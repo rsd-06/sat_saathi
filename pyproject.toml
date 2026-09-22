@@ -19,6 +19,10 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
 
+[tool.ruff.lint.per-file-ignores]
+# Alembic writes these; reformatting generated DDL only invites merge pain.
+"python/core/migrations/versions/*.py" = ["E501"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["satsaathi_core", "satsaathi_tools", "satsaathi_api", "satsaathi_worker"]
 

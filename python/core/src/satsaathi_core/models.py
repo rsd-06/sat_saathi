@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import enum
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from geoalchemy2 import Geometry
 from sqlalchemy import (
@@ -30,7 +30,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def new_id() -> uuid.UUID:
@@ -45,7 +45,7 @@ class Base(DeclarativeBase):
     pass
 
 
-class StepKey(str, enum.Enum):
+class StepKey(enum.StrEnum):
     ask = "ask"
     imagery = "imagery"
     understand = "understand"
@@ -56,7 +56,7 @@ class StepKey(str, enum.Enum):
     answer = "answer"
 
 
-class StepStatus(str, enum.Enum):
+class StepStatus(enum.StrEnum):
     pending = "pending"
     running = "running"
     succeeded = "succeeded"
@@ -65,7 +65,7 @@ class StepStatus(str, enum.Enum):
     needs_review = "needs_review"
 
 
-class JobStatus(str, enum.Enum):
+class JobStatus(enum.StrEnum):
     queued = "queued"
     running = "running"
     succeeded = "succeeded"
@@ -73,13 +73,13 @@ class JobStatus(str, enum.Enum):
     needs_review = "needs_review"
 
 
-class InputMode(str, enum.Enum):
+class InputMode(enum.StrEnum):
     single = "single"
     fusion = "fusion"
     change = "change"
 
 
-class AssetRole(str, enum.Enum):
+class AssetRole(enum.StrEnum):
     single = "single"
     optical = "optical"
     sar = "sar"
@@ -87,7 +87,7 @@ class AssetRole(str, enum.Enum):
     after = "after"
 
 
-class ArtifactKind(str, enum.Enum):
+class ArtifactKind(enum.StrEnum):
     cog = "cog"
     geojson = "geojson"
     pdf = "pdf"
@@ -95,7 +95,7 @@ class ArtifactKind(str, enum.Enum):
     trace = "trace"
 
 
-class ReviewStatus(str, enum.Enum):
+class ReviewStatus(enum.StrEnum):
     pending = "pending"
     approved = "approved"
     edited = "edited"
