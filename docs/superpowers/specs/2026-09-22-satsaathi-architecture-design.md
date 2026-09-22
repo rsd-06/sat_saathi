@@ -1,6 +1,8 @@
 # SatSaathi — Architecture & Foundation Spec
 
-Status: approved by user on 2026-09-22, with corrections below applied.
+Status: draft — awaiting user review. Phase 1 design direction (§12 item 1)
+was verbally approved in chat on 2026-09-22; this document itself has not
+yet been reviewed by the user.
 Scope: architecture, UI and backend plumbing only. No ML model, no training,
 no real orchestration/LLM logic anywhere in this spec or in Phase 1–5. Every
 model-backed step is a stub tool returning deterministic fixture output.
