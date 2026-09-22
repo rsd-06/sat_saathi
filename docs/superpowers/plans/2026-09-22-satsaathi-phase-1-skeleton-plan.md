@@ -976,8 +976,26 @@ git commit -m "chore: commit workspace lockfiles"
 - Create: `infra/docker/api.Dockerfile`
 - Create: `infra/docker/worker.Dockerfile`
 - Create: `infra/docker/web.Dockerfile`
+- Create: `.dockerignore` (repo root)
 
 **Interfaces:** each image's `CMD` is what Task 9's compose file invokes — api listens on `0.0.0.0:8000`, web on `0.0.0.0:3000` (via `next start` default), worker has no listening port.
+
+> **Correction found during Phase 1 execution (2026-09-22):** the original
+> plan omitted a root `.dockerignore`. Without one, `web.Dockerfile`'s
+> `COPY apps/web apps/web` copies the host's locally-installed
+> `apps/web/node_modules` (built for the host OS/arch, with pnpm's
+> Windows-style junctions) over the image's own correctly-installed Linux
+> `node_modules` from the preceding `pnpm install --frozen-lockfile` layer —
+> breaking `next`'s binary resolution (`Cannot find module
+> .../next/dist/bin/next`). Add a root `.dockerignore` as part of this task,
+> before building any image.
+>
+> **Critically**, `.dockerignore` uses Go `filepath.Match` semantics, *not*
+> gitignore semantics: a bare `node_modules/` pattern matches only a
+> **top-level** `node_modules` and silently fails to exclude
+> `apps/web/node_modules`. Patterns must be written `**/node_modules`,
+> `**/.next`, `**/.venv`, etc. Copying `.gitignore`'s contents verbatim into
+> `.dockerignore` reproduces the exact failure above.
 
 - [ ] **Step 1: Create `infra/docker/api.Dockerfile`**
 

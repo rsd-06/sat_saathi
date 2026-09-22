@@ -1,0 +1,21 @@
+# NOTE: .dockerignore uses Go filepath.Match semantics, NOT gitignore semantics.
+# A bare "node_modules/" matches ONLY a top-level node_modules — nested ones
+# (apps/web/node_modules) need the "**/" prefix or the host's platform-specific
+# installs get copied over the image's own, breaking native binaries.
+**/node_modules
+**/.next
+**/.turbo
+**/dist
+**/build
+**/__pycache__
+**/*.pyc
+**/.venv
+**/.pytest_cache
+**/.ruff_cache
+**/.data
+**/.env
+**/next-env.d.ts
+**/*.tsbuildinfo
+.git
+.github
+docs
