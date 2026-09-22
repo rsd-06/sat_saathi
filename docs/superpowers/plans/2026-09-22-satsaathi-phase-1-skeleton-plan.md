@@ -766,7 +766,6 @@ git commit -m "feat(worker): add Celery app with cpu/gpu/lang queues, no tasks y
     "@types/react-dom": "^19.2.0",
     "eslint": "^9.0.0",
     "eslint-config-next": "16.3.5",
-    "@eslint/eslintrc": "^3.2.0",
     "prettier": "^3.4.0",
     "vitest": "^3.0.0",
     "@vitejs/plugin-react": "^4.3.0",
@@ -816,12 +815,25 @@ export default nextConfig;
 - [ ] **Step 4: Create `apps/web/eslint.config.mjs`**
 
 ```js
-import { FlatCompat } from "@eslint/eslintrc";
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
 
-const compat = new FlatCompat({ baseDirectory: import.meta.dirname });
+// eslint-config-next ships flat-config arrays natively as of the ESLint 9 /
+// flat-config-only release line — FlatCompat is for legacy .eslintrc-shaped
+// shareable configs and corrupts these (circular plugin references) when
+// forced through it.
+const config = [...nextCoreWebVitals, ...nextTypescript];
 
-export default [...compat.extends("next/core-web-vitals", "next/typescript")];
+export default config;
 ```
+
+> **Correction found during Phase 1 execution (2026-09-22):** the original
+> plan text used `FlatCompat.extends("next/core-web-vitals", "next/typescript")`,
+> which crashes with `TypeError: Converting circular structure to JSON`
+> against `eslint-config-next@16.3.5` — that package now exports ready-made
+> flat-config arrays directly, so `FlatCompat` (built for legacy `.eslintrc`
+> shareable configs) double-wraps an already-flat plugin object. Fixed above;
+> `@eslint/eslintrc` is correspondingly dropped from devDependencies in Step 1.
 
 - [ ] **Step 5: Create `apps/web/vitest.config.ts`**
 
