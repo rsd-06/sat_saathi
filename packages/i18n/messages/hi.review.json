@@ -1,0 +1,1058 @@
+{
+  "_comment": "First-pass machine translation. Every entry below is UNVERIFIED and must be checked by a native hi speaker before this build is shown to users. Set reviewed:true and record the reviewer once checked.",
+  "_locale": "hi",
+  "_generated": "2026-09-22",
+  "_status": "unreviewed",
+  "entries": {
+    "app.name": {
+      "reviewed": false,
+      "source": "SatSaathi",
+      "translation": "SatSaathi"
+    },
+    "app.tagline": {
+      "reviewed": false,
+      "source": "Ask the satellite, in your language",
+      "translation": "उपग्रह से पूछिए, अपनी भाषा में"
+    },
+    "nav.dashboard": {
+      "reviewed": false,
+      "source": "Dashboard",
+      "translation": "डैशबोर्ड"
+    },
+    "nav.history": {
+      "reviewed": false,
+      "source": "History",
+      "translation": "इतिहास"
+    },
+    "nav.review": {
+      "reviewed": false,
+      "source": "Review",
+      "translation": "समीक्षा"
+    },
+    "nav.settings": {
+      "reviewed": false,
+      "source": "Settings",
+      "translation": "सेटिंग्स"
+    },
+    "nav.signIn": {
+      "reviewed": false,
+      "source": "Sign in",
+      "translation": "साइन इन"
+    },
+    "nav.signOut": {
+      "reviewed": false,
+      "source": "Sign out",
+      "translation": "साइन आउट"
+    },
+    "nav.language": {
+      "reviewed": false,
+      "source": "Language",
+      "translation": "भाषा"
+    },
+    "nav.languageChange": {
+      "reviewed": false,
+      "source": "Change language",
+      "translation": "भाषा बदलें"
+    },
+    "status.online": {
+      "reviewed": false,
+      "source": "Online",
+      "translation": "ऑनलाइन"
+    },
+    "status.offline": {
+      "reviewed": false,
+      "source": "Offline mode",
+      "translation": "ऑफ़लाइन मोड"
+    },
+    "status.onlineHint": {
+      "reviewed": false,
+      "source": "Connected. Translation and basemaps are available.",
+      "translation": "जुड़ा हुआ है। अनुवाद और बेसमैप उपलब्ध हैं।"
+    },
+    "status.offlineHint": {
+      "reviewed": false,
+      "source": "Working offline. Everything runs on this machine.",
+      "translation": "ऑफ़लाइन चल रहा है। सब कुछ इसी मशीन पर होता है।"
+    },
+    "landing.hero.headline": {
+      "reviewed": false,
+      "source": "Ask the satellite, in your language.",
+      "translation": "उपग्रह से पूछिए, अपनी भाषा में।"
+    },
+    "landing.hero.body": {
+      "reviewed": false,
+      "source": "Upload satellite imagery and ask a question in English, Hindi, Tamil or Bangla. Get an answer measured from the pixels, with every step shown.",
+      "translation": "उपग्रह चित्र अपलोड कीजिए और हिंदी, तमिल, बांग्ला या अंग्रेज़ी में सवाल पूछिए। जवाब पिक्सेल से मापकर मिलेगा, और हर कदम दिखाया जाएगा।"
+    },
+    "landing.hero.cta": {
+      "reviewed": false,
+      "source": "Start analysis",
+      "translation": "विश्लेषण शुरू करें"
+    },
+    "landing.hero.secondary": {
+      "reviewed": false,
+      "source": "See how it works",
+      "translation": "यह कैसे काम करता है"
+    },
+    "landing.hero.figureCaption": {
+      "reviewed": false,
+      "source": "Flood extent, Nadia district, 12 September 2026",
+      "translation": "बाढ़ का विस्तार, नदिया ज़िला, 12 सितम्बर 2026"
+    },
+    "landing.problem.title": {
+      "reviewed": false,
+      "source": "A district officer should not need a remote-sensing degree",
+      "translation": "ज़िला अधिकारी को सुदूर संवेदन की डिग्री की ज़रूरत नहीं होनी चाहिए"
+    },
+    "landing.problem.body": {
+      "reviewed": false,
+      "source": "Flood mapping, crop stress, built-up change: the imagery holds the answer, but reading it means specialist software and specialist training. SatSaathi turns the question into the analysis, and shows its working.",
+      "translation": "बाढ़ का मानचित्रण, फ़सल की स्थिति, निर्मित क्षेत्र में बदलाव — जवाब चित्रों में है, पर उसे पढ़ने के लिए विशेष सॉफ़्टवेयर और विशेष प्रशिक्षण चाहिए। SatSaathi सवाल को विश्लेषण में बदलता है, और अपना काम दिखाता है।"
+    },
+    "landing.steps.title": {
+      "reviewed": false,
+      "source": "What happens when you ask",
+      "translation": "पूछने पर क्या होता है"
+    },
+    "landing.steps.ask.title": {
+      "reviewed": false,
+      "source": "Ask",
+      "translation": "पूछिए"
+    },
+    "landing.steps.ask.body": {
+      "reviewed": false,
+      "source": "Type or speak your question in your own language. Upload one image, an optical and SAR pair, or a before and after pair.",
+      "translation": "अपनी भाषा में सवाल लिखिए या बोलिए। एक चित्र, ऑप्टिकल और SAR की जोड़ी, या पहले और बाद की जोड़ी अपलोड कीजिए।"
+    },
+    "landing.steps.compute.title": {
+      "reviewed": false,
+      "source": "Compute",
+      "translation": "गणना"
+    },
+    "landing.steps.compute.body": {
+      "reviewed": false,
+      "source": "Indices are measured from the pixels themselves. NDVI, NDWI and LSWI are computed on the bands you mapped, never substituted.",
+      "translation": "सूचकांक पिक्सेल से ही मापे जाते हैं। NDVI, NDWI और LSWI उन्हीं बैंड पर गिने जाते हैं जो आपने बताए — कभी बदले नहीं जाते।"
+    },
+    "landing.steps.explain.title": {
+      "reviewed": false,
+      "source": "Explain",
+      "translation": "व्याख्या"
+    },
+    "landing.steps.explain.body": {
+      "reviewed": false,
+      "source": "Every claim is checked against the computed numbers before you see it. Low confidence goes to an expert instead of to you.",
+      "translation": "हर दावा दिखाने से पहले मापी गई संख्याओं से जाँचा जाता है। कम भरोसे वाला जवाब आपके पास नहीं, विशेषज्ञ के पास जाता है।"
+    },
+    "landing.steps.act.title": {
+      "reviewed": false,
+      "source": "Act",
+      "translation": "कार्रवाई"
+    },
+    "landing.steps.act.body": {
+      "reviewed": false,
+      "source": "Take away a report, a GeoJSON layer, and the full execution trace, in the language you asked in.",
+      "translation": "रिपोर्ट, GeoJSON परत और पूरा निष्पादन विवरण उसी भाषा में ले जाइए जिसमें आपने पूछा था।"
+    },
+    "landing.inputs.title": {
+      "reviewed": false,
+      "source": "What you can upload",
+      "translation": "आप क्या अपलोड कर सकते हैं"
+    },
+    "landing.inputs.single.title": {
+      "reviewed": false,
+      "source": "Single image",
+      "translation": "एक चित्र"
+    },
+    "landing.inputs.single.body": {
+      "reviewed": false,
+      "source": "One optical, multispectral or SAR GeoTIFF.",
+      "translation": "एक ऑप्टिकल, बहुवर्णक्रमीय या SAR GeoTIFF।"
+    },
+    "landing.inputs.fusion.title": {
+      "reviewed": false,
+      "source": "Optical + SAR pair",
+      "translation": "ऑप्टिकल + SAR जोड़ी"
+    },
+    "landing.inputs.fusion.body": {
+      "reviewed": false,
+      "source": "Two co-registered images of the same ground, read together.",
+      "translation": "एक ही ज़मीन के दो सह-पंजीकृत चित्र, साथ में पढ़े गए।"
+    },
+    "landing.inputs.change.title": {
+      "reviewed": false,
+      "source": "Before + after pair",
+      "translation": "पहले + बाद की जोड़ी"
+    },
+    "landing.inputs.change.body": {
+      "reviewed": false,
+      "source": "The same ground on two dates, to measure what changed.",
+      "translation": "एक ही ज़मीन, दो तारीख़ों पर — यह मापने के लिए कि क्या बदला।"
+    },
+    "landing.trust.title": {
+      "reviewed": false,
+      "source": "You can check the working",
+      "translation": "आप काम की जाँच कर सकते हैं"
+    },
+    "landing.trust.body": {
+      "reviewed": false,
+      "source": "Every job records what ran, with which parameters, and what it produced. Nothing is asserted that the numbers do not support.",
+      "translation": "हर कार्य यह दर्ज करता है कि क्या चला, किन मानकों के साथ, और क्या निकला। जिसे संख्याएँ सिद्ध न करें, वह दावा नहीं किया जाता।"
+    },
+    "landing.trust.cta": {
+      "reviewed": false,
+      "source": "See a worked example",
+      "translation": "एक उदाहरण देखिए"
+    },
+    "auth.signIn.title": {
+      "reviewed": false,
+      "source": "Sign in",
+      "translation": "साइन इन"
+    },
+    "auth.signIn.subtitle": {
+      "reviewed": false,
+      "source": "Continue to your analyses.",
+      "translation": "अपने विश्लेषणों पर जाइए।"
+    },
+    "auth.signUp.title": {
+      "reviewed": false,
+      "source": "Create an account",
+      "translation": "खाता बनाइए"
+    },
+    "auth.signUp.subtitle": {
+      "reviewed": false,
+      "source": "For officers and analysts working with satellite imagery.",
+      "translation": "उपग्रह चित्रों पर काम करने वाले अधिकारियों और विश्लेषकों के लिए।"
+    },
+    "auth.field.email": {
+      "reviewed": false,
+      "source": "Official email",
+      "translation": "सरकारी ईमेल"
+    },
+    "auth.field.emailHint": {
+      "reviewed": false,
+      "source": "Use your department email address.",
+      "translation": "अपने विभाग का ईमेल पता इस्तेमाल कीजिए।"
+    },
+    "auth.field.password": {
+      "reviewed": false,
+      "source": "Password",
+      "translation": "पासवर्ड"
+    },
+    "auth.field.passwordHint": {
+      "reviewed": false,
+      "source": "At least 12 characters.",
+      "translation": "कम से कम 12 अक्षर।"
+    },
+    "auth.field.name": {
+      "reviewed": false,
+      "source": "Full name",
+      "translation": "पूरा नाम"
+    },
+    "auth.field.department": {
+      "reviewed": false,
+      "source": "Department",
+      "translation": "विभाग"
+    },
+    "auth.field.district": {
+      "reviewed": false,
+      "source": "District",
+      "translation": "ज़िला"
+    },
+    "auth.action.signIn": {
+      "reviewed": false,
+      "source": "Sign in",
+      "translation": "साइन इन"
+    },
+    "auth.action.signUp": {
+      "reviewed": false,
+      "source": "Create account",
+      "translation": "खाता बनाइए"
+    },
+    "auth.action.forgot": {
+      "reviewed": false,
+      "source": "Forgot your password?",
+      "translation": "पासवर्ड भूल गए?"
+    },
+    "auth.switch.toSignUp": {
+      "reviewed": false,
+      "source": "Need an account?",
+      "translation": "खाता चाहिए?"
+    },
+    "auth.switch.toSignUpLink": {
+      "reviewed": false,
+      "source": "Create one",
+      "translation": "बनाइए"
+    },
+    "auth.switch.toSignIn": {
+      "reviewed": false,
+      "source": "Already have an account?",
+      "translation": "पहले से खाता है?"
+    },
+    "auth.switch.toSignInLink": {
+      "reviewed": false,
+      "source": "Sign in",
+      "translation": "साइन इन"
+    },
+    "auth.notice.preview": {
+      "reviewed": false,
+      "source": "Preview build. Sign-in is not connected yet, so any details take you to the dashboard.",
+      "translation": "यह पूर्वावलोकन है। साइन इन अभी जुड़ा नहीं है, इसलिए कोई भी विवरण आपको डैशबोर्ड पर ले जाएगा।"
+    },
+    "dashboard.greeting": {
+      "reviewed": false,
+      "source": "Your analyses",
+      "translation": "आपके विश्लेषण"
+    },
+    "dashboard.subtitle": {
+      "reviewed": false,
+      "source": "Start a new analysis, or pick up one you have already run.",
+      "translation": "नया विश्लेषण शुरू कीजिए, या पहले चलाए गए किसी पर लौटिए।"
+    },
+    "dashboard.newAnalysis": {
+      "reviewed": false,
+      "source": "New analysis",
+      "translation": "नया विश्लेषण"
+    },
+    "dashboard.recent.title": {
+      "reviewed": false,
+      "source": "Recent",
+      "translation": "हाल ही के"
+    },
+    "dashboard.recent.empty.title": {
+      "reviewed": false,
+      "source": "Nothing analysed yet",
+      "translation": "अभी कोई विश्लेषण नहीं"
+    },
+    "dashboard.recent.empty.body": {
+      "reviewed": false,
+      "source": "Upload imagery and ask your first question.",
+      "translation": "चित्र अपलोड कीजिए और अपना पहला सवाल पूछिए।"
+    },
+    "dashboard.recent.viewAll": {
+      "reviewed": false,
+      "source": "View all",
+      "translation": "सब देखिए"
+    },
+    "dashboard.review.title": {
+      "reviewed": false,
+      "source": "Waiting for expert review",
+      "translation": "विशेषज्ञ समीक्षा की प्रतीक्षा में"
+    },
+    "dashboard.review.body": {
+      "reviewed": false,
+      "source": "{count, plural, =0 {Nothing is waiting} one {# answer is held for review} other {# answers are held for review}}",
+      "translation": "{count, plural, =0 {कुछ भी प्रतीक्षा में नहीं} one {# जवाब समीक्षा के लिए रोका गया है} other {# जवाब समीक्षा के लिए रोके गए हैं}}"
+    },
+    "dashboard.review.cta": {
+      "reviewed": false,
+      "source": "Open review queue",
+      "translation": "समीक्षा सूची खोलिए"
+    },
+    "dashboard.stats.analyses": {
+      "reviewed": false,
+      "source": "Analyses run",
+      "translation": "विश्लेषण चलाए गए"
+    },
+    "dashboard.stats.area": {
+      "reviewed": false,
+      "source": "Area covered",
+      "translation": "कुल क्षेत्र"
+    },
+    "dashboard.stats.review": {
+      "reviewed": false,
+      "source": "Held for review",
+      "translation": "समीक्षा में रोके गए"
+    },
+    "job.status.running": {
+      "reviewed": false,
+      "source": "Running",
+      "translation": "चल रहा है"
+    },
+    "job.status.succeeded": {
+      "reviewed": false,
+      "source": "Answered",
+      "translation": "उत्तर मिला"
+    },
+    "job.status.failed": {
+      "reviewed": false,
+      "source": "Failed",
+      "translation": "विफल"
+    },
+    "job.status.needs_review": {
+      "reviewed": false,
+      "source": "Held for review",
+      "translation": "समीक्षा में रोका गया"
+    },
+    "job.mode.single": {
+      "reviewed": false,
+      "source": "Single image",
+      "translation": "एक चित्र"
+    },
+    "job.mode.fusion": {
+      "reviewed": false,
+      "source": "Optical + SAR",
+      "translation": "ऑप्टिकल + SAR"
+    },
+    "job.mode.change": {
+      "reviewed": false,
+      "source": "Before + after",
+      "translation": "पहले + बाद"
+    },
+    "workspace.title": {
+      "reviewed": false,
+      "source": "Workspace",
+      "translation": "कार्यक्षेत्र"
+    },
+    "workspace.inputs.title": {
+      "reviewed": false,
+      "source": "Imagery",
+      "translation": "चित्र"
+    },
+    "workspace.inputs.mode": {
+      "reviewed": false,
+      "source": "What are you uploading?",
+      "translation": "आप क्या अपलोड कर रहे हैं?"
+    },
+    "workspace.inputs.slot.single": {
+      "reviewed": false,
+      "source": "Image",
+      "translation": "चित्र"
+    },
+    "workspace.inputs.slot.optical": {
+      "reviewed": false,
+      "source": "Optical",
+      "translation": "ऑप्टिकल"
+    },
+    "workspace.inputs.slot.sar": {
+      "reviewed": false,
+      "source": "SAR",
+      "translation": "SAR"
+    },
+    "workspace.inputs.slot.before": {
+      "reviewed": false,
+      "source": "Before",
+      "translation": "पहले"
+    },
+    "workspace.inputs.slot.after": {
+      "reviewed": false,
+      "source": "After",
+      "translation": "बाद"
+    },
+    "workspace.inputs.drop": {
+      "reviewed": false,
+      "source": "Drop a GeoTIFF here, or",
+      "translation": "GeoTIFF यहाँ छोड़िए, या"
+    },
+    "workspace.inputs.browse": {
+      "reviewed": false,
+      "source": "browse files",
+      "translation": "फ़ाइल चुनिए"
+    },
+    "workspace.inputs.accepts": {
+      "reviewed": false,
+      "source": "GeoTIFF (.tif, .tiff), georeferenced",
+      "translation": "GeoTIFF (.tif, .tiff), भू-संदर्भित"
+    },
+    "workspace.inputs.replace": {
+      "reviewed": false,
+      "source": "Replace",
+      "translation": "बदलिए"
+    },
+    "workspace.inputs.remove": {
+      "reviewed": false,
+      "source": "Remove",
+      "translation": "हटाइए"
+    },
+    "workspace.inputs.uploading": {
+      "reviewed": false,
+      "source": "Uploading",
+      "translation": "अपलोड हो रहा है"
+    },
+    "workspace.inputs.reading": {
+      "reviewed": false,
+      "source": "Reading metadata",
+      "translation": "विवरण पढ़ा जा रहा है"
+    },
+    "workspace.checks.title": {
+      "reviewed": false,
+      "source": "Compatibility",
+      "translation": "अनुकूलता"
+    },
+    "workspace.checks.crs": {
+      "reviewed": false,
+      "source": "Coordinate system",
+      "translation": "निर्देशांक प्रणाली"
+    },
+    "workspace.checks.crsMatch": {
+      "reviewed": false,
+      "source": "Both images use {crs}",
+      "translation": "दोनों चित्र {crs} में हैं"
+    },
+    "workspace.checks.overlap": {
+      "reviewed": false,
+      "source": "Spatial overlap",
+      "translation": "स्थानिक अतिव्यापन"
+    },
+    "workspace.checks.overlapValue": {
+      "reviewed": false,
+      "source": "{pct}% of the smaller footprint",
+      "translation": "छोटे क्षेत्र का {pct}%"
+    },
+    "workspace.checks.resolution": {
+      "reviewed": false,
+      "source": "Pixel size",
+      "translation": "पिक्सेल आकार"
+    },
+    "workspace.checks.resolutionValue": {
+      "reviewed": false,
+      "source": "{a} and {b}",
+      "translation": "{a} और {b}"
+    },
+    "workspace.checks.dates": {
+      "reviewed": false,
+      "source": "Acquisition order",
+      "translation": "अधिग्रहण क्रम"
+    },
+    "workspace.checks.datesValue": {
+      "reviewed": false,
+      "source": "{before} before {after}",
+      "translation": "{before} से पहले {after}"
+    },
+    "workspace.checks.sensor": {
+      "reviewed": false,
+      "source": "Sensor",
+      "translation": "संवेदक"
+    },
+    "workspace.checks.pass": {
+      "reviewed": false,
+      "source": "Passed",
+      "translation": "सही"
+    },
+    "workspace.checks.warn": {
+      "reviewed": false,
+      "source": "Check this",
+      "translation": "इसे देखिए"
+    },
+    "workspace.checks.fail": {
+      "reviewed": false,
+      "source": "Blocked",
+      "translation": "रुका हुआ"
+    },
+    "workspace.bands.title": {
+      "reviewed": false,
+      "source": "Bands",
+      "translation": "बैंड"
+    },
+    "workspace.bands.preset": {
+      "reviewed": false,
+      "source": "Sensor preset",
+      "translation": "संवेदक प्रीसेट"
+    },
+    "workspace.bands.presetHint": {
+      "reviewed": false,
+      "source": "Pick the sensor so bands are read correctly.",
+      "translation": "संवेदक चुनिए ताकि बैंड सही पढ़े जाएँ।"
+    },
+    "workspace.bands.manual": {
+      "reviewed": false,
+      "source": "Assign bands manually",
+      "translation": "बैंड खुद तय कीजिए"
+    },
+    "workspace.bands.role.blue": {
+      "reviewed": false,
+      "source": "Blue",
+      "translation": "नीला"
+    },
+    "workspace.bands.role.green": {
+      "reviewed": false,
+      "source": "Green",
+      "translation": "हरा"
+    },
+    "workspace.bands.role.red": {
+      "reviewed": false,
+      "source": "Red",
+      "translation": "लाल"
+    },
+    "workspace.bands.role.nir": {
+      "reviewed": false,
+      "source": "NIR",
+      "translation": "NIR"
+    },
+    "workspace.bands.role.swir1": {
+      "reviewed": false,
+      "source": "SWIR1",
+      "translation": "SWIR1"
+    },
+    "workspace.bands.role.vv": {
+      "reviewed": false,
+      "source": "VV",
+      "translation": "VV"
+    },
+    "workspace.bands.role.vh": {
+      "reviewed": false,
+      "source": "VH",
+      "translation": "VH"
+    },
+    "workspace.analyses.title": {
+      "reviewed": false,
+      "source": "Available measurements",
+      "translation": "उपलब्ध माप"
+    },
+    "workspace.analyses.ndviUnavailable": {
+      "reviewed": false,
+      "source": "NDVI needs a red and a near-infrared band.",
+      "translation": "NDVI के लिए लाल और निकट-अवरक्त बैंड चाहिए।"
+    },
+    "workspace.analyses.ndwiUnavailable": {
+      "reviewed": false,
+      "source": "NDWI needs a green and a near-infrared band.",
+      "translation": "NDWI के लिए हरा और निकट-अवरक्त बैंड चाहिए।"
+    },
+    "workspace.analyses.lswiUnavailable": {
+      "reviewed": false,
+      "source": "LSWI needs a near-infrared and a SWIR band. This sensor has no SWIR.",
+      "translation": "LSWI के लिए निकट-अवरक्त और SWIR बैंड चाहिए। इस संवेदक में SWIR नहीं है।"
+    },
+    "workspace.map.layers": {
+      "reviewed": false,
+      "source": "Layers",
+      "translation": "परतें"
+    },
+    "workspace.map.layer.trueColour": {
+      "reviewed": false,
+      "source": "True colour",
+      "translation": "वास्तविक रंग"
+    },
+    "workspace.map.layer.falseColour": {
+      "reviewed": false,
+      "source": "False colour",
+      "translation": "मिथ्या रंग"
+    },
+    "workspace.map.layer.sarVV": {
+      "reviewed": false,
+      "source": "SAR VV",
+      "translation": "SAR VV"
+    },
+    "workspace.map.layer.ndwi": {
+      "reviewed": false,
+      "source": "NDWI",
+      "translation": "NDWI"
+    },
+    "workspace.map.layer.ndvi": {
+      "reviewed": false,
+      "source": "NDVI",
+      "translation": "NDVI"
+    },
+    "workspace.map.layer.changeMask": {
+      "reviewed": false,
+      "source": "Change mask",
+      "translation": "परिवर्तन मुखौटा"
+    },
+    "workspace.map.layer.aoi": {
+      "reviewed": false,
+      "source": "Area of interest",
+      "translation": "रुचि क्षेत्र"
+    },
+    "workspace.map.compare": {
+      "reviewed": false,
+      "source": "Drag to compare",
+      "translation": "तुलना के लिए खींचिए"
+    },
+    "workspace.map.empty.title": {
+      "reviewed": false,
+      "source": "No imagery yet",
+      "translation": "अभी कोई चित्र नहीं"
+    },
+    "workspace.map.empty.body": {
+      "reviewed": false,
+      "source": "Upload a GeoTIFF and it will be drawn here.",
+      "translation": "GeoTIFF अपलोड कीजिए, वह यहाँ दिखेगा।"
+    },
+    "workspace.map.legend.low": {
+      "reviewed": false,
+      "source": "Low",
+      "translation": "कम"
+    },
+    "workspace.map.legend.high": {
+      "reviewed": false,
+      "source": "High",
+      "translation": "ज़्यादा"
+    },
+    "workspace.ask.title": {
+      "reviewed": false,
+      "source": "Your question",
+      "translation": "आपका सवाल"
+    },
+    "workspace.ask.placeholder": {
+      "reviewed": false,
+      "source": "Ask about this imagery…",
+      "translation": "इन चित्रों के बारे में पूछिए…"
+    },
+    "workspace.ask.language": {
+      "reviewed": false,
+      "source": "Asking in",
+      "translation": "पूछने की भाषा"
+    },
+    "workspace.ask.submit": {
+      "reviewed": false,
+      "source": "Ask",
+      "translation": "पूछिए"
+    },
+    "workspace.ask.voice": {
+      "reviewed": false,
+      "source": "Ask by voice",
+      "translation": "बोलकर पूछिए"
+    },
+    "workspace.ask.voiceUnavailable": {
+      "reviewed": false,
+      "source": "Voice questions are not available yet.",
+      "translation": "बोलकर पूछना अभी उपलब्ध नहीं है।"
+    },
+    "workspace.ask.examples": {
+      "reviewed": false,
+      "source": "Try one of these",
+      "translation": "इनमें से कोई आज़माइए"
+    },
+    "workspace.ask.example.single1": {
+      "reviewed": false,
+      "source": "Describe the land cover in this image.",
+      "translation": "इस चित्र में भू-आवरण बताइए।"
+    },
+    "workspace.ask.example.single2": {
+      "reviewed": false,
+      "source": "How much of this area is under water?",
+      "translation": "इस क्षेत्र का कितना हिस्सा पानी में है?"
+    },
+    "workspace.ask.example.fusion1": {
+      "reviewed": false,
+      "source": "Use the optical and SAR images together to identify built-up and water-covered regions.",
+      "translation": "ऑप्टिकल और SAR चित्रों का साथ में उपयोग करके निर्मित और जलमग्न क्षेत्र पहचानिए।"
+    },
+    "workspace.ask.example.fusion2": {
+      "reviewed": false,
+      "source": "Where does SAR show water that the optical image misses?",
+      "translation": "SAR कहाँ पानी दिखाता है जो ऑप्टिकल चित्र में नहीं दिखता?"
+    },
+    "workspace.ask.example.change1": {
+      "reviewed": false,
+      "source": "What changed between these two dates?",
+      "translation": "इन दो तारीख़ों के बीच क्या बदला?"
+    },
+    "workspace.ask.example.change2": {
+      "reviewed": false,
+      "source": "How much paddy was lost to flooding?",
+      "translation": "बाढ़ से कितना धान नष्ट हुआ?"
+    },
+    "workspace.ask.blocked": {
+      "reviewed": false,
+      "source": "Upload imagery before asking a question.",
+      "translation": "सवाल पूछने से पहले चित्र अपलोड कीजिए।"
+    },
+    "workspace.trace.title": {
+      "reviewed": false,
+      "source": "What the system did",
+      "translation": "सिस्टम ने क्या किया"
+    },
+    "workspace.trace.subtitle": {
+      "reviewed": false,
+      "source": "Every step, in order, with its parameters and what it produced.",
+      "translation": "हर कदम, क्रम में, अपने मानकों और परिणाम के साथ।"
+    },
+    "workspace.trace.copy": {
+      "reviewed": false,
+      "source": "Copy trace",
+      "translation": "विवरण कॉपी कीजिए"
+    },
+    "workspace.trace.copied": {
+      "reviewed": false,
+      "source": "Copied",
+      "translation": "कॉपी हो गया"
+    },
+    "workspace.trace.download": {
+      "reviewed": false,
+      "source": "Download trace (JSON)",
+      "translation": "विवरण डाउनलोड कीजिए (JSON)"
+    },
+    "workspace.trace.tool": {
+      "reviewed": false,
+      "source": "Tool",
+      "translation": "उपकरण"
+    },
+    "workspace.trace.params": {
+      "reviewed": false,
+      "source": "Parameters",
+      "translation": "मानक"
+    },
+    "workspace.trace.output": {
+      "reviewed": false,
+      "source": "Result",
+      "translation": "परिणाम"
+    },
+    "workspace.trace.artifacts": {
+      "reviewed": false,
+      "source": "Files produced",
+      "translation": "बनी फ़ाइलें"
+    },
+    "workspace.trace.duration": {
+      "reviewed": false,
+      "source": "{ms} ms",
+      "translation": "{ms} ms"
+    },
+    "workspace.trace.stub": {
+      "reviewed": false,
+      "source": "Placeholder",
+      "translation": "अस्थायी"
+    },
+    "workspace.trace.stubHint": {
+      "reviewed": false,
+      "source": "This step returns fixture data. The real tool plugs in here later.",
+      "translation": "यह कदम नमूना डेटा देता है। असली उपकरण यहाँ बाद में जुड़ेगा।"
+    },
+    "steps.ask.title": {
+      "reviewed": false,
+      "source": "Question received",
+      "translation": "सवाल मिला"
+    },
+    "steps.ask.body": {
+      "reviewed": false,
+      "source": "Reads your question and the language you asked in.",
+      "translation": "आपका सवाल और पूछने की भाषा पढ़ता है।"
+    },
+    "steps.imagery.title": {
+      "reviewed": false,
+      "source": "Imagery registered",
+      "translation": "चित्र पंजीकृत"
+    },
+    "steps.imagery.body": {
+      "reviewed": false,
+      "source": "Reads the GeoTIFF headers: bands, coordinate system, pixel size, footprint, date.",
+      "translation": "GeoTIFF का विवरण पढ़ता है: बैंड, निर्देशांक प्रणाली, पिक्सेल आकार, सीमा, तारीख़।"
+    },
+    "steps.understand.title": {
+      "reviewed": false,
+      "source": "Question understood",
+      "translation": "सवाल समझा गया"
+    },
+    "steps.understand.body": {
+      "reviewed": false,
+      "source": "Translates the question to English and works out what is being asked for.",
+      "translation": "सवाल का अंग्रेज़ी में अनुवाद करता है और तय करता है कि क्या पूछा गया है।"
+    },
+    "steps.preprocess.title": {
+      "reviewed": false,
+      "source": "Imagery prepared",
+      "translation": "चित्र तैयार किए गए"
+    },
+    "steps.preprocess.body": {
+      "reviewed": false,
+      "source": "Calibrates, removes speckle, aligns the images and masks cloud.",
+      "translation": "अंशांकन करता है, धब्बे हटाता है, चित्रों को संरेखित करता है और बादल ढकता है।"
+    },
+    "steps.compute.title": {
+      "reviewed": false,
+      "source": "Measurements computed",
+      "translation": "माप की गणना"
+    },
+    "steps.compute.body": {
+      "reviewed": false,
+      "source": "Computes indices from the pixels and converts pixel counts to area on the ground.",
+      "translation": "पिक्सेल से सूचकांक गिनता है और पिक्सेल संख्या को ज़मीनी क्षेत्रफल में बदलता है।"
+    },
+    "steps.vision_language.title": {
+      "reviewed": false,
+      "source": "Imagery read",
+      "translation": "चित्र पढ़े गए"
+    },
+    "steps.vision_language.body": {
+      "reviewed": false,
+      "source": "Describes what is visible and marks where it is.",
+      "translation": "जो दिख रहा है उसका वर्णन करता है और बताता है कि वह कहाँ है।"
+    },
+    "steps.verify.title": {
+      "reviewed": false,
+      "source": "Claims checked",
+      "translation": "दावों की जाँच"
+    },
+    "steps.verify.body": {
+      "reviewed": false,
+      "source": "Compares what was described against what was measured, and scores the agreement.",
+      "translation": "वर्णन की तुलना मापी गई संख्याओं से करता है और सहमति को अंक देता है।"
+    },
+    "steps.answer.title": {
+      "reviewed": false,
+      "source": "Answer written",
+      "translation": "जवाब लिखा गया"
+    },
+    "steps.answer.body": {
+      "reviewed": false,
+      "source": "Writes the answer in your language and assembles the report and layers.",
+      "translation": "आपकी भाषा में जवाब लिखता है और रिपोर्ट व परतें तैयार करता है।"
+    },
+    "step.status.pending": {
+      "reviewed": false,
+      "source": "Waiting",
+      "translation": "प्रतीक्षा में"
+    },
+    "step.status.running": {
+      "reviewed": false,
+      "source": "Running",
+      "translation": "चल रहा है"
+    },
+    "step.status.succeeded": {
+      "reviewed": false,
+      "source": "Done",
+      "translation": "पूरा"
+    },
+    "step.status.skipped": {
+      "reviewed": false,
+      "source": "Skipped",
+      "translation": "छोड़ा गया"
+    },
+    "step.status.failed": {
+      "reviewed": false,
+      "source": "Failed",
+      "translation": "विफल"
+    },
+    "step.status.needs_review": {
+      "reviewed": false,
+      "source": "Held for review",
+      "translation": "समीक्षा में रोका गया"
+    },
+    "answer.title": {
+      "reviewed": false,
+      "source": "Answer",
+      "translation": "जवाब"
+    },
+    "answer.confidence.label": {
+      "reviewed": false,
+      "source": "Confidence",
+      "translation": "विश्वास"
+    },
+    "answer.confidence.high": {
+      "reviewed": false,
+      "source": "The description and the measurements agree closely.",
+      "translation": "वर्णन और माप आपस में मेल खाते हैं।"
+    },
+    "answer.confidence.medium": {
+      "reviewed": false,
+      "source": "Mostly consistent. Check the flagged area before acting.",
+      "translation": "अधिकतर मेल खाता है। कार्रवाई से पहले चिह्नित क्षेत्र देखिए।"
+    },
+    "answer.confidence.low": {
+      "reviewed": false,
+      "source": "The description and the measurements disagree. Sent for expert review.",
+      "translation": "वर्णन और माप मेल नहीं खाते। विशेषज्ञ समीक्षा के लिए भेजा गया।"
+    },
+    "answer.evidence": {
+      "reviewed": false,
+      "source": "Evidence",
+      "translation": "प्रमाण"
+    },
+    "answer.download.pdf": {
+      "reviewed": false,
+      "source": "Download report (PDF)",
+      "translation": "रिपोर्ट डाउनलोड कीजिए (PDF)"
+    },
+    "answer.download.geojson": {
+      "reviewed": false,
+      "source": "Download layers (GeoJSON)",
+      "translation": "परतें डाउनलोड कीजिए (GeoJSON)"
+    },
+    "answer.download.trace": {
+      "reviewed": false,
+      "source": "Download trace (JSON)",
+      "translation": "विवरण डाउनलोड कीजिए (JSON)"
+    },
+    "answer.measuredFrom": {
+      "reviewed": false,
+      "source": "Measured from {source}",
+      "translation": "{source} से मापा गया"
+    },
+    "answer.review.title": {
+      "reviewed": false,
+      "source": "Sent for expert review",
+      "translation": "विशेषज्ञ समीक्षा के लिए भेजा गया"
+    },
+    "answer.review.body": {
+      "reviewed": false,
+      "source": "Confidence fell below {threshold}%, so this answer is held until a specialist checks it. You will be notified when it is released.",
+      "translation": "विश्वास {threshold}% से नीचे रहा, इसलिए यह जवाब तब तक रोका गया है जब तक विशेषज्ञ जाँच न ले। जारी होने पर आपको सूचना मिलेगी।"
+    },
+    "empty.workspace.title": {
+      "reviewed": false,
+      "source": "Start with imagery",
+      "translation": "चित्र से शुरू कीजिए"
+    },
+    "empty.workspace.body": {
+      "reviewed": false,
+      "source": "Upload a GeoTIFF on the left. Once it is read, you can ask a question about it.",
+      "translation": "बाईं ओर GeoTIFF अपलोड कीजिए। पढ़े जाने के बाद आप उसके बारे में सवाल पूछ सकते हैं।"
+    },
+    "error.apiUnreachable.title": {
+      "reviewed": false,
+      "source": "Cannot reach the service",
+      "translation": "सेवा तक नहीं पहुँच पा रहे"
+    },
+    "error.apiUnreachable.body": {
+      "reviewed": false,
+      "source": "The analysis service is not responding. Your uploads are safe.",
+      "translation": "विश्लेषण सेवा जवाब नहीं दे रही। आपके अपलोड सुरक्षित हैं।"
+    },
+    "error.apiUnreachable.action": {
+      "reviewed": false,
+      "source": "Try again",
+      "translation": "फिर कोशिश कीजिए"
+    },
+    "error.upload.crsMismatch": {
+      "reviewed": false,
+      "source": "These two images use different coordinate systems ({a} and {b}). Re-upload them in the same system.",
+      "translation": "इन दोनों चित्रों की निर्देशांक प्रणाली अलग है ({a} और {b})। दोनों को एक ही प्रणाली में अपलोड कीजिए।"
+    },
+    "error.upload.notGeoreferenced": {
+      "reviewed": false,
+      "source": "This GeoTIFF has no coordinate system, so it cannot be placed on the map.",
+      "translation": "इस GeoTIFF में निर्देशांक प्रणाली नहीं है, इसलिए इसे मानचित्र पर नहीं रखा जा सकता।"
+    },
+    "error.upload.tooLarge": {
+      "reviewed": false,
+      "source": "This file is larger than {max} MB.",
+      "translation": "यह फ़ाइल {max} MB से बड़ी है।"
+    },
+    "error.offlineFeature": {
+      "reviewed": false,
+      "source": "This needs a connection. Switch out of offline mode to use it.",
+      "translation": "इसके लिए कनेक्शन चाहिए। उपयोग करने के लिए ऑफ़लाइन मोड से बाहर आइए।"
+    },
+    "common.cancel": {
+      "reviewed": false,
+      "source": "Cancel",
+      "translation": "रद्द कीजिए"
+    },
+    "common.retry": {
+      "reviewed": false,
+      "source": "Try again",
+      "translation": "फिर कोशिश कीजिए"
+    },
+    "common.close": {
+      "reviewed": false,
+      "source": "Close",
+      "translation": "बंद कीजिए"
+    },
+    "common.back": {
+      "reviewed": false,
+      "source": "Back",
+      "translation": "वापस"
+    },
+    "common.learnMore": {
+      "reviewed": false,
+      "source": "Learn more",
+      "translation": "और जानिए"
+    },
+    "common.optional": {
+      "reviewed": false,
+      "source": "Optional",
+      "translation": "वैकल्पिक"
+    }
+  }
+}

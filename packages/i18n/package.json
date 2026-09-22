@@ -1,0 +1,17 @@
+{
+  "name": "@satsaathi/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./messages/*": "./messages/*",
+    "./glossary": "./glossary.json"
+  },
+  "files": [
+    "messages",
+    "glossary.json"
+  ],
+  "scripts": {
+    "check": "node check.mjs"
+  }
+}

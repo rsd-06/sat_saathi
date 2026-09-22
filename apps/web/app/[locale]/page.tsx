@@ -1,0 +1,250 @@
+import { getTranslations, setRequestLocale } from "next-intl/server";
+
+import { Link } from "@/i18n/navigation";
+import { SiteHeader } from "@/components/site-header";
+import { Sheet } from "@/components/sheet";
+import { Scene } from "@/components/scene";
+
+export default async function LandingPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations();
+
+  const steps = ["ask", "compute", "explain", "act"] as const;
+  const inputs = ["single", "fusion", "change"] as const;
+
+  return (
+    <>
+      <SiteHeader />
+
+      <main>
+        {/* Hero: the sheet is the hero. The copy sits beside it, not over it. */}
+        <section className="relative">
+          <div
+            aria-hidden
+            className="sheet-grid pointer-events-none absolute inset-0"
+          />
+          <div className="relative mx-auto grid max-w-[88rem] gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-14 lg:py-20">
+            <div className="max-w-prose self-center">
+              <h1 className="font-serif text-ink text-4xl leading-[1.12] tracking-tight text-balance sm:text-5xl">
+                {t("landing.hero.headline")}
+              </h1>
+              <p className="text-ink-muted mt-5 text-base leading-relaxed">
+                {t("landing.hero.body")}
+              </p>
+              <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <Link
+                  href="/sign-in"
+                  className="bg-accent hover:bg-accent-hover rounded-xs px-5 py-2.5 text-sm font-medium text-white transition-colors"
+                >
+                  {t("landing.hero.cta")}
+                </Link>
+                <a
+                  href="#how"
+                  className="text-ink-muted hover:text-ink text-sm underline decoration-current/30 underline-offset-4 transition-colors"
+                >
+                  {t("landing.hero.secondary")}
+                </a>
+              </div>
+            </div>
+
+            <Sheet
+              className="self-center"
+              margin={[
+                <span key="c" className="tabular">
+                  23.4102°N 88.5107°E
+                </span>,
+                <span key="s">Sentinel-2 L2A</span>,
+                <span key="b">B03 · B08</span>,
+                <span key="d" className="tabular">
+                  2026-09-12
+                </span>,
+              ]}
+              footer={
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <span className="marginal">
+                    {t("landing.hero.figureCaption")}
+                  </span>
+                  <span className="marginal flex items-center gap-2">
+                    NDWI
+                    <span
+                      aria-hidden
+                      className="h-1.5 w-24"
+                      style={{
+                        background:
+                          "linear-gradient(to right, var(--color-relief), var(--color-water))",
+                      }}
+                    />
+                    <span className="tabular">−1 … +1</span>
+                  </span>
+                </div>
+              }
+            >
+              <div className="aspect-[16/10]">
+                <Scene variant="flood" />
+              </div>
+              {/* The measurement is drawn on the sheet, where it was taken. */}
+              <div className="border-rule-strong bg-paper-raised/95 absolute bottom-3 left-3 border px-3 py-2">
+                <div className="text-ink tabular font-serif text-2xl leading-none">
+                  142.4 ha
+                </div>
+                <div className="marginal mt-1">
+                  {t("answer.measuredFrom", { source: "NDWI > 0.3" })}
+                </div>
+              </div>
+            </Sheet>
+          </div>
+        </section>
+
+        {/* The problem, stated plainly. */}
+        <section className="border-rule border-t">
+          <div className="mx-auto max-w-[88rem] px-4 py-14 sm:px-6">
+            <div className="max-w-2xl">
+              <h2 className="font-serif text-ink text-2xl leading-snug tracking-tight text-balance sm:text-3xl">
+                {t("landing.problem.title")}
+              </h2>
+              <p className="text-ink-muted mt-4 leading-relaxed">
+                {t("landing.problem.body")}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Ask → Compute → Explain → Act. Genuinely a sequence, so it is numbered. */}
+        <section id="how" className="border-rule bg-paper-sunk/60 border-t">
+          <div className="mx-auto max-w-[88rem] px-4 py-14 sm:px-6">
+            <h2 className="font-serif text-ink text-2xl tracking-tight">
+              {t("landing.steps.title")}
+            </h2>
+            <ol className="divide-rule border-rule mt-8 grid divide-y border-t sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
+              {steps.map((step, i) => (
+                <li
+                  key={step}
+                  className="border-rule flex gap-4 py-6 sm:border-r sm:px-5 sm:first:pl-0 lg:last:border-r-0"
+                >
+                  <span
+                    className="text-ink-faint tabular marginal shrink-0 pt-0.5"
+                    aria-hidden
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <h3 className="text-ink font-medium">
+                      {t(`landing.steps.${step}.title`)}
+                    </h3>
+                    <p className="text-ink-muted mt-2 text-sm leading-relaxed">
+                      {t(`landing.steps.${step}.body`)}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        {/* Supported inputs, each shown as the sheet it produces. */}
+        <section className="border-rule border-t">
+          <div className="mx-auto max-w-[88rem] px-4 py-14 sm:px-6">
+            <h2 className="font-serif text-ink text-2xl tracking-tight">
+              {t("landing.inputs.title")}
+            </h2>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {inputs.map((input) => (
+                <Sheet
+                  key={input}
+                  margin={[
+                    <span key="k">{t(`landing.inputs.${input}.title`)}</span>,
+                  ]}
+                >
+                  <div className="aspect-[16/9]">
+                    <Scene
+                      variant={
+                        input === "fusion"
+                          ? "sar"
+                          : input === "change"
+                            ? "change"
+                            : "flood"
+                      }
+                      showFlood={input !== "single"}
+                    />
+                  </div>
+                  <p className="text-ink-muted border-rule border-t px-3 py-3 text-sm leading-relaxed">
+                    {t(`landing.inputs.${input}.body`)}
+                  </p>
+                </Sheet>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Trust: the trace is the product's argument, so it closes the page. */}
+        <section className="border-rule bg-paper-sunk/60 border-t">
+          <div className="mx-auto grid max-w-[88rem] gap-10 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:items-center">
+            <div className="max-w-prose">
+              <h2 className="font-serif text-ink text-2xl leading-snug tracking-tight text-balance sm:text-3xl">
+                {t("landing.trust.title")}
+              </h2>
+              <p className="text-ink-muted mt-4 leading-relaxed">
+                {t("landing.trust.body")}
+              </p>
+              <Link
+                href="/workspace"
+                className="text-accent hover:text-accent-hover mt-6 inline-block text-sm font-medium underline decoration-current/30 underline-offset-4 transition-colors"
+              >
+                {t("landing.trust.cta")}
+              </Link>
+            </div>
+
+            <ol className="border-rule-strong bg-paper-raised divide-rule divide-y border">
+              {(
+                [
+                  ["imagery", "succeeded", "rasterio.inspect", "38"],
+                  ["compute", "succeeded", "indices.ndwi", "412"],
+                  ["verify", "succeeded", "verify.crosscheck", "26"],
+                  ["answer", "running", "answer.compose", null],
+                ] as const
+              ).map(([step, status, tool, ms]) => (
+                <li
+                  key={step}
+                  className="flex items-baseline gap-3 px-3 py-2.5"
+                >
+                  <span
+                    aria-hidden
+                    className={`size-1.5 shrink-0 translate-y-[-2px] rounded-full ${
+                      status === "succeeded" ? "bg-vegetation" : "bg-accent"
+                    }`}
+                  />
+                  <span className="text-ink text-sm">
+                    {t(`steps.${step}.title`)}
+                  </span>
+                  <span className="marginal ml-auto shrink-0">{tool}</span>
+                  <span className="marginal tabular w-14 shrink-0 text-right">
+                    {ms ? `${ms} ms` : "—"}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-rule border-t">
+        <div className="marginal mx-auto flex max-w-[88rem] flex-wrap items-center gap-x-4 gap-y-1 px-4 py-6 sm:px-6">
+          <span>{t("app.name")}</span>
+          <span aria-hidden className="text-rule-strong">
+            ·
+          </span>
+          <span>Team MidDevz</span>
+          <span aria-hidden className="text-rule-strong">
+            ·
+          </span>
+          <span>SIH 2026 · SIH26167</span>
+        </div>
+      </footer>
+    </>
+  );
+}

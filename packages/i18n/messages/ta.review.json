@@ -1,0 +1,1058 @@
+{
+  "_comment": "First-pass machine translation. Every entry below is UNVERIFIED and must be checked by a native ta speaker before this build is shown to users. Set reviewed:true and record the reviewer once checked.",
+  "_locale": "ta",
+  "_generated": "2026-09-22",
+  "_status": "unreviewed",
+  "entries": {
+    "app.name": {
+      "reviewed": false,
+      "source": "SatSaathi",
+      "translation": "SatSaathi"
+    },
+    "app.tagline": {
+      "reviewed": false,
+      "source": "Ask the satellite, in your language",
+      "translation": "உங்கள் மொழியில் செயற்கைக்கோளிடம் கேளுங்கள்"
+    },
+    "nav.dashboard": {
+      "reviewed": false,
+      "source": "Dashboard",
+      "translation": "பணிமேடை"
+    },
+    "nav.history": {
+      "reviewed": false,
+      "source": "History",
+      "translation": "வரலாறு"
+    },
+    "nav.review": {
+      "reviewed": false,
+      "source": "Review",
+      "translation": "மறுபார்வை"
+    },
+    "nav.settings": {
+      "reviewed": false,
+      "source": "Settings",
+      "translation": "அமைப்புகள்"
+    },
+    "nav.signIn": {
+      "reviewed": false,
+      "source": "Sign in",
+      "translation": "உள்நுழைக"
+    },
+    "nav.signOut": {
+      "reviewed": false,
+      "source": "Sign out",
+      "translation": "வெளியேறு"
+    },
+    "nav.language": {
+      "reviewed": false,
+      "source": "Language",
+      "translation": "மொழி"
+    },
+    "nav.languageChange": {
+      "reviewed": false,
+      "source": "Change language",
+      "translation": "மொழியை மாற்று"
+    },
+    "status.online": {
+      "reviewed": false,
+      "source": "Online",
+      "translation": "இணையத்தில்"
+    },
+    "status.offline": {
+      "reviewed": false,
+      "source": "Offline mode",
+      "translation": "இணையமில்லா முறை"
+    },
+    "status.onlineHint": {
+      "reviewed": false,
+      "source": "Connected. Translation and basemaps are available.",
+      "translation": "இணைக்கப்பட்டுள்ளது. மொழிபெயர்ப்பும் நிலப்படங்களும் கிடைக்கும்."
+    },
+    "status.offlineHint": {
+      "reviewed": false,
+      "source": "Working offline. Everything runs on this machine.",
+      "translation": "இணையமின்றி இயங்குகிறது. அனைத்தும் இந்தக் கணினியிலேயே நடக்கிறது."
+    },
+    "landing.hero.headline": {
+      "reviewed": false,
+      "source": "Ask the satellite, in your language.",
+      "translation": "உங்கள் மொழியில் செயற்கைக்கோளிடம் கேளுங்கள்."
+    },
+    "landing.hero.body": {
+      "reviewed": false,
+      "source": "Upload satellite imagery and ask a question in English, Hindi, Tamil or Bangla. Get an answer measured from the pixels, with every step shown.",
+      "translation": "செயற்கைக்கோள் படங்களைப் பதிவேற்றி, தமிழ், இந்தி, வங்காளம் அல்லது ஆங்கிலத்தில் கேளுங்கள். பதில் படத்துகள்களிலிருந்து அளக்கப்படும், ஒவ்வொரு படியும் காட்டப்படும்."
+    },
+    "landing.hero.cta": {
+      "reviewed": false,
+      "source": "Start analysis",
+      "translation": "பகுப்பாய்வைத் தொடங்கு"
+    },
+    "landing.hero.secondary": {
+      "reviewed": false,
+      "source": "See how it works",
+      "translation": "இது எப்படி வேலை செய்கிறது"
+    },
+    "landing.hero.figureCaption": {
+      "reviewed": false,
+      "source": "Flood extent, Nadia district, 12 September 2026",
+      "translation": "வெள்ளப் பரப்பு, நதியா மாவட்டம், 12 செப்டம்பர் 2026"
+    },
+    "landing.problem.title": {
+      "reviewed": false,
+      "source": "A district officer should not need a remote-sensing degree",
+      "translation": "மாவட்ட அலுவலருக்குத் தொலையுணர்வுப் பட்டம் தேவையில்லை"
+    },
+    "landing.problem.body": {
+      "reviewed": false,
+      "source": "Flood mapping, crop stress, built-up change: the imagery holds the answer, but reading it means specialist software and specialist training. SatSaathi turns the question into the analysis, and shows its working.",
+      "translation": "வெள்ள வரைபடம், பயிர் நிலை, கட்டிடப் பரப்பு மாற்றம் — பதில் படங்களிலேயே உள்ளது, ஆனால் அதைப் படிக்கச் சிறப்புச் செயலியும் சிறப்புப் பயிற்சியும் தேவை. SatSaathi கேள்வியைப் பகுப்பாய்வாக மாற்றி, தன் வேலையைக் காட்டுகிறது."
+    },
+    "landing.steps.title": {
+      "reviewed": false,
+      "source": "What happens when you ask",
+      "translation": "நீங்கள் கேட்டால் என்ன நடக்கும்"
+    },
+    "landing.steps.ask.title": {
+      "reviewed": false,
+      "source": "Ask",
+      "translation": "கேளுங்கள்"
+    },
+    "landing.steps.ask.body": {
+      "reviewed": false,
+      "source": "Type or speak your question in your own language. Upload one image, an optical and SAR pair, or a before and after pair.",
+      "translation": "உங்கள் மொழியில் கேள்வியை எழுதுங்கள் அல்லது பேசுங்கள். ஒரு படம், ஒளியியல்–SAR இணை, அல்லது முன்–பின் இணையைப் பதிவேற்றுங்கள்."
+    },
+    "landing.steps.compute.title": {
+      "reviewed": false,
+      "source": "Compute",
+      "translation": "கணக்கிடல்"
+    },
+    "landing.steps.compute.body": {
+      "reviewed": false,
+      "source": "Indices are measured from the pixels themselves. NDVI, NDWI and LSWI are computed on the bands you mapped, never substituted.",
+      "translation": "குறியீடுகள் படத்துகள்களிலிருந்தே அளக்கப்படுகின்றன. NDVI, NDWI, LSWI ஆகியவை நீங்கள் குறித்த பட்டைகளில் மட்டுமே கணக்கிடப்படும் — வேறு பட்டை பயன்படுத்தப்படாது."
+    },
+    "landing.steps.explain.title": {
+      "reviewed": false,
+      "source": "Explain",
+      "translation": "விளக்கம்"
+    },
+    "landing.steps.explain.body": {
+      "reviewed": false,
+      "source": "Every claim is checked against the computed numbers before you see it. Low confidence goes to an expert instead of to you.",
+      "translation": "ஒவ்வொரு கூற்றும் உங்களுக்குக் காட்டுவதற்கு முன் அளந்த எண்களோடு சரிபார்க்கப்படும். நம்பிக்கை குறைவாக இருந்தால் பதில் உங்களிடம் அல்ல, நிபுணரிடம் செல்லும்."
+    },
+    "landing.steps.act.title": {
+      "reviewed": false,
+      "source": "Act",
+      "translation": "செயல்படுங்கள்"
+    },
+    "landing.steps.act.body": {
+      "reviewed": false,
+      "source": "Take away a report, a GeoJSON layer, and the full execution trace, in the language you asked in.",
+      "translation": "அறிக்கை, GeoJSON அடுக்கு, முழு நிறைவேற்றப் பதிவு — நீங்கள் கேட்ட அதே மொழியில் எடுத்துச் செல்லுங்கள்."
+    },
+    "landing.inputs.title": {
+      "reviewed": false,
+      "source": "What you can upload",
+      "translation": "நீங்கள் பதிவேற்றக்கூடியவை"
+    },
+    "landing.inputs.single.title": {
+      "reviewed": false,
+      "source": "Single image",
+      "translation": "ஒரு படம்"
+    },
+    "landing.inputs.single.body": {
+      "reviewed": false,
+      "source": "One optical, multispectral or SAR GeoTIFF.",
+      "translation": "ஒரு ஒளியியல், பல்நிறமாலை அல்லது SAR GeoTIFF."
+    },
+    "landing.inputs.fusion.title": {
+      "reviewed": false,
+      "source": "Optical + SAR pair",
+      "translation": "ஒளியியல் + SAR இணை"
+    },
+    "landing.inputs.fusion.body": {
+      "reviewed": false,
+      "source": "Two co-registered images of the same ground, read together.",
+      "translation": "ஒரே நிலத்தின் இரு இணைபதிவு செய்யப்பட்ட படங்கள், சேர்ந்து படிக்கப்படும்."
+    },
+    "landing.inputs.change.title": {
+      "reviewed": false,
+      "source": "Before + after pair",
+      "translation": "முன் + பின் இணை"
+    },
+    "landing.inputs.change.body": {
+      "reviewed": false,
+      "source": "The same ground on two dates, to measure what changed.",
+      "translation": "ஒரே நிலம், இரு தேதிகளில் — என்ன மாறியது என்பதை அளக்க."
+    },
+    "landing.trust.title": {
+      "reviewed": false,
+      "source": "You can check the working",
+      "translation": "வேலையை நீங்களே சரிபார்க்கலாம்"
+    },
+    "landing.trust.body": {
+      "reviewed": false,
+      "source": "Every job records what ran, with which parameters, and what it produced. Nothing is asserted that the numbers do not support.",
+      "translation": "ஒவ்வொரு பணியும் என்ன இயங்கியது, எந்த அளவுருக்களுடன், என்ன உருவாக்கியது என்பதைப் பதிவு செய்கிறது. எண்கள் ஆதரிக்காத எதுவும் கூறப்படுவதில்லை."
+    },
+    "landing.trust.cta": {
+      "reviewed": false,
+      "source": "See a worked example",
+      "translation": "ஓர் எடுத்துக்காட்டைப் பாருங்கள்"
+    },
+    "auth.signIn.title": {
+      "reviewed": false,
+      "source": "Sign in",
+      "translation": "உள்நுழைக"
+    },
+    "auth.signIn.subtitle": {
+      "reviewed": false,
+      "source": "Continue to your analyses.",
+      "translation": "உங்கள் பகுப்பாய்வுகளுக்குச் செல்லுங்கள்."
+    },
+    "auth.signUp.title": {
+      "reviewed": false,
+      "source": "Create an account",
+      "translation": "கணக்கை உருவாக்குங்கள்"
+    },
+    "auth.signUp.subtitle": {
+      "reviewed": false,
+      "source": "For officers and analysts working with satellite imagery.",
+      "translation": "செயற்கைக்கோள் படங்களுடன் பணியாற்றும் அலுவலர்களுக்கும் பகுப்பாய்வாளர்களுக்கும்."
+    },
+    "auth.field.email": {
+      "reviewed": false,
+      "source": "Official email",
+      "translation": "அலுவலக மின்னஞ்சல்"
+    },
+    "auth.field.emailHint": {
+      "reviewed": false,
+      "source": "Use your department email address.",
+      "translation": "உங்கள் துறையின் மின்னஞ்சல் முகவரியைப் பயன்படுத்துங்கள்."
+    },
+    "auth.field.password": {
+      "reviewed": false,
+      "source": "Password",
+      "translation": "கடவுச்சொல்"
+    },
+    "auth.field.passwordHint": {
+      "reviewed": false,
+      "source": "At least 12 characters.",
+      "translation": "குறைந்தது 12 எழுத்துகள்."
+    },
+    "auth.field.name": {
+      "reviewed": false,
+      "source": "Full name",
+      "translation": "முழுப் பெயர்"
+    },
+    "auth.field.department": {
+      "reviewed": false,
+      "source": "Department",
+      "translation": "துறை"
+    },
+    "auth.field.district": {
+      "reviewed": false,
+      "source": "District",
+      "translation": "மாவட்டம்"
+    },
+    "auth.action.signIn": {
+      "reviewed": false,
+      "source": "Sign in",
+      "translation": "உள்நுழைக"
+    },
+    "auth.action.signUp": {
+      "reviewed": false,
+      "source": "Create account",
+      "translation": "கணக்கை உருவாக்கு"
+    },
+    "auth.action.forgot": {
+      "reviewed": false,
+      "source": "Forgot your password?",
+      "translation": "கடவுச்சொல் மறந்துவிட்டதா?"
+    },
+    "auth.switch.toSignUp": {
+      "reviewed": false,
+      "source": "Need an account?",
+      "translation": "கணக்கு வேண்டுமா?"
+    },
+    "auth.switch.toSignUpLink": {
+      "reviewed": false,
+      "source": "Create one",
+      "translation": "உருவாக்குங்கள்"
+    },
+    "auth.switch.toSignIn": {
+      "reviewed": false,
+      "source": "Already have an account?",
+      "translation": "ஏற்கனவே கணக்கு உள்ளதா?"
+    },
+    "auth.switch.toSignInLink": {
+      "reviewed": false,
+      "source": "Sign in",
+      "translation": "உள்நுழைக"
+    },
+    "auth.notice.preview": {
+      "reviewed": false,
+      "source": "Preview build. Sign-in is not connected yet, so any details take you to the dashboard.",
+      "translation": "இது முன்னோட்டம். உள்நுழைவு இன்னும் இணைக்கப்படவில்லை, எனவே எந்த விவரமும் உங்களைப் பணிமேடைக்கு அழைத்துச் செல்லும்."
+    },
+    "dashboard.greeting": {
+      "reviewed": false,
+      "source": "Your analyses",
+      "translation": "உங்கள் பகுப்பாய்வுகள்"
+    },
+    "dashboard.subtitle": {
+      "reviewed": false,
+      "source": "Start a new analysis, or pick up one you have already run.",
+      "translation": "புதிய பகுப்பாய்வைத் தொடங்குங்கள், அல்லது ஏற்கனவே இயக்கிய ஒன்றைத் தொடருங்கள்."
+    },
+    "dashboard.newAnalysis": {
+      "reviewed": false,
+      "source": "New analysis",
+      "translation": "புதிய பகுப்பாய்வு"
+    },
+    "dashboard.recent.title": {
+      "reviewed": false,
+      "source": "Recent",
+      "translation": "சமீபத்தியவை"
+    },
+    "dashboard.recent.empty.title": {
+      "reviewed": false,
+      "source": "Nothing analysed yet",
+      "translation": "இதுவரை எதுவும் பகுப்பாய்வு செய்யப்படவில்லை"
+    },
+    "dashboard.recent.empty.body": {
+      "reviewed": false,
+      "source": "Upload imagery and ask your first question.",
+      "translation": "படங்களைப் பதிவேற்றி உங்கள் முதல் கேள்வியைக் கேளுங்கள்."
+    },
+    "dashboard.recent.viewAll": {
+      "reviewed": false,
+      "source": "View all",
+      "translation": "அனைத்தையும் பார்"
+    },
+    "dashboard.review.title": {
+      "reviewed": false,
+      "source": "Waiting for expert review",
+      "translation": "நிபுணர் மறுபார்வைக்குக் காத்திருக்கிறது"
+    },
+    "dashboard.review.body": {
+      "reviewed": false,
+      "source": "{count, plural, =0 {Nothing is waiting} one {# answer is held for review} other {# answers are held for review}}",
+      "translation": "{count, plural, =0 {எதுவும் காத்திருக்கவில்லை} one {# பதில் மறுபார்வைக்கு நிறுத்தப்பட்டுள்ளது} other {# பதில்கள் மறுபார்வைக்கு நிறுத்தப்பட்டுள்ளன}}"
+    },
+    "dashboard.review.cta": {
+      "reviewed": false,
+      "source": "Open review queue",
+      "translation": "மறுபார்வைப் பட்டியலைத் திற"
+    },
+    "dashboard.stats.analyses": {
+      "reviewed": false,
+      "source": "Analyses run",
+      "translation": "இயக்கிய பகுப்பாய்வுகள்"
+    },
+    "dashboard.stats.area": {
+      "reviewed": false,
+      "source": "Area covered",
+      "translation": "மொத்தப் பரப்பு"
+    },
+    "dashboard.stats.review": {
+      "reviewed": false,
+      "source": "Held for review",
+      "translation": "மறுபார்வையில் உள்ளவை"
+    },
+    "job.status.running": {
+      "reviewed": false,
+      "source": "Running",
+      "translation": "இயங்குகிறது"
+    },
+    "job.status.succeeded": {
+      "reviewed": false,
+      "source": "Answered",
+      "translation": "பதில் கிடைத்தது"
+    },
+    "job.status.failed": {
+      "reviewed": false,
+      "source": "Failed",
+      "translation": "தோல்வி"
+    },
+    "job.status.needs_review": {
+      "reviewed": false,
+      "source": "Held for review",
+      "translation": "மறுபார்வையில் நிறுத்தப்பட்டது"
+    },
+    "job.mode.single": {
+      "reviewed": false,
+      "source": "Single image",
+      "translation": "ஒரு படம்"
+    },
+    "job.mode.fusion": {
+      "reviewed": false,
+      "source": "Optical + SAR",
+      "translation": "ஒளியியல் + SAR"
+    },
+    "job.mode.change": {
+      "reviewed": false,
+      "source": "Before + after",
+      "translation": "முன் + பின்"
+    },
+    "workspace.title": {
+      "reviewed": false,
+      "source": "Workspace",
+      "translation": "பணியிடம்"
+    },
+    "workspace.inputs.title": {
+      "reviewed": false,
+      "source": "Imagery",
+      "translation": "படங்கள்"
+    },
+    "workspace.inputs.mode": {
+      "reviewed": false,
+      "source": "What are you uploading?",
+      "translation": "நீங்கள் எதைப் பதிவேற்றுகிறீர்கள்?"
+    },
+    "workspace.inputs.slot.single": {
+      "reviewed": false,
+      "source": "Image",
+      "translation": "படம்"
+    },
+    "workspace.inputs.slot.optical": {
+      "reviewed": false,
+      "source": "Optical",
+      "translation": "ஒளியியல்"
+    },
+    "workspace.inputs.slot.sar": {
+      "reviewed": false,
+      "source": "SAR",
+      "translation": "SAR"
+    },
+    "workspace.inputs.slot.before": {
+      "reviewed": false,
+      "source": "Before",
+      "translation": "முன்"
+    },
+    "workspace.inputs.slot.after": {
+      "reviewed": false,
+      "source": "After",
+      "translation": "பின்"
+    },
+    "workspace.inputs.drop": {
+      "reviewed": false,
+      "source": "Drop a GeoTIFF here, or",
+      "translation": "GeoTIFF-ஐ இங்கே விடுங்கள், அல்லது"
+    },
+    "workspace.inputs.browse": {
+      "reviewed": false,
+      "source": "browse files",
+      "translation": "கோப்பைத் தேர்ந்தெடுங்கள்"
+    },
+    "workspace.inputs.accepts": {
+      "reviewed": false,
+      "source": "GeoTIFF (.tif, .tiff), georeferenced",
+      "translation": "GeoTIFF (.tif, .tiff), புவிக்குறிப்புடன்"
+    },
+    "workspace.inputs.replace": {
+      "reviewed": false,
+      "source": "Replace",
+      "translation": "மாற்று"
+    },
+    "workspace.inputs.remove": {
+      "reviewed": false,
+      "source": "Remove",
+      "translation": "நீக்கு"
+    },
+    "workspace.inputs.uploading": {
+      "reviewed": false,
+      "source": "Uploading",
+      "translation": "பதிவேற்றுகிறது"
+    },
+    "workspace.inputs.reading": {
+      "reviewed": false,
+      "source": "Reading metadata",
+      "translation": "விவரங்கள் படிக்கப்படுகின்றன"
+    },
+    "workspace.checks.title": {
+      "reviewed": false,
+      "source": "Compatibility",
+      "translation": "பொருத்தப்பாடு"
+    },
+    "workspace.checks.crs": {
+      "reviewed": false,
+      "source": "Coordinate system",
+      "translation": "ஆள்கூற்று அமைப்பு"
+    },
+    "workspace.checks.crsMatch": {
+      "reviewed": false,
+      "source": "Both images use {crs}",
+      "translation": "இரு படங்களும் {crs} பயன்படுத்துகின்றன"
+    },
+    "workspace.checks.overlap": {
+      "reviewed": false,
+      "source": "Spatial overlap",
+      "translation": "இடம்சார் ஒன்றுதல்"
+    },
+    "workspace.checks.overlapValue": {
+      "reviewed": false,
+      "source": "{pct}% of the smaller footprint",
+      "translation": "சிறிய பரப்பில் {pct}%"
+    },
+    "workspace.checks.resolution": {
+      "reviewed": false,
+      "source": "Pixel size",
+      "translation": "படத்துகள் அளவு"
+    },
+    "workspace.checks.resolutionValue": {
+      "reviewed": false,
+      "source": "{a} and {b}",
+      "translation": "{a} மற்றும் {b}"
+    },
+    "workspace.checks.dates": {
+      "reviewed": false,
+      "source": "Acquisition order",
+      "translation": "கையகப்படுத்திய வரிசை"
+    },
+    "workspace.checks.datesValue": {
+      "reviewed": false,
+      "source": "{before} before {after}",
+      "translation": "{after}-க்கு முன் {before}"
+    },
+    "workspace.checks.sensor": {
+      "reviewed": false,
+      "source": "Sensor",
+      "translation": "உணரி"
+    },
+    "workspace.checks.pass": {
+      "reviewed": false,
+      "source": "Passed",
+      "translation": "சரி"
+    },
+    "workspace.checks.warn": {
+      "reviewed": false,
+      "source": "Check this",
+      "translation": "இதைப் பாருங்கள்"
+    },
+    "workspace.checks.fail": {
+      "reviewed": false,
+      "source": "Blocked",
+      "translation": "தடுக்கப்பட்டது"
+    },
+    "workspace.bands.title": {
+      "reviewed": false,
+      "source": "Bands",
+      "translation": "பட்டைகள்"
+    },
+    "workspace.bands.preset": {
+      "reviewed": false,
+      "source": "Sensor preset",
+      "translation": "உணரி முன்னமைவு"
+    },
+    "workspace.bands.presetHint": {
+      "reviewed": false,
+      "source": "Pick the sensor so bands are read correctly.",
+      "translation": "பட்டைகள் சரியாகப் படிக்கப்பட உணரியைத் தேர்ந்தெடுங்கள்."
+    },
+    "workspace.bands.manual": {
+      "reviewed": false,
+      "source": "Assign bands manually",
+      "translation": "பட்டைகளை நீங்களே ஒதுக்குங்கள்"
+    },
+    "workspace.bands.role.blue": {
+      "reviewed": false,
+      "source": "Blue",
+      "translation": "நீலம்"
+    },
+    "workspace.bands.role.green": {
+      "reviewed": false,
+      "source": "Green",
+      "translation": "பச்சை"
+    },
+    "workspace.bands.role.red": {
+      "reviewed": false,
+      "source": "Red",
+      "translation": "சிவப்பு"
+    },
+    "workspace.bands.role.nir": {
+      "reviewed": false,
+      "source": "NIR",
+      "translation": "NIR"
+    },
+    "workspace.bands.role.swir1": {
+      "reviewed": false,
+      "source": "SWIR1",
+      "translation": "SWIR1"
+    },
+    "workspace.bands.role.vv": {
+      "reviewed": false,
+      "source": "VV",
+      "translation": "VV"
+    },
+    "workspace.bands.role.vh": {
+      "reviewed": false,
+      "source": "VH",
+      "translation": "VH"
+    },
+    "workspace.analyses.title": {
+      "reviewed": false,
+      "source": "Available measurements",
+      "translation": "கிடைக்கும் அளவீடுகள்"
+    },
+    "workspace.analyses.ndviUnavailable": {
+      "reviewed": false,
+      "source": "NDVI needs a red and a near-infrared band.",
+      "translation": "NDVI-க்குச் சிவப்பு மற்றும் அண்மை அகச்சிவப்புப் பட்டைகள் தேவை."
+    },
+    "workspace.analyses.ndwiUnavailable": {
+      "reviewed": false,
+      "source": "NDWI needs a green and a near-infrared band.",
+      "translation": "NDWI-க்குப் பச்சை மற்றும் அண்மை அகச்சிவப்புப் பட்டைகள் தேவை."
+    },
+    "workspace.analyses.lswiUnavailable": {
+      "reviewed": false,
+      "source": "LSWI needs a near-infrared and a SWIR band. This sensor has no SWIR.",
+      "translation": "LSWI-க்கு அண்மை அகச்சிவப்பு மற்றும் SWIR பட்டைகள் தேவை. இந்த உணரியில் SWIR இல்லை."
+    },
+    "workspace.map.layers": {
+      "reviewed": false,
+      "source": "Layers",
+      "translation": "அடுக்குகள்"
+    },
+    "workspace.map.layer.trueColour": {
+      "reviewed": false,
+      "source": "True colour",
+      "translation": "உண்மை நிறம்"
+    },
+    "workspace.map.layer.falseColour": {
+      "reviewed": false,
+      "source": "False colour",
+      "translation": "மாற்று நிறம்"
+    },
+    "workspace.map.layer.sarVV": {
+      "reviewed": false,
+      "source": "SAR VV",
+      "translation": "SAR VV"
+    },
+    "workspace.map.layer.ndwi": {
+      "reviewed": false,
+      "source": "NDWI",
+      "translation": "NDWI"
+    },
+    "workspace.map.layer.ndvi": {
+      "reviewed": false,
+      "source": "NDVI",
+      "translation": "NDVI"
+    },
+    "workspace.map.layer.changeMask": {
+      "reviewed": false,
+      "source": "Change mask",
+      "translation": "மாற்ற முகமூடி"
+    },
+    "workspace.map.layer.aoi": {
+      "reviewed": false,
+      "source": "Area of interest",
+      "translation": "ஆர்வப் பகுதி"
+    },
+    "workspace.map.compare": {
+      "reviewed": false,
+      "source": "Drag to compare",
+      "translation": "ஒப்பிட இழுங்கள்"
+    },
+    "workspace.map.empty.title": {
+      "reviewed": false,
+      "source": "No imagery yet",
+      "translation": "இன்னும் படம் இல்லை"
+    },
+    "workspace.map.empty.body": {
+      "reviewed": false,
+      "source": "Upload a GeoTIFF and it will be drawn here.",
+      "translation": "GeoTIFF-ஐப் பதிவேற்றுங்கள், அது இங்கே வரையப்படும்."
+    },
+    "workspace.map.legend.low": {
+      "reviewed": false,
+      "source": "Low",
+      "translation": "குறைவு"
+    },
+    "workspace.map.legend.high": {
+      "reviewed": false,
+      "source": "High",
+      "translation": "அதிகம்"
+    },
+    "workspace.ask.title": {
+      "reviewed": false,
+      "source": "Your question",
+      "translation": "உங்கள் கேள்வி"
+    },
+    "workspace.ask.placeholder": {
+      "reviewed": false,
+      "source": "Ask about this imagery…",
+      "translation": "இந்தப் படங்களைப் பற்றிக் கேளுங்கள்…"
+    },
+    "workspace.ask.language": {
+      "reviewed": false,
+      "source": "Asking in",
+      "translation": "கேட்கும் மொழி"
+    },
+    "workspace.ask.submit": {
+      "reviewed": false,
+      "source": "Ask",
+      "translation": "கேள்"
+    },
+    "workspace.ask.voice": {
+      "reviewed": false,
+      "source": "Ask by voice",
+      "translation": "பேசிக் கேளுங்கள்"
+    },
+    "workspace.ask.voiceUnavailable": {
+      "reviewed": false,
+      "source": "Voice questions are not available yet.",
+      "translation": "பேசிக் கேட்பது இன்னும் கிடைக்கவில்லை."
+    },
+    "workspace.ask.examples": {
+      "reviewed": false,
+      "source": "Try one of these",
+      "translation": "இவற்றில் ஒன்றை முயலுங்கள்"
+    },
+    "workspace.ask.example.single1": {
+      "reviewed": false,
+      "source": "Describe the land cover in this image.",
+      "translation": "இந்தப் படத்தில் நிலப்பரப்பை விவரியுங்கள்."
+    },
+    "workspace.ask.example.single2": {
+      "reviewed": false,
+      "source": "How much of this area is under water?",
+      "translation": "இந்தப் பகுதியில் எவ்வளவு நீரில் மூழ்கியுள்ளது?"
+    },
+    "workspace.ask.example.fusion1": {
+      "reviewed": false,
+      "source": "Use the optical and SAR images together to identify built-up and water-covered regions.",
+      "translation": "ஒளியியல் மற்றும் SAR படங்களைச் சேர்த்துப் பயன்படுத்திக் கட்டிடப் பகுதிகளையும் நீர்ப் பகுதிகளையும் கண்டறியுங்கள்."
+    },
+    "workspace.ask.example.fusion2": {
+      "reviewed": false,
+      "source": "Where does SAR show water that the optical image misses?",
+      "translation": "ஒளியியல் படத்தில் தெரியாத நீரை SAR எங்கே காட்டுகிறது?"
+    },
+    "workspace.ask.example.change1": {
+      "reviewed": false,
+      "source": "What changed between these two dates?",
+      "translation": "இந்த இரு தேதிகளுக்கு இடையே என்ன மாறியது?"
+    },
+    "workspace.ask.example.change2": {
+      "reviewed": false,
+      "source": "How much paddy was lost to flooding?",
+      "translation": "வெள்ளத்தால் எவ்வளவு நெல் இழக்கப்பட்டது?"
+    },
+    "workspace.ask.blocked": {
+      "reviewed": false,
+      "source": "Upload imagery before asking a question.",
+      "translation": "கேள்வி கேட்பதற்கு முன் படங்களைப் பதிவேற்றுங்கள்."
+    },
+    "workspace.trace.title": {
+      "reviewed": false,
+      "source": "What the system did",
+      "translation": "அமைப்பு என்ன செய்தது"
+    },
+    "workspace.trace.subtitle": {
+      "reviewed": false,
+      "source": "Every step, in order, with its parameters and what it produced.",
+      "translation": "ஒவ்வொரு படியும், வரிசையாக, அதன் அளவுருக்கள் மற்றும் விளைவுடன்."
+    },
+    "workspace.trace.copy": {
+      "reviewed": false,
+      "source": "Copy trace",
+      "translation": "பதிவை நகலெடு"
+    },
+    "workspace.trace.copied": {
+      "reviewed": false,
+      "source": "Copied",
+      "translation": "நகலெடுக்கப்பட்டது"
+    },
+    "workspace.trace.download": {
+      "reviewed": false,
+      "source": "Download trace (JSON)",
+      "translation": "பதிவைப் பதிவிறக்கு (JSON)"
+    },
+    "workspace.trace.tool": {
+      "reviewed": false,
+      "source": "Tool",
+      "translation": "கருவி"
+    },
+    "workspace.trace.params": {
+      "reviewed": false,
+      "source": "Parameters",
+      "translation": "அளவுருக்கள்"
+    },
+    "workspace.trace.output": {
+      "reviewed": false,
+      "source": "Result",
+      "translation": "விளைவு"
+    },
+    "workspace.trace.artifacts": {
+      "reviewed": false,
+      "source": "Files produced",
+      "translation": "உருவான கோப்புகள்"
+    },
+    "workspace.trace.duration": {
+      "reviewed": false,
+      "source": "{ms} ms",
+      "translation": "{ms} ms"
+    },
+    "workspace.trace.stub": {
+      "reviewed": false,
+      "source": "Placeholder",
+      "translation": "தற்காலிகம்"
+    },
+    "workspace.trace.stubHint": {
+      "reviewed": false,
+      "source": "This step returns fixture data. The real tool plugs in here later.",
+      "translation": "இந்தப் படி மாதிரித் தரவைத் தருகிறது. உண்மையான கருவி பின்னர் இங்கே இணைக்கப்படும்."
+    },
+    "steps.ask.title": {
+      "reviewed": false,
+      "source": "Question received",
+      "translation": "கேள்வி பெறப்பட்டது"
+    },
+    "steps.ask.body": {
+      "reviewed": false,
+      "source": "Reads your question and the language you asked in.",
+      "translation": "உங்கள் கேள்வியையும் நீங்கள் கேட்ட மொழியையும் படிக்கிறது."
+    },
+    "steps.imagery.title": {
+      "reviewed": false,
+      "source": "Imagery registered",
+      "translation": "படங்கள் பதிவு செய்யப்பட்டன"
+    },
+    "steps.imagery.body": {
+      "reviewed": false,
+      "source": "Reads the GeoTIFF headers: bands, coordinate system, pixel size, footprint, date.",
+      "translation": "GeoTIFF விவரங்களைப் படிக்கிறது: பட்டைகள், ஆள்கூற்று அமைப்பு, படத்துகள் அளவு, எல்லை, தேதி."
+    },
+    "steps.understand.title": {
+      "reviewed": false,
+      "source": "Question understood",
+      "translation": "கேள்வி புரிந்துகொள்ளப்பட்டது"
+    },
+    "steps.understand.body": {
+      "reviewed": false,
+      "source": "Translates the question to English and works out what is being asked for.",
+      "translation": "கேள்வியை ஆங்கிலத்தில் மொழிபெயர்த்து என்ன கேட்கப்படுகிறது என்பதைத் தீர்மானிக்கிறது."
+    },
+    "steps.preprocess.title": {
+      "reviewed": false,
+      "source": "Imagery prepared",
+      "translation": "படங்கள் தயாரிக்கப்பட்டன"
+    },
+    "steps.preprocess.body": {
+      "reviewed": false,
+      "source": "Calibrates, removes speckle, aligns the images and masks cloud.",
+      "translation": "அளவீடு செய்து, புள்ளித் தொய்வை நீக்கி, படங்களை ஒழுங்குபடுத்தி, மேகத்தை மறைக்கிறது."
+    },
+    "steps.compute.title": {
+      "reviewed": false,
+      "source": "Measurements computed",
+      "translation": "அளவீடுகள் கணக்கிடப்பட்டன"
+    },
+    "steps.compute.body": {
+      "reviewed": false,
+      "source": "Computes indices from the pixels and converts pixel counts to area on the ground.",
+      "translation": "படத்துகள்களிலிருந்து குறியீடுகளைக் கணக்கிட்டு, துகள் எண்ணிக்கையை நிலப்பரப்பாக மாற்றுகிறது."
+    },
+    "steps.vision_language.title": {
+      "reviewed": false,
+      "source": "Imagery read",
+      "translation": "படங்கள் படிக்கப்பட்டன"
+    },
+    "steps.vision_language.body": {
+      "reviewed": false,
+      "source": "Describes what is visible and marks where it is.",
+      "translation": "தெரிவதை விவரித்து அது எங்கே உள்ளது எனக் குறிக்கிறது."
+    },
+    "steps.verify.title": {
+      "reviewed": false,
+      "source": "Claims checked",
+      "translation": "கூற்றுகள் சரிபார்க்கப்பட்டன"
+    },
+    "steps.verify.body": {
+      "reviewed": false,
+      "source": "Compares what was described against what was measured, and scores the agreement.",
+      "translation": "விவரிப்பை அளந்த எண்களுடன் ஒப்பிட்டு ஒத்திசைவுக்கு மதிப்பெண் அளிக்கிறது."
+    },
+    "steps.answer.title": {
+      "reviewed": false,
+      "source": "Answer written",
+      "translation": "பதில் எழுதப்பட்டது"
+    },
+    "steps.answer.body": {
+      "reviewed": false,
+      "source": "Writes the answer in your language and assembles the report and layers.",
+      "translation": "உங்கள் மொழியில் பதிலை எழுதி அறிக்கையையும் அடுக்குகளையும் தயாரிக்கிறது."
+    },
+    "step.status.pending": {
+      "reviewed": false,
+      "source": "Waiting",
+      "translation": "காத்திருக்கிறது"
+    },
+    "step.status.running": {
+      "reviewed": false,
+      "source": "Running",
+      "translation": "இயங்குகிறது"
+    },
+    "step.status.succeeded": {
+      "reviewed": false,
+      "source": "Done",
+      "translation": "முடிந்தது"
+    },
+    "step.status.skipped": {
+      "reviewed": false,
+      "source": "Skipped",
+      "translation": "தவிர்க்கப்பட்டது"
+    },
+    "step.status.failed": {
+      "reviewed": false,
+      "source": "Failed",
+      "translation": "தோல்வி"
+    },
+    "step.status.needs_review": {
+      "reviewed": false,
+      "source": "Held for review",
+      "translation": "மறுபார்வையில் நிறுத்தப்பட்டது"
+    },
+    "answer.title": {
+      "reviewed": false,
+      "source": "Answer",
+      "translation": "பதில்"
+    },
+    "answer.confidence.label": {
+      "reviewed": false,
+      "source": "Confidence",
+      "translation": "நம்பிக்கை"
+    },
+    "answer.confidence.high": {
+      "reviewed": false,
+      "source": "The description and the measurements agree closely.",
+      "translation": "விவரிப்பும் அளவீடுகளும் நெருக்கமாக ஒத்துப்போகின்றன."
+    },
+    "answer.confidence.medium": {
+      "reviewed": false,
+      "source": "Mostly consistent. Check the flagged area before acting.",
+      "translation": "பெரும்பாலும் ஒத்துப்போகிறது. செயல்படுவதற்கு முன் குறித்த பகுதியைப் பாருங்கள்."
+    },
+    "answer.confidence.low": {
+      "reviewed": false,
+      "source": "The description and the measurements disagree. Sent for expert review.",
+      "translation": "விவரிப்பும் அளவீடுகளும் ஒத்துப்போகவில்லை. நிபுணர் மறுபார்வைக்கு அனுப்பப்பட்டது."
+    },
+    "answer.evidence": {
+      "reviewed": false,
+      "source": "Evidence",
+      "translation": "சான்று"
+    },
+    "answer.download.pdf": {
+      "reviewed": false,
+      "source": "Download report (PDF)",
+      "translation": "அறிக்கையைப் பதிவிறக்கு (PDF)"
+    },
+    "answer.download.geojson": {
+      "reviewed": false,
+      "source": "Download layers (GeoJSON)",
+      "translation": "அடுக்குகளைப் பதிவிறக்கு (GeoJSON)"
+    },
+    "answer.download.trace": {
+      "reviewed": false,
+      "source": "Download trace (JSON)",
+      "translation": "பதிவைப் பதிவிறக்கு (JSON)"
+    },
+    "answer.measuredFrom": {
+      "reviewed": false,
+      "source": "Measured from {source}",
+      "translation": "{source}-இலிருந்து அளக்கப்பட்டது"
+    },
+    "answer.review.title": {
+      "reviewed": false,
+      "source": "Sent for expert review",
+      "translation": "நிபுணர் மறுபார்வைக்கு அனுப்பப்பட்டது"
+    },
+    "answer.review.body": {
+      "reviewed": false,
+      "source": "Confidence fell below {threshold}%, so this answer is held until a specialist checks it. You will be notified when it is released.",
+      "translation": "நம்பிக்கை {threshold}%-க்குக் கீழே இருந்தது, எனவே நிபுணர் சரிபார்க்கும் வரை இந்தப் பதில் நிறுத்தப்பட்டுள்ளது. வெளியிடப்படும்போது உங்களுக்குத் தெரிவிக்கப்படும்."
+    },
+    "empty.workspace.title": {
+      "reviewed": false,
+      "source": "Start with imagery",
+      "translation": "படத்துடன் தொடங்குங்கள்"
+    },
+    "empty.workspace.body": {
+      "reviewed": false,
+      "source": "Upload a GeoTIFF on the left. Once it is read, you can ask a question about it.",
+      "translation": "இடதுபுறம் GeoTIFF-ஐப் பதிவேற்றுங்கள். படிக்கப்பட்ட பிறகு அதைப் பற்றிக் கேள்வி கேட்கலாம்."
+    },
+    "error.apiUnreachable.title": {
+      "reviewed": false,
+      "source": "Cannot reach the service",
+      "translation": "சேவையை அடைய முடியவில்லை"
+    },
+    "error.apiUnreachable.body": {
+      "reviewed": false,
+      "source": "The analysis service is not responding. Your uploads are safe.",
+      "translation": "பகுப்பாய்வுச் சேவை பதிலளிக்கவில்லை. உங்கள் பதிவேற்றங்கள் பாதுகாப்பாக உள்ளன."
+    },
+    "error.apiUnreachable.action": {
+      "reviewed": false,
+      "source": "Try again",
+      "translation": "மீண்டும் முயலுங்கள்"
+    },
+    "error.upload.crsMismatch": {
+      "reviewed": false,
+      "source": "These two images use different coordinate systems ({a} and {b}). Re-upload them in the same system.",
+      "translation": "இந்த இரு படங்களும் வெவ்வேறு ஆள்கூற்று அமைப்புகளைப் பயன்படுத்துகின்றன ({a} மற்றும் {b}). இரண்டையும் ஒரே அமைப்பில் மீண்டும் பதிவேற்றுங்கள்."
+    },
+    "error.upload.notGeoreferenced": {
+      "reviewed": false,
+      "source": "This GeoTIFF has no coordinate system, so it cannot be placed on the map.",
+      "translation": "இந்த GeoTIFF-இல் ஆள்கூற்று அமைப்பு இல்லை, எனவே அதை நிலப்படத்தில் வைக்க முடியாது."
+    },
+    "error.upload.tooLarge": {
+      "reviewed": false,
+      "source": "This file is larger than {max} MB.",
+      "translation": "இந்தக் கோப்பு {max} MB-ஐ விடப் பெரியது."
+    },
+    "error.offlineFeature": {
+      "reviewed": false,
+      "source": "This needs a connection. Switch out of offline mode to use it.",
+      "translation": "இதற்கு இணைப்பு தேவை. பயன்படுத்த இணையமில்லா முறையிலிருந்து வெளியேறுங்கள்."
+    },
+    "common.cancel": {
+      "reviewed": false,
+      "source": "Cancel",
+      "translation": "ரத்து"
+    },
+    "common.retry": {
+      "reviewed": false,
+      "source": "Try again",
+      "translation": "மீண்டும் முயலுங்கள்"
+    },
+    "common.close": {
+      "reviewed": false,
+      "source": "Close",
+      "translation": "மூடு"
+    },
+    "common.back": {
+      "reviewed": false,
+      "source": "Back",
+      "translation": "பின்"
+    },
+    "common.learnMore": {
+      "reviewed": false,
+      "source": "Learn more",
+      "translation": "மேலும் அறிக"
+    },
+    "common.optional": {
+      "reviewed": false,
+      "source": "Optional",
+      "translation": "விருப்பத்தேர்வு"
+    }
+  }
+}

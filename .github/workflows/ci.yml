@@ -18,6 +18,9 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Locale parity gate: every key present in all four locales, with
+      # matching ICU placeholders and no prefix collisions.
+      - run: pnpm --filter @satsaathi/i18n check
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test

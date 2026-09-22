@@ -1,0 +1,29 @@
+{
+  "_comment": "Protected domain terms. Translation must never mangle these; they stay in Latin script across every locale. Units keep their English abbreviation alongside the localised word.",
+  "protected": [
+    "NDVI",
+    "NDWI",
+    "LSWI",
+    "SAR",
+    "GeoTIFF",
+    "COG",
+    "VV",
+    "VH",
+    "EPSG",
+    "AOI",
+    "Sentinel-1",
+    "Sentinel-2",
+    "Landsat",
+    "Resourcesat",
+    "Cartosat",
+    "RISAT",
+    "EOS-04",
+    "ISRO",
+    "SatSaathi"
+  ],
+  "units": {
+    "hectare": { "abbr": "ha" },
+    "metre": { "abbr": "m" },
+    "kilometre": { "abbr": "km" }
+  }
+}

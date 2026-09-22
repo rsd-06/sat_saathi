@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+/* Self-hosted, no runtime CDN — offline mode must work. */
+@import "@fontsource-variable/noto-sans";
+@import "@fontsource-variable/noto-sans-devanagari";
+@import "@fontsource-variable/noto-sans-tamil";
+@import "@fontsource-variable/noto-sans-bengali";
+@import "@fontsource-variable/noto-serif";
+@import "@fontsource-variable/noto-serif-devanagari";
+@import "@fontsource-variable/noto-serif-tamil";
+@import "@fontsource-variable/noto-serif-bengali";
+
+@theme {
+  /* Surface: cool survey paper, not cream. */
+  --color-paper: #f7f7f4;
+  --color-paper-sunk: #eeeeea;
+  --color-paper-raised: #fdfdfb;
+
+  /* Ink: graphite, the colour of a drawn line. */
+  --color-ink: #1c1f1d;
+  --color-ink-muted: #5c625e;
+  --color-ink-faint: #8b918d;
+  --color-rule: #d5d6cf;
+  --color-rule-strong: #b6b8af;
+
+  /* Action. One accent, used only for things you can do. */
+  --color-accent: #33367a;
+  --color-accent-hover: #272a63;
+  --color-accent-wash: #e8e8f2;
+
+  /* Toposheet feature classes. These encode data, never decoration:
+     water on a map is blue because it is water. */
+  --color-water: #2e5e8c;
+  --color-water-wash: #dce7f0;
+  --color-vegetation: #4a7a3f;
+  --color-vegetation-wash: #e2ebdd;
+  --color-relief: #8a6a3c;
+  --color-relief-wash: #efe7da;
+  --color-alert: #a33526;
+  --color-alert-wash: #f6e3e0;
+
+  --font-sans:
+    "Noto Sans Variable", "Noto Sans Devanagari Variable",
+    "Noto Sans Tamil Variable", "Noto Sans Bengali Variable", system-ui,
+    sans-serif;
+  --font-serif:
+    "Noto Serif Variable", "Noto Serif Devanagari Variable",
+    "Noto Serif Tamil Variable", "Noto Serif Bengali Variable", Georgia, serif;
+
+  --text-marginal: 0.6875rem;
+  --text-marginal--line-height: 1.45;
+  --text-marginal--letter-spacing: 0.04em;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-synthesis-weight: none;
+}
+
+/* Measurements line up in columns; they are read against each other. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Marginal information: the text that lives in a sheet's margin. */
+.marginal {
+  font-size: var(--text-marginal);
+  line-height: var(--text-marginal--line-height);
+  letter-spacing: var(--text-marginal--letter-spacing);
+  color: var(--color-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The faint grid a sheet is drawn on. Structure, not ornament. */
+.sheet-grid {
+  background-image:
+    linear-gradient(to right, var(--color-rule) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-rule) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.35;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
