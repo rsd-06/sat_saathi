@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://satsaathi.example/schemas/trace-1.json",
+  "title": "SatSaathi execution trace",
+  "description": "The record of what the system did for one job. This is the artifact the evaluation looks at, so it is versioned and validated on export.",
+  "type": "object",
+  "required": [
+    "trace_version",
+    "job_id",
+    "created_at",
+    "status",
+    "query",
+    "input_set",
+    "plan",
+    "steps"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "trace_version": { "const": 1 },
+    "job_id": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "minLength": 1 },
+    "status": {
+      "enum": ["running", "succeeded", "failed", "needs_review"]
+    },
+    "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+    "answer": {
+      "type": ["object", "null"],
+      "properties": { "text": { "type": ["string", "null"] } }
+    },
+    "query": {
+      "type": "object",
+      "required": ["text", "lang"],
+      "properties": {
+        "text": { "type": "string" },
+        "lang": { "type": "string" },
+        "ui_lang": { "type": "string" },
+        "text_en": { "type": ["string", "null"] },
+        "intent": { "type": ["string", "null"] }
+      }
+    },
+    "input_set": {
+      "type": "object",
+      "required": ["mode", "assets"],
+      "description": "Metadata about the inputs, never the raster data itself.",
+      "properties": {
+        "mode": { "enum": ["single", "fusion", "change"] },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["role"],
+            "properties": {
+              "role": {
+                "enum": ["single", "optical", "sar", "before", "after"]
+              },
+              "filename": { "type": "string" },
+              "crs": { "type": ["string", "null"] },
+              "width": { "type": ["integer", "null"] },
+              "height": { "type": ["integer", "null"] },
+              "bands": { "type": ["integer", "null"] },
+              "sensor_type": { "type": ["string", "null"] },
+              "acquired_at": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "plan": {
+      "type": "array",
+      "description": "The ordered tool calls decided before execution began.",
+      "items": {
+        "type": "object",
+        "required": ["step_key", "tool"],
+        "properties": {
+          "step_key": { "$ref": "#/$defs/stepKey" },
+          "tool": { "type": "string" },
+          "params": { "type": "object" }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "description": "Exactly the eight fixed steps, in order.",
+      "items": { "$ref": "#/$defs/step" }
+    }
+  },
+  "$defs": {
+    "stepKey": {
+      "enum": [
+        "ask",
+        "imagery",
+        "understand",
+        "preprocess",
+        "compute",
+        "vision_language",
+        "verify",
+        "answer"
+      ]
+    },
+    "step": {
+      "type": "object",
+      "required": ["step_key", "ordinal", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "step_key": { "$ref": "#/$defs/stepKey" },
+        "ordinal": { "type": "integer", "minimum": 0, "maximum": 7 },
+        "status": {
+          "enum": [
+            "pending",
+            "running",
+            "succeeded",
+            "skipped",
+            "failed",
+            "needs_review"
+          ]
+        },
+        "tool_name": { "type": ["string", "null"] },
+        "tool_version": { "type": ["string", "null"] },
+        "is_stub": {
+          "type": ["boolean", "null"],
+          "description": "Whether this step's output was measured or fixture."
+        },
+        "params": { "type": "object" },
+        "output_summary": { "type": "object" },
+        "note": { "type": ["string", "null"] },
+        "error": {
+          "type": ["object", "null"],
+          "required": ["key"],
+          "description": "A message key and params; never a user-facing sentence.",
+          "properties": {
+            "key": { "type": "string" },
+            "params": { "type": "object" }
+          }
+        },
+        "started_at": { "type": ["string", "null"] },
+        "finished_at": { "type": ["string", "null"] },
+        "duration_ms": { "type": ["integer", "null"], "minimum": 0 },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "kind", "storage_key"],
+            "properties": {
+              "name": { "type": "string" },
+              "kind": { "enum": ["cog", "geojson", "pdf", "png", "trace"] },
+              "storage_key": { "type": "string" },
+              "meta": { "type": "object" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
