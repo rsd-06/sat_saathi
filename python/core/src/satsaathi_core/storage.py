@@ -122,7 +122,9 @@ class S3Storage(Storage):
         public_base_url: str | None = None,
     ):
         if client is None:  # pragma: no cover - exercised only with boto3 present
-            import boto3
+            # Optional extra: `satsaathi-core[s3]`. Kept out of the base install
+            # so the offline image never pulls an AWS SDK it must not use.
+            import boto3  # pyright: ignore[reportMissingImports]
 
             client = boto3.client("s3")
         self.bucket = bucket

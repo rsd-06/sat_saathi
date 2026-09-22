@@ -11,6 +11,10 @@ dependencies = [
     "pyproj>=3.6,<4",
 ]
 
+[project.optional-dependencies]
+# Only needed for the S3 storage backend; offline mode never installs it.
+s3 = ["boto3>=1.35,<2"]
+
 [dependency-groups]
 dev = ["pytest>=8,<9"]
 
