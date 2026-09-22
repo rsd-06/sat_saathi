@@ -1,0 +1,12 @@
+node_modules/
+.next/
+.turbo/
+dist/
+build/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+.data/
+.env
