@@ -756,8 +756,8 @@ git commit -m "feat(worker): add Celery app with cpu/gpu/lang queues, no tasks y
   },
   "dependencies": {
     "next": "16.3.5",
-    "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "typescript": "^5.7.0",
