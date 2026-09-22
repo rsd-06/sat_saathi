@@ -1,0 +1,279 @@
+"""Persistent shape of a job and everything it touches.
+
+PostGIS holds footprints, AOIs and vector results. Rasters never go in the
+database — they live in storage and are referenced by key.
+
+The step_key enum is fixed and shared with the frontend, the i18n catalogs and
+the exported trace. Renaming a member is a breaking change to all four.
+"""
+
+from __future__ import annotations
+
+import enum
+import uuid
+from datetime import datetime, timezone
+
+from geoalchemy2 import Geometry
+from sqlalchemy import (
+    JSON,
+    DateTime,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
+from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+
+
+def utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def new_id() -> uuid.UUID:
+    return uuid.uuid4()
+
+
+#: JSONB on Postgres, plain JSON elsewhere so tests can run on SQLite.
+JsonType = JSON().with_variant(JSONB(), "postgresql")
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class StepKey(str, enum.Enum):
+    ask = "ask"
+    imagery = "imagery"
+    understand = "understand"
+    preprocess = "preprocess"
+    compute = "compute"
+    vision_language = "vision_language"
+    verify = "verify"
+    answer = "answer"
+
+
+class StepStatus(str, enum.Enum):
+    pending = "pending"
+    running = "running"
+    succeeded = "succeeded"
+    skipped = "skipped"
+    failed = "failed"
+    needs_review = "needs_review"
+
+
+class JobStatus(str, enum.Enum):
+    queued = "queued"
+    running = "running"
+    succeeded = "succeeded"
+    failed = "failed"
+    needs_review = "needs_review"
+
+
+class InputMode(str, enum.Enum):
+    single = "single"
+    fusion = "fusion"
+    change = "change"
+
+
+class AssetRole(str, enum.Enum):
+    single = "single"
+    optical = "optical"
+    sar = "sar"
+    before = "before"
+    after = "after"
+
+
+class ArtifactKind(str, enum.Enum):
+    cog = "cog"
+    geojson = "geojson"
+    pdf = "pdf"
+    png = "png"
+    trace = "trace"
+
+
+class ReviewStatus(str, enum.Enum):
+    pending = "pending"
+    approved = "approved"
+    edited = "edited"
+    rejected = "rejected"
+
+
+class Asset(Base):
+    __tablename__ = "assets"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    storage_key: Mapped[str] = mapped_column(String(512))
+    cog_key: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    filename: Mapped[str] = mapped_column(String(512))
+    sensor_type: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    sensor_preset: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    bands: Mapped[list | None] = mapped_column(JsonType, nullable=True)
+    band_map: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    crs: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    pixel_size: Mapped[float | None] = mapped_column(Float, nullable=True)
+    width: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    height: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    acquired_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    footprint = mapped_column(
+        Geometry("POLYGON", srid=4326, spatial_index=True), nullable=True
+    )
+    warnings: Mapped[list | None] = mapped_column(JsonType, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow
+    )
+
+
+class InputSet(Base):
+    __tablename__ = "input_sets"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    mode: Mapped[InputMode] = mapped_column(Enum(InputMode, name="input_mode"))
+    checks: Mapped[list | None] = mapped_column(JsonType, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow
+    )
+
+    assets: Mapped[list[InputSetAsset]] = relationship(
+        back_populates="input_set", cascade="all, delete-orphan"
+    )
+
+
+class InputSetAsset(Base):
+    __tablename__ = "input_set_assets"
+    __table_args__ = (UniqueConstraint("input_set_id", "role"),)
+
+    input_set_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("input_sets.id", ondelete="CASCADE"),
+        primary_key=True,
+    )
+    asset_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("assets.id"), primary_key=True
+    )
+    role: Mapped[AssetRole] = mapped_column(Enum(AssetRole, name="asset_role"))
+
+    input_set: Mapped[InputSet] = relationship(back_populates="assets")
+    asset: Mapped[Asset] = relationship()
+
+
+class Job(Base):
+    __tablename__ = "jobs"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    input_set_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("input_sets.id")
+    )
+    query_text: Mapped[str] = mapped_column(Text)
+    query_lang: Mapped[str] = mapped_column(String(8))
+    ui_lang: Mapped[str] = mapped_column(String(8))
+    query_text_en: Mapped[str | None] = mapped_column(Text, nullable=True)
+    intent: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    plan: Mapped[list | None] = mapped_column(JsonType, nullable=True)
+    status: Mapped[JobStatus] = mapped_column(
+        Enum(JobStatus, name="job_status"), default=JobStatus.queued
+    )
+    confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+    answer: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    error: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow
+    )
+    finished_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    steps: Mapped[list[JobStep]] = relationship(
+        back_populates="job",
+        cascade="all, delete-orphan",
+        order_by="JobStep.ordinal",
+    )
+    input_set: Mapped[InputSet] = relationship()
+
+
+class JobStep(Base):
+    __tablename__ = "job_steps"
+    __table_args__ = (UniqueConstraint("job_id", "step_key"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    job_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("jobs.id", ondelete="CASCADE")
+    )
+    step_key: Mapped[StepKey] = mapped_column(Enum(StepKey, name="step_key"))
+    ordinal: Mapped[int] = mapped_column(Integer)
+    status: Mapped[StepStatus] = mapped_column(
+        Enum(StepStatus, name="step_status"), default=StepStatus.pending
+    )
+    tool_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    tool_version: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    is_stub: Mapped[bool | None] = mapped_column(nullable=True)
+    params: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    output_summary: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    note: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    error: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    started_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    finished_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+    job: Mapped[Job] = relationship(back_populates="steps")
+
+
+class Artifact(Base):
+    __tablename__ = "artifacts"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    job_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("jobs.id", ondelete="CASCADE")
+    )
+    step_key: Mapped[StepKey | None] = mapped_column(
+        Enum(StepKey, name="step_key"), nullable=True
+    )
+    kind: Mapped[ArtifactKind] = mapped_column(Enum(ArtifactKind, name="artifact_kind"))
+    name: Mapped[str] = mapped_column(String(256))
+    storage_key: Mapped[str] = mapped_column(String(512))
+    geometry = mapped_column(Geometry(srid=4326), nullable=True)
+    meta: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow
+    )
+
+
+class ReviewItem(Base):
+    __tablename__ = "review_items"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    job_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("jobs.id", ondelete="CASCADE")
+    )
+    reason: Mapped[str] = mapped_column(String(128))
+    status: Mapped[ReviewStatus] = mapped_column(
+        Enum(ReviewStatus, name="review_status"), default=ReviewStatus.pending
+    )
+    reviewer_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    edited_answer: Mapped[dict | None] = mapped_column(JsonType, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow
+    )
+    resolved_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
