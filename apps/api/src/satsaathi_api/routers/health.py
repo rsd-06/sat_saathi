@@ -76,7 +76,7 @@ async def health() -> HealthResponse:
     names = ("database", "redis", "storage", "tiler")
     checkers = (check_database, check_redis, check_storage, check_tiler)
     results = await asyncio.gather(*(checker(settings) for checker in checkers))
-    checks = dict(zip(names, results))
+    checks: dict[str, CheckResult] = dict(zip(names, results))
     overall: Literal["ok", "degraded"] = (
         "ok" if all(c.status == "ok" for c in checks.values()) else "degraded"
     )

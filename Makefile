@@ -19,7 +19,7 @@ lint:
 
 typecheck:
 	pnpm typecheck
-	uv run pyright
+	uv run python -m pyright
 
 gen-client:
 	@echo "gen-client wires up in Phase 3 once apps/api's OpenAPI schema and packages/api-client exist"

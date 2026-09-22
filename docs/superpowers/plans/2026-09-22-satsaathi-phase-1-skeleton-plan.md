@@ -1273,6 +1273,30 @@ git commit -m "feat(infra): add docker-compose core/offline profiles and Makefil
 
 **Interfaces:** none — this encodes the Phase 1 Definition of Done as an automated gate.
 
+> **Corrections found during Phase 1 execution (2026-09-22):**
+> 1. **`ruff` and `pyright` were never declared as dependencies.** The root
+>    `pyproject.toml` configured `[tool.ruff]`/`[tool.pyright]` but nothing
+>    installed them, so `uv run ruff check .` and `uv run pyright` both
+>    failed with `program not found` — CI's python job and `make lint` /
+>    `make typecheck` would all have been red. Added a root
+>    `[dependency-groups] dev = ["ruff==0.16.8", "pyright>=1.1.400,<2"]`.
+> 2. **Ruff's isort treated our own packages as third-party.** Added
+>    `[tool.ruff.lint.isort] known-first-party = ["satsaathi_core",
+>    "satsaathi_tools", "satsaathi_api", "satsaathi_worker"]`.
+> 3. **Invoke pyright as `uv run python -m pyright`, not `uv run pyright`.**
+>    The generated `pyright.exe` shim is unsigned and is blocked outright by
+>    Windows Application Control policies (`os error 4551`); the module form
+>    works identically on Windows and Linux.
+> 4. **Pyright caught a real type error** in `health.py`: `dict` is invariant
+>    in its key type, so `dict(zip(names, results))` infers
+>    `dict[Literal[...], CheckResult]`, which is not assignable to
+>    `dict[str, CheckResult]`. Annotate the binding:
+>    `checks: dict[str, CheckResult] = dict(zip(names, results))`.
+> 5. **The compose-health CI step must assert on the response body.**
+>    `/api/v1/health` returns HTTP 200 even when `degraded`, so a bare
+>    `curl -sf` would pass with a broken dependency; grep for
+>    `"status":"ok"` instead.
+
 - [ ] **Step 1: Create `.github/workflows/ci.yml`**
 
 ```yaml

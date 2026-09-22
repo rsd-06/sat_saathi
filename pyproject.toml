@@ -3,6 +3,12 @@ name = "satsaathi-workspace"
 version = "0.1.0"
 requires-python = ">=3.12,<3.13"
 
+[dependency-groups]
+dev = [
+    "ruff==0.16.8",
+    "pyright>=1.1.400,<2",
+]
+
 [tool.uv.workspace]
 members = ["python/core", "python/tools", "apps/api", "apps/worker"]
 
@@ -12,6 +18,9 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["satsaathi_core", "satsaathi_tools", "satsaathi_api", "satsaathi_worker"]
 
 [tool.pyright]
 include = ["python/core/src", "python/tools/src", "apps/api/src", "apps/worker/src"]
