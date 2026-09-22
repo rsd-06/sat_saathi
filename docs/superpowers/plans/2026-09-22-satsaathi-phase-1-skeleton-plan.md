@@ -1100,6 +1100,16 @@ git commit -m "feat(infra): add Dockerfiles for api, worker, web"
 
 **Interfaces:** compose service names `postgres`, `redis`, `tiler`, `api`, `worker`, `web` — these exact names are what Phase 2's `docker compose logs <service>` and any future override files will target.
 
+> **Correction found during Phase 1 execution (2026-09-22):** the official
+> `ghcr.io/developmentseed/titiler` image runs gunicorn on **port 80**
+> inside the container, not 8000. The original plan mapped `8001:8000` and
+> set `TILER_URL=http://tiler:8000`, which made the `/api/v1/health` tiler
+> check fail with "All connection attempts failed" while every other check
+> passed. Correct values: port mapping `8001:80`, and `TILER_URL`
+> `http://tiler:80` (in `docker-compose.yml`, `.env.example`, and
+> `.env.offline.example`). The image tag `2.4.0` itself is valid and pulls
+> successfully.
+
 - [ ] **Step 1: Create `infra/compose/docker-compose.yml`**
 
 ```yaml

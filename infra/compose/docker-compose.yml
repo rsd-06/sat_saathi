@@ -1,0 +1,92 @@
+name: satsaathi
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.5
+    profiles: ["core", "offline"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-satsaathi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-satsaathi_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-satsaathi}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-satsaathi}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:8.10-alpine
+    profiles: ["core", "offline"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  tiler:
+    image: ghcr.io/developmentseed/titiler:2.4.0
+    profiles: ["core", "offline"]
+    # The official TiTiler image runs gunicorn on port 80 inside the
+    # container, not 8000 — TILER_URL must target :80 accordingly.
+    ports:
+      - "8001:80"
+
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/api.Dockerfile
+    profiles: ["core", "offline"]
+    env_file: ../../.env
+    environment:
+      TILER_URL: http://tiler:80
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: infra/docker/worker.Dockerfile
+    profiles: ["core", "offline"]
+    env_file: ../../.env
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/docker/web.Dockerfile
+    profiles: ["core", "offline"]
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+# gpu profile placeholder — the real VLM worker lands after Phase 5.
+# services:
+#   worker-gpu:
+#     build:
+#       context: ../..
+#       dockerfile: infra/docker/worker-gpu.Dockerfile
+#     profiles: ["gpu"]
+#     deploy:
+#       resources:
+#         reservations:
+#           devices:
+#             - driver: nvidia
+#               count: 1
+#               capabilities: [gpu]
+
+volumes:
+  postgres-data:
