@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { StatusDot } from "./status-dot";
-import type { Step } from "@/lib/mock";
+import type { RunStep } from "@/lib/orchestrator";
 
-function Detail({ step }: { step: Step }) {
+/** Reasons a step declined to produce a figure, spelled out in the trace. */
+const NOTES: Record<string, string> = {
+  "rgb-no-crs":
+    "Three visible bands and no coordinate system. Area on the ground is not derivable from this file.",
+  "ndvi-ndwi-unavailable":
+    "NDVI, NDWI and LSWI need a near-infrared or SWIR band. This file has none, so they were not computed rather than approximated.",
+};
+
+function Detail({ step }: { step: RunStep }) {
   const t = useTranslations();
   const rows: [string, string][] = [];
 
@@ -44,17 +52,34 @@ function Detail({ step }: { step: Step }) {
           <span className="text-ink-muted tabular break-all">{value}</span>
         </div>
       ))}
+      {step.note && NOTES[step.note] && (
+        <div className="marginal text-relief">{NOTES[step.note]}</div>
+      )}
       {step.isStub && (
-        <div className="marginal text-relief">{t("workspace.trace.stubHint")}</div>
+        <div className="marginal text-relief">
+          {t("workspace.trace.stubHint")}
+        </div>
       )}
     </div>
   );
 }
 
-export function Trace({ steps }: { steps: Step[] }) {
+export function Trace({ steps }: { steps: RunStep[] }) {
   const t = useTranslations();
-  const [open, setOpen] = useState<string | null>("compute");
+  const [pinned, setPinned] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const listRef = useRef<HTMLOListElement>(null);
+
+  const running = steps.find((s) => s.status === "running")?.key ?? null;
+  // While a run is live the current step opens itself; a click pins one open.
+  const open = pinned ?? running;
+
+  // Keep the active step in view without yanking the whole page around.
+  useEffect(() => {
+    if (!running || !listRef.current) return;
+    const el = listRef.current.querySelector(`[data-step="${running}"]`);
+    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [running]);
 
   async function copyTrace() {
     try {
@@ -62,8 +87,21 @@ export function Trace({ steps }: { steps: Step[] }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      /* Clipboard unavailable; the download action still works. */
+      /* Clipboard blocked; the trace is still on screen. */
     }
+  }
+
+  function downloadTrace() {
+    const blob = new Blob(
+      [JSON.stringify({ trace_version: 1, steps }, null, 2)],
+      { type: "application/json" },
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "satsaathi-trace.json";
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   return (
@@ -72,36 +110,50 @@ export function Trace({ steps }: { steps: Step[] }) {
         <h2 className="font-serif text-ink text-lg tracking-tight">
           {t("workspace.trace.title")}
         </h2>
-        <button
-          type="button"
-          onClick={copyTrace}
-          className="text-accent hover:text-accent-hover marginal transition-colors"
-        >
-          {copied ? t("workspace.trace.copied") : t("workspace.trace.copy")}
-        </button>
+        <div className="flex shrink-0 items-baseline gap-3">
+          <button
+            type="button"
+            onClick={copyTrace}
+            className="text-accent hover:text-accent-hover marginal transition-colors"
+          >
+            {copied ? t("workspace.trace.copied") : t("workspace.trace.copy")}
+          </button>
+          <button
+            type="button"
+            onClick={downloadTrace}
+            className="text-accent hover:text-accent-hover marginal transition-colors"
+          >
+            JSON
+          </button>
+        </div>
       </div>
       <p className="marginal mt-1">{t("workspace.trace.subtitle")}</p>
 
-      <ol className="border-rule mt-4 border-t">
+      <ol ref={listRef} className="border-rule mt-4 border-t">
         {steps.map((step, i) => {
           const isOpen = open === step.key;
           return (
-            <li key={step.key} className="border-rule border-b">
+            <li
+              key={step.key}
+              data-step={step.key}
+              className="border-rule border-b"
+            >
               <button
                 type="button"
-                onClick={() => setOpen(isOpen ? null : step.key)}
+                onClick={() => setPinned(isOpen ? null : step.key)}
                 aria-expanded={isOpen}
                 className="hover:bg-paper-sunk/60 flex w-full items-baseline gap-2.5 px-1 py-2.5 text-left transition-colors"
               >
                 <span className="marginal text-ink-faint tabular w-5 shrink-0">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <StatusDot
-                  status={step.status}
-                  className="translate-y-[-2px]"
-                />
+                <StatusDot status={step.status} className="translate-y-[-2px]" />
                 <span className="min-w-0 flex-1">
-                  <span className="text-ink block text-sm">
+                  <span
+                    className={`block text-sm ${
+                      step.status === "pending" ? "text-ink-faint" : "text-ink"
+                    }`}
+                  >
                     {t(`steps.${step.key}.title`)}
                   </span>
                   {isOpen && (
@@ -117,11 +169,17 @@ export function Trace({ steps }: { steps: Step[] }) {
                 )}
                 <span className="marginal tabular w-14 shrink-0 text-right">
                   {step.durationMs === null
-                    ? "—"
+                    ? step.status === "running"
+                      ? "…"
+                      : "—"
                     : t("workspace.trace.duration", { ms: step.durationMs })}
                 </span>
               </button>
-              {isOpen && <div className="pb-3 pl-8">{<Detail step={step} />}</div>}
+              {isOpen && step.status !== "pending" && (
+                <div className="pb-3 pl-8">
+                  <Detail step={step} />
+                </div>
+              )}
             </li>
           );
         })}

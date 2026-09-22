@@ -1,128 +1,171 @@
 "use client";
 
-import { useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 
-import { AnswerCard } from "./answer-card";
+import { ImageUpload, type LoadedImage } from "./image-upload";
+import { LiveAnswer } from "./live-answer";
 import { Scene } from "./scene";
 import { Trace } from "./trace";
-import { WorkspaceInputs } from "./workspace-inputs";
-import { DEMO_STEPS, type JobMode } from "@/lib/mock";
+import { runPipeline, type RunState } from "@/lib/orchestrator";
 import { localeNames, locales, type Locale } from "@/i18n/routing";
 
-const LAYERS = [
-  { key: "falseColour", on: true },
-  { key: "ndwi", on: true },
-  { key: "changeMask", on: false },
-  { key: "aoi", on: false },
-] as const;
-
-const EXAMPLES: Record<JobMode, string[]> = {
-  single: ["single1", "single2"],
-  fusion: ["fusion1", "fusion2"],
-  change: ["change1", "change2"],
-};
+const EXAMPLES = ["single1", "single2", "change1"] as const;
 
 export function Workspace() {
   const t = useTranslations();
+  const format = useFormatter();
   const uiLocale = useLocale() as Locale;
-  const [mode, setMode] = useState<JobMode>("change");
-  const [queryLang, setQueryLang] = useState<Locale>(uiLocale);
-  const [question, setQuestion] = useState("");
-  const [layers, setLayers] = useState<string[]>(
-    LAYERS.filter((l) => l.on).map((l) => l.key),
-  );
 
-  function toggleLayer(key: string) {
-    setLayers((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key],
-    );
+  const [image, setImage] = useState<LoadedImage | null>(null);
+  const [question, setQuestion] = useState("");
+  const [queryLang, setQueryLang] = useState<Locale>(uiLocale);
+  const [run, setRun] = useState<RunState | null>(null);
+  const [busy, setBusy] = useState(false);
+  const cancelled = useRef(false);
+
+  // Object URLs are a real leak if the component unmounts mid-demo.
+  useEffect(() => {
+    return () => {
+      cancelled.current = true;
+      if (image) URL.revokeObjectURL(image.url);
+    };
+  }, [image]);
+
+  async function start() {
+    if (!image || !question.trim() || busy) return;
+    setBusy(true);
+    cancelled.current = false;
+
+    for await (const state of runPipeline({
+      question,
+      queryLang,
+      uiLang: uiLocale,
+      image: {
+        element: image.element,
+        name: image.file.name,
+        sizeBytes: image.file.size,
+        type: image.file.type,
+      },
+      formatNumber: (n) => format.number(n),
+    })) {
+      if (cancelled.current) return;
+      setRun(state);
+    }
+    setBusy(false);
   }
+
+  function clearImage() {
+    if (image) URL.revokeObjectURL(image.url);
+    setImage(null);
+    setRun(null);
+  }
+
+  const canRun = Boolean(image) && question.trim().length > 0 && !busy;
 
   return (
     <div className="mx-auto grid max-w-[110rem] gap-6 px-4 py-6 sm:px-6 xl:grid-cols-[19rem_minmax(0,1fr)_25rem]">
-      {/* Left: what you are looking at. */}
+      {/* Left: the input and what is known about it. */}
       <aside
         data-lenis-prevent
-        className="xl:max-h-[calc(100dvh-6rem)] xl:overflow-y-auto xl:pr-1"
+        className="space-y-6 xl:max-h-[calc(100dvh-6rem)] xl:overflow-y-auto xl:pr-1"
       >
-        <WorkspaceInputs mode={mode} onModeChange={setMode} />
+        <section>
+          <h2 className="font-serif text-ink text-lg tracking-tight">
+            {t("workspace.inputs.title")}
+          </h2>
+          <div className="mt-3">
+            <ImageUpload
+              loaded={image}
+              onLoad={(img) => {
+                setImage(img);
+                setRun(null);
+              }}
+              onClear={clearImage}
+            />
+          </div>
+        </section>
+
+        <section>
+          <h3 className="text-ink text-sm font-medium">
+            {t("workspace.analyses.title")}
+          </h3>
+          {/* An RGB file genuinely cannot support NDVI/NDWI/LSWI. Saying so is
+              the product's whole discipline, so it is stated before the run. */}
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {[
+              { name: "ExG", available: true },
+              { name: "NDVI", available: false },
+              { name: "NDWI", available: false },
+              { name: "LSWI", available: false },
+            ].map((a) => (
+              <span
+                key={a.name}
+                className={`border px-2 py-1 text-xs ${
+                  a.available
+                    ? "border-vegetation text-vegetation bg-vegetation-wash/50"
+                    : "border-rule text-ink-faint line-through"
+                }`}
+              >
+                {a.name}
+              </span>
+            ))}
+          </div>
+          <p className="marginal mt-2">
+            {t("workspace.analyses.ndviUnavailable")}
+          </p>
+        </section>
       </aside>
 
-      {/* Centre: the sheet. The imagery is the largest thing on screen. */}
+      {/* Centre: the uploaded image, framed as a sheet. */}
       <div className="min-w-0">
         <div className="border-rule-strong bg-paper-raised border">
           <div className="border-rule divide-rule flex flex-wrap items-center divide-x border-b">
-            <span className="marginal tabular px-2.5 py-1.5">
-              23.4102°N 88.5107°E
+            <span className="marginal px-2.5 py-1.5">
+              {image ? image.file.name : t("workspace.map.empty.title")}
             </span>
-            <span className="marginal px-2.5 py-1.5">EPSG:32645</span>
-            <span className="marginal px-2.5 py-1.5">10 m</span>
-            <span className="marginal tabular px-2.5 py-1.5">
-              2026-09-04 → 2026-09-12
-            </span>
-            <span className="marginal ml-auto px-2.5 py-1.5">
-              {t("workspace.map.compare")}
-            </span>
-          </div>
-
-          <div className="relative aspect-[16/10] min-h-[20rem]">
-            <Scene variant="flood" />
-            {/* Before/after comparison handle. */}
-            <div
-              aria-hidden
-              className="absolute inset-y-0 left-1/2 w-px bg-white/70"
-            >
-              <span className="border-rule-strong bg-paper-raised absolute top-1/2 left-1/2 flex size-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center border text-xs">
-                ‹›
-              </span>
-            </div>
-            <div className="border-rule-strong bg-paper-raised/95 absolute bottom-3 left-3 border px-2.5 py-1.5">
-              <div className="marginal flex items-center gap-2">
-                NDWI
-                <span
-                  aria-hidden
-                  className="h-1.5 w-20"
-                  style={{
-                    background:
-                      "linear-gradient(to right, var(--color-relief), var(--color-water))",
-                  }}
-                />
-                <span className="tabular">
-                  {t("workspace.map.legend.low")} … {t("workspace.map.legend.high")}
+            {image && (
+              <>
+                <span className="marginal tabular px-2.5 py-1.5">
+                  {image.width} × {image.height} px
                 </span>
-              </div>
-            </div>
+                <span className="marginal px-2.5 py-1.5">RGB</span>
+                <span className="marginal px-2.5 py-1.5">
+                  {t("upload.meta.noCrs")}
+                </span>
+              </>
+            )}
           </div>
 
-          <div className="border-rule flex flex-wrap items-center gap-x-4 gap-y-2 border-t px-2.5 py-2">
-            <span className="marginal text-ink">
-              {t("workspace.map.layers")}
-            </span>
-            {LAYERS.map((l) => {
-              const on = layers.includes(l.key);
-              return (
-                <label
-                  key={l.key}
-                  className="marginal flex cursor-pointer items-center gap-1.5"
-                >
-                  <input
-                    type="checkbox"
-                    checked={on}
-                    onChange={() => toggleLayer(l.key)}
-                    className="accent-accent size-3"
-                  />
-                  <span className={on ? "text-ink" : "text-ink-faint"}>
-                    {t(`workspace.map.layer.${l.key}`)}
-                  </span>
-                </label>
-              );
-            })}
+          <div className="bg-paper-sunk relative flex aspect-[16/10] min-h-[20rem] items-center justify-center">
+            {image ? (
+              /* A local object URL from the file picker — next/image cannot
+                 optimise a blob: source, so a plain <img> is correct here. */
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={image.url}
+                alt={image.file.name}
+                className="max-h-full max-w-full object-contain"
+              />
+            ) : (
+              <div className="px-6 text-center">
+                <div className="mx-auto w-48 opacity-25">
+                  <Scene variant="flood" />
+                </div>
+                <p className="text-ink-muted mt-4 text-sm">
+                  {t("workspace.map.empty.body")}
+                </p>
+              </div>
+            )}
           </div>
+
+          <p className="marginal border-rule border-t px-2.5 py-2">
+            {t("run.demo.notice")}
+          </p>
         </div>
       </div>
 
-      {/* Right: ask, then watch. */}
+      {/* Right: ask, watch, read. */}
       <aside
         data-lenis-prevent
         className="space-y-6 xl:max-h-[calc(100dvh-6rem)] xl:overflow-y-auto xl:pl-1"
@@ -168,16 +211,23 @@ export function Workspace() {
               </button>
               <button
                 type="button"
-                className="bg-accent hover:bg-accent-hover ml-auto rounded-xs px-4 py-1.5 text-xs font-medium whitespace-nowrap text-white transition-colors"
+                onClick={() => void start()}
+                disabled={!canRun}
+                className="bg-accent hover:bg-accent-hover ml-auto rounded-xs px-4 py-1.5 text-xs font-medium whitespace-nowrap text-white transition-colors disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {t("workspace.ask.submit")}
+                {busy ? t("run.running") : t("run.start")}
               </button>
             </div>
           </div>
 
+          {!image && <p className="marginal mt-2">{t("run.needsImage")}</p>}
+          {image && !question.trim() && (
+            <p className="marginal mt-2">{t("run.needsQuestion")}</p>
+          )}
+
           <p className="marginal mt-2.5">{t("workspace.ask.examples")}</p>
           <div className="mt-1.5 space-y-1.5">
-            {EXAMPLES[mode].map((ex) => {
+            {EXAMPLES.map((ex) => {
               const text = t(`workspace.ask.example.${ex}`);
               return (
                 <button
@@ -193,9 +243,17 @@ export function Workspace() {
           </div>
         </section>
 
-        <Trace steps={DEMO_STEPS} />
+        {run && <Trace steps={run.steps} />}
 
-        <AnswerCard />
+        {run?.answer && (
+          <LiveAnswer
+            answer={run.answer}
+            onAskAgain={() => {
+              setRun(null);
+              setQuestion("");
+            }}
+          />
+        )}
       </aside>
     </div>
   );

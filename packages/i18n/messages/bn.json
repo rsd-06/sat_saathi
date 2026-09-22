@@ -208,5 +208,21 @@
   "common.close": "বন্ধ",
   "common.back": "পিছনে",
   "common.learnMore": "আরও জানুন",
-  "common.optional": "ঐচ্ছিক"
+  "common.optional": "ঐচ্ছিক",
+  "upload.accepts": "PNG, JPEG বা WebP। এই যন্ত্রেই থাকে — কিছুই আপলোড হয় না।",
+  "upload.meta.dimensions": "মাপ",
+  "upload.meta.size": "ফাইলের আকার",
+  "upload.meta.type": "ফরম্যাট",
+  "upload.meta.noCrs": "নেই (ভূ-সন্দর্ভ নেই)",
+  "upload.error.unsupported": "এই ধরনের ফাইল দেখানো যাবে না। PNG, JPEG বা WebP ব্যবহার করুন।",
+  "upload.error.geotiffPreview": "GeoTIFF এখনও ব্রাউজারে দেখানো যায় না। এই ডেমোর জন্য PNG বা JPEG ব্যবহার করুন।",
+  "upload.error.decode": "এই ছবিটি পড়া গেল না। এটি নষ্ট হয়ে থাকতে পারে।",
+  "run.start": "বিশ্লেষণ চালান",
+  "run.running": "চলছে…",
+  "run.again": "আরেকটি প্রশ্ন করুন",
+  "run.needsImage": "আগে একটি ছবি যোগ করুন।",
+  "run.needsQuestion": "আগে প্রশ্ন লিখুন।",
+  "run.limits.title": "এই ইনপুট থেকে যা বলা যাবে না",
+  "run.demo.notice": "ডেমো মোড। মাপগুলি আপনার ছবি থেকে ব্রাউজারেই গোনা হয়; দৃষ্টি-ভাষা ও বাক্য গঠনের ধাপ নমুনা ফলাফল দেয়।",
+  "answer.intent": "যেভাবে পড়া হয়েছে"
 }

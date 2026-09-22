@@ -208,5 +208,21 @@
   "common.close": "बंद कीजिए",
   "common.back": "वापस",
   "common.learnMore": "और जानिए",
-  "common.optional": "वैकल्पिक"
+  "common.optional": "वैकल्पिक",
+  "upload.accepts": "PNG, JPEG या WebP। इसी मशीन पर रहती है — कुछ भी अपलोड नहीं होता।",
+  "upload.meta.dimensions": "आयाम",
+  "upload.meta.size": "फ़ाइल आकार",
+  "upload.meta.type": "प्रारूप",
+  "upload.meta.noCrs": "कोई नहीं (भू-संदर्भित नहीं)",
+  "upload.error.unsupported": "यह फ़ाइल प्रकार दिखाया नहीं जा सकता। PNG, JPEG या WebP इस्तेमाल कीजिए।",
+  "upload.error.geotiffPreview": "GeoTIFF अभी ब्राउज़र में नहीं दिखाया जा सकता। इस डेमो के लिए PNG या JPEG इस्तेमाल कीजिए।",
+  "upload.error.decode": "यह चित्र पढ़ा नहीं जा सका। शायद यह ख़राब है।",
+  "run.start": "विश्लेषण चलाइए",
+  "run.running": "चल रहा है…",
+  "run.again": "दूसरा सवाल पूछिए",
+  "run.needsImage": "पहले चित्र जोड़िए।",
+  "run.needsQuestion": "पहले सवाल लिखिए।",
+  "run.limits.title": "इस इनपुट से क्या नहीं बताया जा सकता",
+  "run.demo.notice": "डेमो मोड। माप आपके चित्र से ब्राउज़र में ही गिने जाते हैं; दृष्टि-भाषा और वाक्य-रचना के चरण नमूना परिणाम देते हैं।",
+  "answer.intent": "इस रूप में पढ़ा गया"
 }

@@ -208,5 +208,21 @@
   "common.close": "Close",
   "common.back": "Back",
   "common.learnMore": "Learn more",
-  "common.optional": "Optional"
+  "common.optional": "Optional",
+  "upload.accepts": "PNG, JPEG or WebP. Stays on this machine — nothing is uploaded.",
+  "upload.meta.dimensions": "Dimensions",
+  "upload.meta.size": "File size",
+  "upload.meta.type": "Format",
+  "upload.meta.noCrs": "none (not georeferenced)",
+  "upload.error.unsupported": "That file type cannot be displayed. Use PNG, JPEG or WebP.",
+  "upload.error.geotiffPreview": "GeoTIFF cannot be previewed in the browser yet. Use a PNG or JPEG export for this demo.",
+  "upload.error.decode": "This image could not be read. It may be damaged.",
+  "run.start": "Run analysis",
+  "run.running": "Running…",
+  "run.again": "Ask another question",
+  "run.needsImage": "Add an image first.",
+  "run.needsQuestion": "Type a question first.",
+  "run.limits.title": "What this input cannot answer",
+  "run.demo.notice": "Demo mode. Measurements are computed from your image in the browser; the vision-language and phrasing steps return fixture output.",
+  "answer.intent": "Read as"
 }
