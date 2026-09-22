@@ -12,7 +12,7 @@
  */
 
 import { analyzeImage, type ImageAnalysis } from "./analyze";
-import { classifyIntent, type Intent } from "./intent";
+import { classifyIntentDetailed, type Intent } from "./intent";
 import { composeAnswer, type ComposedAnswer } from "./compose";
 import type { StepKey, StepStatus } from "./mock";
 
@@ -144,9 +144,18 @@ export async function* runPipeline(
       }
 
       case "understand": {
-        intent = classifyIntent(input.question);
+        const match = classifyIntentDetailed(input.question);
+        intent = match.intent;
         step.params = { translate: "passthrough", classifier: "keyword" };
-        step.output = { intent, query_lang: input.queryLang };
+        // The evidence goes in the trace: if a keyword misfires, it is visible
+        // here rather than only showing up as a surprising intent downstream.
+        step.output = {
+          intent,
+          query_lang: input.queryLang,
+          matched: match.matched.length ? match.matched.join(" ") : "(none)",
+          score: match.score,
+        };
+        if (match.score === 0) step.note = "intent-defaulted";
         break;
       }
 

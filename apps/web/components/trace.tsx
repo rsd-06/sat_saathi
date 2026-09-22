@@ -12,6 +12,8 @@ const NOTES: Record<string, string> = {
     "Three visible bands and no coordinate system. Area on the ground is not derivable from this file.",
   "ndvi-ndwi-unavailable":
     "NDVI, NDWI and LSWI need a near-infrared or SWIR band. This file has none, so they were not computed rather than approximated.",
+  "intent-defaulted":
+    "No keyword in the question matched a known task, so this fell back to a general land-cover reading. Rephrasing with a term like water, crop, change or built-up will route it deliberately.",
 };
 
 function Detail({ step }: { step: RunStep }) {

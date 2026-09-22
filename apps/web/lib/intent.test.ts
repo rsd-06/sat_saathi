@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { classifyIntent } from "./intent";
+import { classifyIntent, classifyIntentDetailed } from "./intent";
 
 describe("classifyIntent", () => {
   it("recognises water questions in English", () => {
@@ -34,5 +34,48 @@ describe("classifyIntent", () => {
 
   it("is case insensitive", () => {
     expect(classifyIntent("WHERE IS THE FLOODING")).toBe("water_extent");
+  });
+
+  describe("does not match keywords buried inside unrelated words", () => {
+    it("ignores 'பின்' inside 'பின்வருமாறு' (as follows)", () => {
+      // Reported from a demo: this Tamil sentence is not a change question,
+      // but "பின்" (after) is a substring of "பின்வருமாறு" (as follows), which
+      // routed it to change detection and held the answer for review.
+      expect(classifyIntent("என்பதை தமிழில் பின்வருமாறு கூறலாம்")).toBe(
+        "land_cover",
+      );
+    });
+
+    it("ignores 'after' inside 'afternoon'", () => {
+      expect(classifyIntent("Describe this afternoon scene")).toBe(
+        "land_cover",
+      );
+    });
+
+    it("still classifies a genuine Tamil change question", () => {
+      expect(classifyIntent("இரு தேதிகளுக்கு இடையே என்ன மாற்றம்?")).toBe(
+        "change",
+      );
+    });
+
+    it("still classifies a genuine English before/after question", () => {
+      expect(classifyIntent("Compare the before and after images")).toBe(
+        "change",
+      );
+    });
+  });
+
+  it("reports which keywords drove the decision", () => {
+    const r = classifyIntentDetailed("How much of this area is flooded?");
+    expect(r.intent).toBe("water_extent");
+    expect(r.matched).toContain("flood");
+    expect(r.score).toBeGreaterThan(0);
+  });
+
+  it("reports no evidence when nothing matched", () => {
+    const r = classifyIntentDetailed("என்பதை தமிழில் பின்வருமாறு கூறலாம்");
+    expect(r.matched).toEqual([]);
+    expect(r.score).toBe(0);
+    expect(r.intent).toBe("land_cover");
   });
 });
