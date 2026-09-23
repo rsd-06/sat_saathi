@@ -15,6 +15,7 @@ schema and registering it instead. Nothing above this module changes.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any, Literal
 
@@ -165,6 +166,17 @@ class VerifyCrosscheck(BaseTool):
     params_schema = VerifyParams
     is_stub = False
 
+    @staticmethod
+    def _has_measurement(measured: dict[str, Any]) -> bool:
+        """A dict of reasons is not a measurement.
+
+        `indices.unavailable` reports why each index could not be computed, so
+        the summary is non-empty while nothing was actually measured. Truthiness
+        would read that as success and release a fully confident answer backed
+        by no numbers at all.
+        """
+        return isinstance(measured.get("above_threshold_pct"), (int, float))
+
     def run(self, inputs, params: VerifyParams, ctx: ToolContext) -> ToolResult:
         measured: dict[str, Any] = inputs.get("measured") or {}
         claims: dict[str, Any] = inputs.get("claims") or {}
@@ -172,7 +184,7 @@ class VerifyCrosscheck(BaseTool):
         confidence = 0.9
         reasons: list[str] = []
 
-        if not measured:
+        if not self._has_measurement(measured):
             confidence -= 0.4
             reasons.append("no_measurement")
         if measured.get("area_ha") is None and claims.get("mentions_area"):
@@ -231,29 +243,66 @@ class IntentKeyword(BaseTool):
     params_schema = IntentParams
     is_stub = True
 
+    #: Matching is token-anchored, never substring-anywhere: "பின்" (after)
+    #: once matched inside "பின்வருமாறு" (as follows) and routed an unrelated
+    #: sentence to change detection. Bare positional words are excluded for
+    #: the same reason — they carry no intent and hide inside compounds.
     KEYWORDS: dict[str, tuple[str, ...]] = {
-        "water": ("water", "flood", "inundat", "submerged", "बाढ़", "வெள்ள", "বন্যা"),
-        "vegetation": ("crop", "paddy", "vegetation", "फसल", "பயிர்", "ফসল"),
-        "change": ("change", "difference", "परिवर्तन", "மாற்ற", "পরিবর্তন"),
-        "built_up": ("built", "urban", "settlement", "शहर", "நகர", "শহর"),
+        "water": (
+            "water", "flood", "flooded", "flooding", "inundated", "inundation",
+            "submerged", "river", "lake", "waterlogged",
+            "पानी", "बाढ़", "जलमग्न", "नदी", "झील",
+            "நீர", "வெள்ள", "மூழ்க", "ஆறு", "ஏரி",
+            "জল", "বন্যা", "জলমগ্ন", "নদী", "প্লাবিত",
+        ),
+        "vegetation": (
+            "crop", "crops", "paddy", "rice", "vegetation", "farm", "farmland",
+            "field", "fields", "harvest", "yield", "canopy", "greenery",
+            "फसल", "धान", "खेत", "हरियाली", "वनस्पति",
+            "பயிர்", "நெல்", "வயல்", "தாவர", "பசுமை",
+            "ফসল", "ধান", "ক্ষেত", "সবুজ", "গাছপালা",
+        ),
+        "change": (
+            "change", "changed", "changes", "difference", "differences",
+            "compare", "comparison",
+            "बदल", "परिवर्तन", "अंतर", "तुलना",
+            "மாற்ற", "மாறி", "மாறு", "வேறுபாடு", "ஒப்பிட",
+            "পরিবর্তন", "বদল", "পার্থক্য", "তুলনা",
+        ),
+        "built_up": (
+            "built", "urban", "building", "buildings", "settlement",
+            "city", "town", "road", "roads", "infrastructure",
+            "निर्मित", "शहर", "इमारत", "बस्ती", "सड़क",
+            "கட்டிட", "நகர", "குடியிருப்", "சாலை",
+            "নির্মিত", "শহর", "বাড়ি", "বসতি", "রাস্তা",
+        ),
     }
+
+    _SPLIT = re.compile(r"[\s.,;:!?'\"()\[\]{}/\\|<>@#$%^&*+=~`_—–-]+")
 
     def run(self, inputs, params: IntentParams, ctx: ToolContext) -> ToolResult:
         question = str(inputs.get("question", "")).lower()
-        tokens = question.split()
-        best, matched = "land_cover", []
+        tokens = [t for t in self._SPLIT.split(question) if t]
+
+        best, matched, best_score = "land_cover", [], 0
         for intent, words in self.KEYWORDS.items():
             hits = [
                 w
                 for w in words
+                # Anchored to a token start, which tolerates the suffixes
+                # Tamil, Hindi and Bengali attach without matching mid-word.
                 if any(t == w or t.startswith(w) for t in tokens)
             ]
-            if len(hits) > len(matched):
-                best, matched = intent, hits
+            # Longer terms are more specific, so weight by length.
+            score = sum(len(w) for w in hits)
+            if score > best_score:
+                best, matched, best_score = intent, hits, score
+
         return ToolResult(
             output_summary={
                 "intent": best,
                 "matched": ",".join(matched) or "(none)",
+                "score": best_score,
             },
             note=None if matched else "intent.defaulted",
         )

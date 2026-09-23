@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { StatusDot } from "./status-dot";
-import type { RunStep } from "@/lib/orchestrator";
+import { traceUrl, type StepOut } from "@/lib/api";
 
 /** Reasons a step declined to produce a figure, spelled out in the trace. */
 const NOTES: Record<string, string> = {
@@ -16,7 +16,7 @@ const NOTES: Record<string, string> = {
     "No keyword in the question matched a known task, so this fell back to a general land-cover reading. Rephrasing with a term like water, crop, change or built-up will route it deliberately.",
 };
 
-function Detail({ step }: { step: RunStep }) {
+function Detail({ step }: { step: StepOut }) {
   const t = useTranslations();
   const rows: [string, string][] = [];
 
@@ -28,25 +28,19 @@ function Detail({ step }: { step: RunStep }) {
         .join("  "),
     ]);
   }
-  if (step.output) {
+  if (step.output_summary) {
     rows.push([
       t("workspace.trace.output"),
-      Object.entries(step.output)
+      Object.entries(step.output_summary)
         .map(([k, v]) => `${k}=${v}`)
         .join("  "),
-    ]);
-  }
-  if (step.artifacts?.length) {
-    rows.push([
-      t("workspace.trace.artifacts"),
-      step.artifacts.map((a) => a.name).join("  "),
     ]);
   }
 
   return (
     <div className="border-rule mt-2 space-y-1.5 border-l pl-3">
       <div className="marginal">
-        {t("workspace.trace.tool")} · {step.tool} {step.version}
+        {t("workspace.trace.tool")} · {step.tool_name} {step.tool_version}
       </div>
       {rows.map(([label, value]) => (
         <div key={label} className="marginal">
@@ -57,7 +51,7 @@ function Detail({ step }: { step: RunStep }) {
       {step.note && NOTES[step.note] && (
         <div className="marginal text-relief">{NOTES[step.note]}</div>
       )}
-      {step.isStub && (
+      {step.is_stub && (
         <div className="marginal text-relief">
           {t("workspace.trace.stubHint")}
         </div>
@@ -66,13 +60,13 @@ function Detail({ step }: { step: RunStep }) {
   );
 }
 
-export function Trace({ steps }: { steps: RunStep[] }) {
+export function Trace({ steps, jobId }: { steps: StepOut[]; jobId: string }) {
   const t = useTranslations();
   const [pinned, setPinned] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const listRef = useRef<HTMLOListElement>(null);
 
-  const running = steps.find((s) => s.status === "running")?.key ?? null;
+  const running = steps.find((s) => s.status === "running")?.step_key ?? null;
   // While a run is live the current step opens itself; a click pins one open.
   const open = pinned ?? running;
 
@@ -93,18 +87,8 @@ export function Trace({ steps }: { steps: RunStep[] }) {
     }
   }
 
-  function downloadTrace() {
-    const blob = new Blob(
-      [JSON.stringify({ trace_version: 1, steps }, null, 2)],
-      { type: "application/json" },
-    );
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "satsaathi-trace.json";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  // The server owns the canonical trace document, schema-versioned.
+  const downloadHref = traceUrl(jobId);
 
   return (
     <section>
@@ -120,29 +104,29 @@ export function Trace({ steps }: { steps: RunStep[] }) {
           >
             {copied ? t("workspace.trace.copied") : t("workspace.trace.copy")}
           </button>
-          <button
-            type="button"
-            onClick={downloadTrace}
+          <a
+            href={downloadHref}
+            download
             className="text-accent hover:text-accent-hover marginal transition-colors"
           >
             JSON
-          </button>
+          </a>
         </div>
       </div>
       <p className="marginal mt-1">{t("workspace.trace.subtitle")}</p>
 
       <ol ref={listRef} className="border-rule mt-4 border-t">
         {steps.map((step, i) => {
-          const isOpen = open === step.key;
+          const isOpen = open === step.step_key;
           return (
             <li
-              key={step.key}
-              data-step={step.key}
+              key={step.step_key}
+              data-step={step.step_key}
               className="border-rule border-b"
             >
               <button
                 type="button"
-                onClick={() => setPinned(isOpen ? null : step.key)}
+                onClick={() => setPinned(isOpen ? null : step.step_key)}
                 aria-expanded={isOpen}
                 className="hover:bg-paper-sunk/60 flex w-full items-baseline gap-2.5 px-1 py-2.5 text-left transition-colors"
               >
@@ -156,25 +140,25 @@ export function Trace({ steps }: { steps: RunStep[] }) {
                       step.status === "pending" ? "text-ink-faint" : "text-ink"
                     }`}
                   >
-                    {t(`steps.${step.key}.title`)}
+                    {t(`steps.${step.step_key}.title`)}
                   </span>
                   {isOpen && (
                     <span className="marginal mt-0.5 block">
-                      {t(`steps.${step.key}.body`)}
+                      {t(`steps.${step.step_key}.body`)}
                     </span>
                   )}
                 </span>
-                {step.isStub && (
+                {step.is_stub && (
                   <span className="marginal text-relief shrink-0">
                     {t("workspace.trace.stub")}
                   </span>
                 )}
                 <span className="marginal tabular w-14 shrink-0 text-right">
-                  {step.durationMs === null
+                  {step.duration_ms === null
                     ? step.status === "running"
                       ? "…"
                       : "—"
-                    : t("workspace.trace.duration", { ms: step.durationMs })}
+                    : t("workspace.trace.duration", { ms: step.duration_ms ?? 0 })}
                 </span>
               </button>
               {isOpen && step.status !== "pending" && (

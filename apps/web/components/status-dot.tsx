@@ -1,4 +1,4 @@
-import type { StepStatus } from "@/lib/mock";
+
 
 const TONE: Record<string, string> = {
   succeeded: "bg-vegetation",
@@ -13,7 +13,7 @@ export function StatusDot({
   status,
   className = "",
 }: {
-  status: StepStatus | string;
+  status: string;
   className?: string;
 }) {
   const running = status === "running";

@@ -159,11 +159,65 @@ def test_verify_holds_an_answer_that_claims_area_without_a_crs(registry, ctx):
     assert "area_claimed_without_crs" in result.output_summary["reasons"]
 
 
+@pytest.mark.parametrize(
+    ("question", "expected"),
+    [
+        ("How much of this area is under water?", "water"),
+        ("इस क्षेत्र का कितना हिस्सा पानी में है?", "water"),
+        # "நீரில்" inflects "நீர", and a stem stored with its pulli would
+        # never prefix-match the inflected form.
+        ("இந்தப் பகுதியில் எவ்வளவு நீரில் மூழ்கியுள்ளது?", "water"),
+        ("এই এলাকার কতটা জলের নিচে?", "water"),
+        ("How much paddy is there?", "vegetation"),
+        ("What changed between the two dates?", "change"),
+        # Regression: "பின்" (after) sits inside "பின்வருமாறு" (as follows)
+        # and once routed this unrelated sentence to change detection.
+        ("என்பதை தமிழில் பின்வருமாறு கூறலாம்", "land_cover"),
+        ("Describe this afternoon scene", "land_cover"),
+    ],
+)
+def test_intent_routing_across_languages(registry, ctx, question, expected):
+    result = run(registry, "intent.keyword", {"question": question}, {}, ctx)
+
+    assert result.output_summary["intent"] == expected
+
+
+def test_verify_holds_when_nothing_was_actually_measured(registry, ctx):
+    # indices.unavailable reports why each index failed, so its summary is
+    # non-empty while no measurement happened. Truthiness once read that as
+    # success and released a 90%-confident answer backed by no numbers.
+    result = run(
+        registry,
+        "verify.crosscheck",
+        {
+            "measured": {
+                "ndvi": "needs nir, red",
+                "ndwi": "needs green, nir",
+                "lswi": "needs nir, swir1",
+            },
+            "claims": {},
+        },
+        {"threshold": 0.75},
+        ctx,
+    )
+
+    assert result.output_summary["verdict"] == "held_for_review"
+    assert "no_measurement" in result.output_summary["reasons"]
+    assert result.confidence is not None and result.confidence < 0.75
+
+
 def test_verify_releases_a_supported_answer(registry, ctx):
     result = run(
         registry,
         "verify.crosscheck",
-        {"measured": {"index": "ndvi", "area_ha": 1.5}, "claims": {"index": "ndvi"}},
+        {
+            "measured": {
+                "index": "ndvi",
+                "above_threshold_pct": 62.5,
+                "area_ha": 1.5,
+            },
+            "claims": {"index": "ndvi"},
+        },
         {},
         ctx,
     )

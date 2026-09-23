@@ -81,13 +81,25 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* The faint grid a sheet is drawn on. Structure, not ornament. */
+/* The faint grid a sheet is drawn on. Structure, not ornament.
+
+   Deliberately scoped to sparse surfaces — the landing hero, auth, empty
+   states. Behind dense data it competes with small type for attention and
+   shimmers on low-quality monitors, so the workspace and every table stay
+   plain. Hidden below the sm breakpoint, where there is no whitespace to
+   fill. */
 .sheet-grid {
   background-image:
     linear-gradient(to right, var(--color-rule) 1px, transparent 1px),
     linear-gradient(to bottom, var(--color-rule) 1px, transparent 1px);
-  background-size: 64px 64px;
-  opacity: 0.35;
+  background-size: 56px 56px;
+  opacity: 0.3;
+}
+
+@media (max-width: 40rem) {
+  .sheet-grid {
+    display: none;
+  }
 }
 
 :focus-visible {

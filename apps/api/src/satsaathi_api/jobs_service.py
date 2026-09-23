@@ -192,6 +192,7 @@ async def execute(
         input_set=input_summary,
         emit=emit,
         confidence_threshold=settings.confidence_threshold,
+        stub_delay_ms=settings.stub_delay_ms,
     )
 
     await _persist(session, job, trace, settings)
@@ -247,6 +248,31 @@ async def _persist(
 
 def trace_to_dict(trace: pipeline.Trace) -> dict[str, Any]:
     return trace.to_dict()
+
+
+def snapshot_for_stream(job: Job, snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Reshape a pipeline snapshot into the job shape the API otherwise serves.
+
+    The stream would otherwise carry two different documents — a job for the
+    first frame and a raw trace for every later one — leaving the client to
+    guess which identifier field it has. One shape, always.
+    """
+    return {
+        "id": str(job.id),
+        "input_set_id": str(job.input_set_id),
+        "query_text": job.query_text,
+        "query_lang": job.query_lang,
+        "ui_lang": job.ui_lang,
+        "intent": snapshot.get("query", {}).get("intent"),
+        "status": snapshot.get("status"),
+        "confidence": snapshot.get("confidence"),
+        "answer": snapshot.get("answer"),
+        "error": None,
+        "steps": snapshot.get("steps", []),
+        "artifacts": [],
+        "created_at": job.created_at.isoformat(),
+        "finished_at": None,
+    }
 
 
 def step_records(job: Job) -> list[dict[str, Any]]:

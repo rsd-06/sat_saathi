@@ -137,7 +137,11 @@ async def run_job_task(job_id: uuid.UUID) -> None:
                     job,
                     storage=storage,
                     settings=settings,
-                    publish=publish,
+                    # Every frame leaves in the job shape, so the client never
+                    # has to tell a trace document from a job document.
+                    publish=lambda snap: publish(
+                        jobs_service.snapshot_for_stream(job, snap)
+                    ),
                 )
             except Exception as exc:  # noqa: BLE001
                 job.status = JobStatus.failed

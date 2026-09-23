@@ -1,24 +1,31 @@
 "use client";
 
 import { useRef, useState, type DragEvent } from "react";
+
+import type { AssetOut } from "@/lib/api";
 import { useTranslations } from "next-intl";
 
 export type LoadedImage = {
   file: File;
   url: string;
-  element: HTMLImageElement;
+  element: HTMLImageElement | null;
   width: number;
   height: number;
 };
 
-const DISPLAYABLE = ["image/png", "image/jpeg", "image/webp", "image/avif"];
+const PREVIEWABLE = ["image/png", "image/jpeg", "image/webp", "image/avif"];
+const ACCEPT = [...PREVIEWABLE, ".tif", ".tiff"].join(",");
 
 export function ImageUpload({
   loaded,
+  asset,
+  busy,
   onLoad,
   onClear,
 }: {
   loaded: LoadedImage | null;
+  asset: AssetOut | null;
+  busy: boolean;
   onLoad: (image: LoadedImage) => void;
   onClear: () => void;
 }) {
@@ -31,12 +38,22 @@ export function ImageUpload({
     if (!file) return;
     setError(null);
 
-    if (!DISPLAYABLE.includes(file.type)) {
-      setError(
-        file.name.match(/\.tiff?$/i)
-          ? t("upload.error.geotiffPreview")
-          : t("upload.error.unsupported"),
-      );
+    const isGeotiff = /\.tiff?$/i.test(file.name);
+    if (!PREVIEWABLE.includes(file.type) && !isGeotiff) {
+      setError(t("upload.error.unsupported"));
+      return;
+    }
+
+    // A browser cannot decode a GeoTIFF, but the server reads it properly.
+    // Upload it anyway and show the metadata instead of a picture.
+    if (isGeotiff) {
+      onLoad({
+        file,
+        url: "",
+        element: null,
+        width: 0,
+        height: 0,
+      });
       return;
     }
 
@@ -80,12 +97,34 @@ export function ImageUpload({
             {t("workspace.inputs.remove")}
           </button>
         </div>
+        {busy && (
+          <p className="marginal border-rule border-b px-2.5 py-1.5">
+            {t("workspace.inputs.reading")}…
+          </p>
+        )}
+        {/* Once registered, everything shown comes from the server's own read
+            of the file rather than from the browser's guess about it. */}
         <dl className="divide-rule divide-y">
           {[
-            [t("upload.meta.dimensions"), `${loaded.width} × ${loaded.height} px`],
+            [
+              t("upload.meta.dimensions"),
+              asset
+                ? `${asset.width} × ${asset.height} px`
+                : `${loaded.width} × ${loaded.height} px`,
+            ],
             [t("upload.meta.size"), `${(loaded.file.size / 1024).toFixed(0)} KB`],
-            [t("upload.meta.type"), loaded.file.type.replace("image/", "")],
-            [t("workspace.checks.crs"), t("upload.meta.noCrs")],
+            [
+              t("workspace.bands.title"),
+              asset ? String(asset.band_count) : "—",
+            ],
+            [
+              t("workspace.checks.sensor"),
+              asset?.sensor_type ?? "—",
+            ],
+            [
+              t("workspace.checks.crs"),
+              asset?.crs ?? t("upload.meta.noCrs"),
+            ],
           ].map(([k, v]) => (
             <div
               key={k}
@@ -129,7 +168,7 @@ export function ImageUpload({
         <input
           ref={inputRef}
           type="file"
-          accept={DISPLAYABLE.join(",")}
+          accept={ACCEPT}
           className="sr-only"
           onChange={(e) => void accept(e.target.files?.[0])}
         />

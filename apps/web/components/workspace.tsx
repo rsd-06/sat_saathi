@@ -1,71 +1,128 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 
 import { ImageUpload, type LoadedImage } from "./image-upload";
 import { LiveAnswer } from "./live-answer";
 import { Scene } from "./scene";
 import { Trace } from "./trace";
-import { runPipeline, type RunState } from "@/lib/orchestrator";
+import { BandMapping } from "./band-mapping";
+import {
+  ApiError,
+  createInputSet,
+  createJob,
+  subscribeToJob,
+  uploadAsset,
+  type AssetOut,
+  type ErrorBody,
+  type JobOut,
+} from "@/lib/api";
 import { localeNames, locales, type Locale } from "@/i18n/routing";
 
 const EXAMPLES = ["single1", "single2", "change1"] as const;
 
+type Phase = "empty" | "uploading" | "ready" | "running" | "done" | "failed";
+
 export function Workspace() {
   const t = useTranslations();
-  const format = useFormatter();
   const uiLocale = useLocale() as Locale;
 
   const [image, setImage] = useState<LoadedImage | null>(null);
+  const [asset, setAsset] = useState<AssetOut | null>(null);
+  const [job, setJob] = useState<JobOut | null>(null);
+  const [phase, setPhase] = useState<Phase>("empty");
+  const [error, setError] = useState<ErrorBody | null>(null);
   const [question, setQuestion] = useState("");
   const [queryLang, setQueryLang] = useState<Locale>(uiLocale);
-  const [run, setRun] = useState<RunState | null>(null);
-  const [busy, setBusy] = useState(false);
-  const cancelled = useRef(false);
+  const unsubscribe = useRef<(() => void) | null>(null);
 
-  // Object URLs are a real leak if the component unmounts mid-demo.
   useEffect(() => {
     return () => {
-      cancelled.current = true;
-      if (image) URL.revokeObjectURL(image.url);
+      unsubscribe.current?.();
+      if (image?.url) URL.revokeObjectURL(image.url);
     };
   }, [image]);
 
-  async function start() {
-    if (!image || !question.trim() || busy) return;
-    setBusy(true);
-    cancelled.current = false;
-
-    for await (const state of runPipeline({
-      question,
-      queryLang,
-      uiLang: uiLocale,
-      image: {
-        element: image.element,
-        name: image.file.name,
-        sizeBytes: image.file.size,
-        type: image.file.type,
-      },
-      formatNumber: (n) => format.number(n),
-    })) {
-      if (cancelled.current) return;
-      setRun(state);
+  const handleUpload = useCallback(async (loaded: LoadedImage) => {
+    setImage(loaded);
+    setJob(null);
+    setError(null);
+    setPhase("uploading");
+    try {
+      setAsset(await uploadAsset(loaded.file));
+      setPhase("ready");
+    } catch (cause) {
+      setAsset(null);
+      setPhase("empty");
+      setError(
+        cause instanceof ApiError
+          ? cause.body
+          : { key: "error.apiUnreachable.title", params: {} as never },
+      );
     }
-    setBusy(false);
-  }
+  }, []);
 
   function clearImage() {
-    if (image) URL.revokeObjectURL(image.url);
+    unsubscribe.current?.();
+    if (image?.url) URL.revokeObjectURL(image.url);
     setImage(null);
-    setRun(null);
+    setAsset(null);
+    setJob(null);
+    setError(null);
+    setPhase("empty");
   }
 
-  const canRun = Boolean(image) && question.trim().length > 0 && !busy;
+  async function run() {
+    if (!asset || !question.trim() || phase === "running") return;
+    setError(null);
+    setPhase("running");
+    try {
+      const inputSet = await createInputSet("single", { single: asset.id });
+      if (inputSet.blocked) {
+        setPhase("ready");
+        setError({
+          key: "job.error.inputSetBlocked",
+          params: {} as never,
+        });
+        return;
+      }
+
+      const created = await createJob({
+        input_set_id: inputSet.id,
+        query_text: question,
+        query_lang: queryLang,
+        ui_lang: uiLocale,
+      });
+      setJob(created);
+
+      unsubscribe.current?.();
+      unsubscribe.current = subscribeToJob(created.id, {
+        onSnapshot: (snapshot) => {
+          setJob(snapshot);
+          if (snapshot.status === "failed") setPhase("failed");
+        },
+        onDone: () => setPhase("done"),
+        onError: (body) => {
+          setError(body);
+          setPhase("done");
+        },
+      });
+    } catch (cause) {
+      setPhase("ready");
+      setError(
+        cause instanceof ApiError
+          ? cause.body
+          : { key: "error.apiUnreachable.title", params: {} as never },
+      );
+    }
+  }
+
+  const canRun = Boolean(asset) && question.trim().length > 0 && phase !== "running";
+  const answered = job?.status === "succeeded" || job?.status === "needs_review";
 
   return (
     <div className="mx-auto grid max-w-[110rem] gap-6 px-4 py-6 sm:px-6 xl:grid-cols-[19rem_minmax(0,1fr)_25rem]">
-      {/* Left: the input and what is known about it. */}
       <aside
         data-lenis-prevent
         className="space-y-6 xl:max-h-[calc(100dvh-6rem)] xl:overflow-y-auto xl:pr-1"
@@ -77,76 +134,71 @@ export function Workspace() {
           <div className="mt-3">
             <ImageUpload
               loaded={image}
-              onLoad={(img) => {
-                setImage(img);
-                setRun(null);
-              }}
+              asset={asset}
+              busy={phase === "uploading"}
+              onLoad={handleUpload}
               onClear={clearImage}
             />
           </div>
         </section>
 
-        <section>
-          <h3 className="text-ink text-sm font-medium">
-            {t("workspace.analyses.title")}
-          </h3>
-          {/* An RGB file genuinely cannot support NDVI/NDWI/LSWI. Saying so is
-              the product's whole discipline, so it is stated before the run. */}
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {[
-              { name: "ExG", available: true },
-              { name: "NDVI", available: false },
-              { name: "NDWI", available: false },
-              { name: "LSWI", available: false },
-            ].map((a) => (
-              <span
-                key={a.name}
-                className={`border px-2 py-1 text-xs ${
-                  a.available
-                    ? "border-vegetation text-vegetation bg-vegetation-wash/50"
-                    : "border-rule text-ink-faint line-through"
-                }`}
-              >
-                {a.name}
-              </span>
-            ))}
-          </div>
-          <p className="marginal mt-2">
-            {t("workspace.analyses.ndviUnavailable")}
-          </p>
-        </section>
+        {asset && (
+          <BandMapping
+            asset={asset}
+            onChange={(updated) => {
+              setAsset(updated);
+              setJob(null);
+            }}
+          />
+        )}
       </aside>
 
-      {/* Centre: the uploaded image, framed as a sheet. */}
       <div className="min-w-0">
         <div className="border-rule-strong bg-paper-raised border">
           <div className="border-rule divide-rule flex flex-wrap items-center divide-x border-b">
             <span className="marginal px-2.5 py-1.5">
-              {image ? image.file.name : t("workspace.map.empty.title")}
+              {asset ? asset.filename : t("workspace.map.empty.title")}
             </span>
-            {image && (
+            {asset && (
               <>
                 <span className="marginal tabular px-2.5 py-1.5">
-                  {image.width} × {image.height} px
+                  {asset.width} × {asset.height} px
                 </span>
-                <span className="marginal px-2.5 py-1.5">RGB</span>
                 <span className="marginal px-2.5 py-1.5">
-                  {t("upload.meta.noCrs")}
+                  {asset.band_count} {t("workspace.bands.title")}
                 </span>
+                <span className="marginal px-2.5 py-1.5">
+                  {asset.crs ?? t("upload.meta.noCrs")}
+                </span>
+                {asset.pixel_size ? (
+                  <span className="marginal tabular px-2.5 py-1.5">
+                    {asset.pixel_size} m
+                  </span>
+                ) : null}
               </>
             )}
           </div>
 
           <div className="bg-paper-sunk relative flex aspect-[16/10] min-h-[20rem] items-center justify-center">
-            {image ? (
-              /* A local object URL from the file picker — next/image cannot
-                 optimise a blob: source, so a plain <img> is correct here. */
+            {image?.url ? (
+              /* A local object URL; next/image cannot optimise a blob source. */
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={image.url}
                 alt={image.file.name}
                 className="max-h-full max-w-full object-contain"
               />
+            ) : image ? (
+              /* GeoTIFF: no browser preview, so show what was read instead of
+                 an empty frame. Real tiles arrive once the tiler is wired. */
+              <div className="px-6 text-center">
+                <div className="mx-auto w-40 opacity-30">
+                  <Scene variant="flood" />
+                </div>
+                <p className="text-ink-muted mt-4 text-sm">
+                  {t("upload.error.geotiffPreview")}
+                </p>
+              </div>
             ) : (
               <div className="px-6 text-center">
                 <div className="mx-auto w-48 opacity-25">
@@ -160,12 +212,11 @@ export function Workspace() {
           </div>
 
           <p className="marginal border-rule border-t px-2.5 py-2">
-            {t("run.demo.notice")}
+            {t("run.server.notice")}
           </p>
         </div>
       </div>
 
-      {/* Right: ask, watch, read. */}
       <aside
         data-lenis-prevent
         className="space-y-6 xl:max-h-[calc(100dvh-6rem)] xl:overflow-y-auto xl:pl-1"
@@ -211,17 +262,24 @@ export function Workspace() {
               </button>
               <button
                 type="button"
-                onClick={() => void start()}
+                onClick={() => void run()}
                 disabled={!canRun}
                 className="bg-accent hover:bg-accent-hover ml-auto rounded-xs px-4 py-1.5 text-xs font-medium whitespace-nowrap text-white transition-colors disabled:cursor-not-allowed disabled:opacity-40"
               >
-                {busy ? t("run.running") : t("run.start")}
+                {phase === "running" ? t("run.running") : t("run.start")}
               </button>
             </div>
           </div>
 
-          {!image && <p className="marginal mt-2">{t("run.needsImage")}</p>}
-          {image && !question.trim() && (
+          {error && (
+            <p className="border-alert bg-alert-wash/60 text-ink marginal mt-2 border-l-2 px-2.5 py-2">
+              {t.has(error.key) ? t(error.key) : error.key}
+            </p>
+          )}
+          {!asset && phase !== "uploading" && (
+            <p className="marginal mt-2">{t("run.needsImage")}</p>
+          )}
+          {asset && !question.trim() && (
             <p className="marginal mt-2">{t("run.needsQuestion")}</p>
           )}
 
@@ -243,17 +301,9 @@ export function Workspace() {
           </div>
         </section>
 
-        {run && <Trace steps={run.steps} />}
+        {job && <Trace steps={job.steps} jobId={job.id} />}
 
-        {run?.answer && (
-          <LiveAnswer
-            answer={run.answer}
-            onAskAgain={() => {
-              setRun(null);
-              setQuestion("");
-            }}
-          />
-        )}
+        {job && answered && <LiveAnswer job={job} onAskAgain={() => setQuestion("")} />}
       </aside>
     </div>
   );

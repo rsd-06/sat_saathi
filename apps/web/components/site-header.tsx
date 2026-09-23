@@ -36,6 +36,24 @@ export async function SiteHeader({ signedIn = false }: Props) {
             >
               {t("workspace.title")}
             </Link>
+            <Link
+              href="/history"
+              className="text-ink-muted hover:text-ink transition-colors"
+            >
+              {t("nav.history")}
+            </Link>
+            <Link
+              href="/review"
+              className="text-ink-muted hover:text-ink transition-colors"
+            >
+              {t("nav.review")}
+            </Link>
+            <Link
+              href="/settings"
+              className="text-ink-muted hover:text-ink transition-colors"
+            >
+              {t("nav.settings")}
+            </Link>
           </nav>
         )}
 

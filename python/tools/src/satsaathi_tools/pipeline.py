@@ -119,6 +119,7 @@ def run(
     input_set: dict[str, Any],
     emit: Emitter | None = None,
     confidence_threshold: float = 0.75,
+    stub_delay_ms: int = 0,
 ) -> Trace:
     """Execute a plan end to end, emitting the trace as it changes.
 
@@ -169,6 +170,12 @@ def run(
         try:
             tool = registry.get(planned.tool_name)
             params = tool.validate_params(planned.params)
+
+            # Real steps are fast enough that the trace would flash past. A
+            # configurable pause on stub steps only lets the sequence be
+            # watched, and never inflates a measured step's timing.
+            if stub_delay_ms and tool.is_stub:
+                time.sleep(stub_delay_ms / 1000)
 
             record.tool_name = tool.name
             record.tool_version = tool.version

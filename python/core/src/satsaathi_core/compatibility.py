@@ -158,8 +158,15 @@ def check_change(
 
 
 def check_single(asset: RasterMetadata) -> list[Check]:
+    """A single image is analysable unless it cannot be read at all.
+
+    A missing coordinate system warns rather than blocks: indices are still
+    computable from the pixels, and the only casualty is ground area, which is
+    reported as unavailable rather than guessed. Blocking here would reject
+    the PNG and JPEG benchmark datasets the problem statement allows.
+    """
     if not asset.is_georeferenced:
-        return [Check("checks.georeferenced", "fail", {})]
+        return [Check("checks.georeferenced", "warn", {})]
     return [Check("checks.georeferenced", "pass", {"crs": asset.crs})]
 
 

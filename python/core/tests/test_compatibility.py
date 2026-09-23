@@ -114,7 +114,9 @@ def test_resolution_mismatch_warns_within_reason(
     assert check.params["ratio"] == pytest.approx(6.0)
 
 
-def test_single_image_must_be_georeferenced(tmp_path: Path, make_raster, optical: Path):
+def test_single_image_without_a_crs_warns_but_is_not_blocked(
+    tmp_path: Path, make_raster, optical: Path
+):
     assert not blocked(check_single(inspect(optical)))
 
     plain = make_raster(
@@ -122,7 +124,12 @@ def test_single_image_must_be_georeferenced(tmp_path: Path, make_raster, optical
         [np.zeros((2, 2), dtype="float32")] * 3,
         crs=None,
     )
-    assert blocked(check_single(inspect(plain)))
+    checks = check_single(inspect(plain))
+
+    # Indices remain computable; only ground area is lost, and that is
+    # reported as unavailable rather than guessed.
+    assert not blocked(checks)
+    assert by_key(checks, "checks.georeferenced").status == "warn"
 
 
 def test_checks_carry_keys_and_params_not_sentences(optical: Path, sar: Path):

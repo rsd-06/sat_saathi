@@ -12,3 +12,6 @@ __pycache__/
 .env
 next-env.d.ts
 *.tsbuildinfo
+
+# Playwright MCP session artifacts (snapshots, console logs, screenshots)
+.playwright-mcp/
