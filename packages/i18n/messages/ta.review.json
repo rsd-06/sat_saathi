@@ -1119,5 +1119,55 @@
     "reviewed": false,
     "source": "Language to work in",
     "translation": "பணிபுரியும் மொழி"
+  },
+  "settings.models.title": {
+    "reviewed": false,
+    "source": "Models on this machine",
+    "translation": "இந்த இயந்திரத்தில் உள்ள மாதிரிகள்"
+  },
+  "settings.models.body": {
+    "reviewed": false,
+    "source": "A step with no model here answers from fixture data, and the trace says so.",
+    "translation": "இங்கு மாதிரி இல்லாத படி மாதிரித் தரவிலிருந்து பதிலளிக்கிறது; தடயப் பதிவு அதைச் சொல்கிறது."
+  },
+  "settings.models.installed": {
+    "reviewed": false,
+    "source": "Installed",
+    "translation": "நிறுவப்பட்டது"
+  },
+  "settings.models.missing": {
+    "reviewed": false,
+    "source": "Not installed",
+    "translation": "நிறுவப்படவில்லை"
+  },
+  "settings.models.count": {
+    "reviewed": false,
+    "source": "{available} of {total} installed",
+    "translation": "{total} இல் {available} நிறுவப்பட்டுள்ளது"
+  },
+  "settings.models.measuring": {
+    "reviewed": false,
+    "source": "{measuring} of {total} steps measure something; the rest return fixtures.",
+    "translation": "{total} படிகளில் {measuring} உண்மையில் அளவிடுகின்றன; மற்றவை மாதிரி முடிவுகளைத் தருகின்றன."
+  },
+  "settings.models.directory": {
+    "reviewed": false,
+    "source": "Weights directory",
+    "translation": "எடைக் கோப்பகம்"
+  },
+  "settings.models.revision": {
+    "reviewed": false,
+    "source": "Revision",
+    "translation": "பதிப்பு"
+  },
+  "settings.models.empty": {
+    "reviewed": false,
+    "source": "No models are installed yet. Every step runs on fixture data.",
+    "translation": "இன்னும் எந்த மாதிரியும் நிறுவப்படவில்லை. ஒவ்வொரு படியும் மாதிரித் தரவில் இயங்குகிறது."
+  },
+  "request.invalid": {
+    "reviewed": false,
+    "source": "Something in the form was not accepted. Check the highlighted fields.",
+    "translation": "படிவத்தில் ஏதோ ஒன்று ஏற்கப்படவில்லை. குறிக்கப்பட்ட புலங்களைச் சரிபார்க்கவும்."
   }
 }

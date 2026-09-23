@@ -260,6 +260,15 @@
   "settings.api": "பகுப்பாய்வு சேவை",
   "settings.reachable": "அடையக்கூடியது",
   "settings.unreachable": "அடைய முடியவில்லை",
+  "settings.models.title": "இந்த இயந்திரத்தில் உள்ள மாதிரிகள்",
+  "settings.models.body": "இங்கு மாதிரி இல்லாத படி மாதிரித் தரவிலிருந்து பதிலளிக்கிறது; தடயப் பதிவு அதைச் சொல்கிறது.",
+  "settings.models.installed": "நிறுவப்பட்டது",
+  "settings.models.missing": "நிறுவப்படவில்லை",
+  "settings.models.count": "{total} இல் {available} நிறுவப்பட்டுள்ளது",
+  "settings.models.measuring": "{total} படிகளில் {measuring} உண்மையில் அளவிடுகின்றன; மற்றவை மாதிரி முடிவுகளைத் தருகின்றன.",
+  "settings.models.directory": "எடைக் கோப்பகம்",
+  "settings.models.revision": "பதிப்பு",
+  "settings.models.empty": "இன்னும் எந்த மாதிரியும் நிறுவப்படவில்லை. ஒவ்வொரு படியும் மாதிரித் தரவில் இயங்குகிறது.",
   "workspace.bands.presetName.sentinel-2-l2a": "Sentinel-2 L2A",
   "workspace.bands.presetName.landsat-8-9-oli": "Landsat 8/9 OLI",
   "workspace.bands.presetName.resourcesat-2-liss3": "Resourcesat-2 LISS-III",
@@ -274,5 +283,6 @@
   "job.not_found": "அந்தப் பகுப்பாய்வு இப்போது கிடைக்கவில்லை.",
   "upload.error.unsupportedType": "இந்த வகைக் கோப்பைப் பகுப்பாய்வு செய்ய முடியாது.",
   "upload.error.unreadable": "இந்தக் கோப்பைப் படமாகப் படிக்க முடியவில்லை.",
-  "bands.error.outOfRange": "அந்தப் பட்டை எண் இந்தப் படத்தில் இல்லை."
+  "bands.error.outOfRange": "அந்தப் பட்டை எண் இந்தப் படத்தில் இல்லை.",
+  "request.invalid": "படிவத்தில் ஏதோ ஒன்று ஏற்கப்படவில்லை. குறிக்கப்பட்ட புலங்களைச் சரிபார்க்கவும்."
 }

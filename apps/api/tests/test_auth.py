@@ -108,6 +108,23 @@ class TestRegistration:
         response = register(client, unique_email("short"), password="short")
 
         assert response.status_code == 422
+        body = response.json()
+        # Even a rejected field leaves as a key: FastAPI's own message is
+        # English prose, which is exactly what this API promises not to send.
+        assert body["error"]["key"] == "request.invalid"
+        assert "password" in body["error"]["params"]["fields"]
+
+    def test_a_malformed_address_names_the_field_and_not_the_reason(self, client):
+        response = client.post(
+            "/api/v1/auth/register",
+            json={"email": "not-an-address", "password": PASSWORD, "full_name": "A"},
+        )
+
+        assert response.status_code == 422
+        body = response.json()
+        assert body["error"]["key"] == "request.invalid"
+        assert body["error"]["params"]["fields"] == ["email"]
+        assert "valid email" not in response.text
 
 
 class TestSignIn:

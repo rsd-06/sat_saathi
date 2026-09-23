@@ -12,6 +12,9 @@ export type CheckOut = Schema["CheckOut"];
 export type ToolOut = Schema["ToolOut"];
 export type ReviewOut = Schema["ReviewOut"];
 export type ErrorBody = Schema["ErrorBody"];
+export type ModelOut = Schema["ModelOut"];
+export type ModelsOut = Schema["ModelsOut"];
+export type UserOut = Schema["UserOut"];
 
 export const DEFAULT_BASE_URL = "http://localhost:8000";
 

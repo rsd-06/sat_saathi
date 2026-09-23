@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
@@ -63,6 +64,31 @@ async def message_key_errors(request: Request, exc: HTTPException) -> JSONRespon
     return JSONResponse(
         {"error": {"key": "http.error", "params": {"status": exc.status_code}}},
         status_code=exc.status_code,
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_errors(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
+    """A rejected field leaves as a key too, not as FastAPI's English.
+
+    Pydantic writes messages like "value is not a valid email address", which
+    is exactly the user-facing English this API promises never to send. The
+    fields it names still travel, so the interface can mark the right inputs;
+    the wording is the frontend's to choose.
+    """
+    fields = sorted(
+        {
+            str(part)
+            for error in exc.errors()
+            for part in error.get("loc", ())
+            if part != "body"
+        }
+    )
+    return JSONResponse(
+        {"error": {"key": "request.invalid", "params": {"fields": fields}}},
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
     )
 
 

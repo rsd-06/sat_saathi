@@ -260,6 +260,15 @@
   "settings.api": "বিশ্লেষণ পরিষেবা",
   "settings.reachable": "পৌঁছনো যাচ্ছে",
   "settings.unreachable": "পৌঁছনো যাচ্ছে না",
+  "settings.models.title": "এই মেশিনে থাকা মডেল",
+  "settings.models.body": "যে ধাপের মডেল এখানে নেই সেটি নমুনা তথ্য থেকে উত্তর দেয়, আর ট্রেস তা জানিয়ে দেয়।",
+  "settings.models.installed": "ইনস্টল করা",
+  "settings.models.missing": "ইনস্টল করা নেই",
+  "settings.models.count": "{total}টির মধ্যে {available}টি ইনস্টল করা",
+  "settings.models.measuring": "{total}টি ধাপের মধ্যে {measuring}টি সত্যিই মাপে; বাকিগুলি নমুনা ফল দেয়।",
+  "settings.models.directory": "ওয়েট ডিরেক্টরি",
+  "settings.models.revision": "সংস্করণ",
+  "settings.models.empty": "এখনও কোনো মডেল ইনস্টল করা নেই। প্রতিটি ধাপ নমুনা তথ্যে চলে।",
   "workspace.bands.presetName.sentinel-2-l2a": "Sentinel-2 L2A",
   "workspace.bands.presetName.landsat-8-9-oli": "Landsat 8/9 OLI",
   "workspace.bands.presetName.resourcesat-2-liss3": "Resourcesat-2 LISS-III",
@@ -274,5 +283,6 @@
   "job.not_found": "সেই বিশ্লেষণ আর পাওয়া যাচ্ছে না।",
   "upload.error.unsupportedType": "এই ধরনের ফাইল বিশ্লেষণ করা যাবে না।",
   "upload.error.unreadable": "এই ফাইলটি ছবি হিসেবে পড়া গেল না।",
-  "bands.error.outOfRange": "সেই ব্যান্ড নম্বরটি এই ছবিতে নেই।"
+  "bands.error.outOfRange": "সেই ব্যান্ড নম্বরটি এই ছবিতে নেই।",
+  "request.invalid": "ফর্মের কিছু গ্রহণ করা হয়নি। চিহ্নিত ঘরগুলি দেখুন।"
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { LanguageSwitcher } from "./language-switcher";
+import { ModelStatus } from "./model-status";
 import { StatusDot } from "./status-dot";
 import { API_BASE, getHealth } from "@/lib/api";
 
@@ -80,6 +81,8 @@ export function SettingsPanel() {
           </p>
         )}
       </section>
+
+      <ModelStatus />
     </div>
   );
 }

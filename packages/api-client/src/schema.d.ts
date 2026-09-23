@@ -21,6 +21,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register */
+        post: operations["register_api_v1_auth_register_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Login */
+        post: operations["login_api_v1_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Logout
+         * @description Signing out with no session, or twice, is not an error.
+         */
+        post: operations["logout_api_v1_auth_logout_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Me */
+        get: operations["me_api_v1_auth_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/assets": {
         parameters: {
             query?: never;
@@ -187,6 +258,14 @@ export interface paths {
          *
          *     A snapshot rather than a delta, so a browser that reconnects mid-job
          *     recovers on the next message with nothing to replay.
+         *
+         *     Redis pub/sub has no replay, which makes the broker alone unsafe to wait
+         *     on: a job that finishes between this handler reading the row and the
+         *     subscription being established publishes every one of its frames into an
+         *     empty channel, and the browser then waits for a message that never comes.
+         *     A worker that finishes a job in under a second loses that race routinely.
+         *     So the stream falls back to re-reading the row whenever the broker goes
+         *     quiet, which doubles as the keep-alive that proxies want to see.
          */
         get: operations["job_events_api_v1_jobs__job_id__events_get"];
         put?: never;
@@ -229,6 +308,23 @@ export interface paths {
          *     coordinate system yields an empty collection rather than invented shapes.
          */
         get: operations["job_geojson_api_v1_jobs__job_id__result_geojson_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/models": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Models */
+        get: operations["list_models_api_v1_models_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -629,6 +725,58 @@ export interface components {
              */
             created_at: string;
         };
+        /** LoginIn */
+        LoginIn: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Password */
+            password: string;
+        };
+        /**
+         * ModelOut
+         * @description One model, and whether this machine actually has it.
+         */
+        ModelOut: {
+            /** Name */
+            name: string;
+            /** Task */
+            task: string;
+            /** Revision */
+            revision: string;
+            /** Runtime */
+            runtime: string;
+            /** Queue */
+            queue: string;
+            /** Available */
+            available: boolean;
+            /** Path */
+            path: string;
+            /** Fingerprint */
+            fingerprint?: string | null;
+            /** Vram Mb */
+            vram_mb?: number | null;
+            /**
+             * Note
+             * @default
+             */
+            note: string;
+        };
+        /** ModelsOut */
+        ModelsOut: {
+            /** Models */
+            models: components["schemas"]["ModelOut"][];
+            /** Models Dir */
+            models_dir: string;
+            /** Available Count */
+            available_count: number;
+            /** Stub Tool Count */
+            stub_tool_count: number;
+            /** Tool Count */
+            tool_count: number;
+        };
         /**
          * PresignOut
          * @description Where to send the bytes, and the key to register afterwards.
@@ -647,6 +795,28 @@ export interface components {
             headers?: {
                 [key: string]: string;
             };
+        };
+        /** RegisterIn */
+        RegisterIn: {
+            /**
+             * Email
+             * Format: email
+             */
+            email: string;
+            /** Password */
+            password: string;
+            /** Full Name */
+            full_name: string;
+            /** Department */
+            department?: string | null;
+            /** District */
+            district?: string | null;
+            /**
+             * Preferred Locale
+             * @default en
+             * @enum {string}
+             */
+            preferred_locale: "en" | "hi" | "ta" | "bn";
         };
         /** ReviewDecisionIn */
         ReviewDecisionIn: {
@@ -696,6 +866,20 @@ export interface components {
             /** Resolved At */
             resolved_at: string | null;
         };
+        /**
+         * SessionOut
+         * @description The token is returned once and never again; only its holder has it.
+         */
+        SessionOut: {
+            /** Token */
+            token: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            user: components["schemas"]["UserOut"];
+        };
         /** StepOut */
         StepOut: {
             /** Step Key */
@@ -728,6 +912,20 @@ export interface components {
             /** Duration Ms */
             duration_ms?: number | null;
         };
+        /**
+         * ToolModelOut
+         * @description The model a tool would use, if this machine has it.
+         */
+        ToolModelOut: {
+            /** Name */
+            name: string;
+            /** Available */
+            available: boolean;
+            /** Revision */
+            revision?: string | null;
+            /** Fingerprint */
+            fingerprint?: string | null;
+        };
         /** ToolOut */
         ToolOut: {
             /** Name */
@@ -744,6 +942,35 @@ export interface components {
             };
             /** Is Stub */
             is_stub: boolean;
+            /**
+             * Queue
+             * @default cpu
+             */
+            queue: string;
+            model?: components["schemas"]["ToolModelOut"] | null;
+        };
+        /** UserOut */
+        UserOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Email */
+            email: string;
+            /** Full Name */
+            full_name: string;
+            /** Department */
+            department?: string | null;
+            /** District */
+            district?: string | null;
+            /** Preferred Locale */
+            preferred_locale: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -783,6 +1010,132 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    register_api_v1_auth_register_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    login_api_v1_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    logout_api_v1_auth_logout_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    me_api_v1_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1187,6 +1540,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_models_api_v1_models_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelsOut"];
                 };
             };
         };

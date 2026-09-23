@@ -25,6 +25,27 @@ test.beforeAll(async ({ request }) => {
   }
 });
 
+/**
+ * The workspace is behind sign-in, so every test needs an account.
+ *
+ * Registering a fresh one per run rather than reusing a seeded user: these
+ * tests create jobs, and a shared account would accumulate somebody else's
+ * history between runs. Going through the app's own route rather than the
+ * API's means the session cookie lands exactly as a real sign-in leaves it.
+ */
+test.beforeEach(async ({ page, baseURL }) => {
+  const email = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@e2e.example.gov.in`;
+  const response = await page.request.post(`${baseURL}/api/auth/register`, {
+    data: {
+      email,
+      password: "an-e2e-passphrase-long-enough",
+      full_name: "E2E Surveyor",
+      preferred_locale: "en",
+    },
+  });
+  expect(response.ok(), await response.text()).toBeTruthy();
+});
+
 async function upload(page: Page, locale: string, file: string) {
   await page.goto(`/${locale}/workspace`);
   const chooser = page.waitForEvent("filechooser");

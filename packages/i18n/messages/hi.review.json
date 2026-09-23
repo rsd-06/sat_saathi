@@ -1119,5 +1119,55 @@
     "reviewed": false,
     "source": "Language to work in",
     "translation": "काम करने की भाषा"
+  },
+  "settings.models.title": {
+    "reviewed": false,
+    "source": "Models on this machine",
+    "translation": "इस मशीन पर मॉडल"
+  },
+  "settings.models.body": {
+    "reviewed": false,
+    "source": "A step with no model here answers from fixture data, and the trace says so.",
+    "translation": "जिस चरण का मॉडल यहाँ नहीं है वह नमूना डेटा से उत्तर देता है, और ट्रेस यह बताता है।"
+  },
+  "settings.models.installed": {
+    "reviewed": false,
+    "source": "Installed",
+    "translation": "स्थापित"
+  },
+  "settings.models.missing": {
+    "reviewed": false,
+    "source": "Not installed",
+    "translation": "स्थापित नहीं"
+  },
+  "settings.models.count": {
+    "reviewed": false,
+    "source": "{available} of {total} installed",
+    "translation": "{total} में से {available} स्थापित"
+  },
+  "settings.models.measuring": {
+    "reviewed": false,
+    "source": "{measuring} of {total} steps measure something; the rest return fixtures.",
+    "translation": "{total} में से {measuring} चरण वास्तविक माप करते हैं; बाकी नमूना परिणाम देते हैं।"
+  },
+  "settings.models.directory": {
+    "reviewed": false,
+    "source": "Weights directory",
+    "translation": "वेट्स डायरेक्टरी"
+  },
+  "settings.models.revision": {
+    "reviewed": false,
+    "source": "Revision",
+    "translation": "संशोधन"
+  },
+  "settings.models.empty": {
+    "reviewed": false,
+    "source": "No models are installed yet. Every step runs on fixture data.",
+    "translation": "अभी कोई मॉडल स्थापित नहीं है। हर चरण नमूना डेटा पर चलता है।"
+  },
+  "request.invalid": {
+    "reviewed": false,
+    "source": "Something in the form was not accepted. Check the highlighted fields.",
+    "translation": "फ़ॉर्म में कुछ स्वीकार नहीं हुआ। चिह्नित फ़ील्ड जाँचें।"
   }
 }

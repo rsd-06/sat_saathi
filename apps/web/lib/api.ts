@@ -8,6 +8,8 @@ import {
   type InputSetOut,
   type JobOut,
   type JobPage,
+  type ModelOut,
+  type ModelsOut,
   type ReviewOut,
   type StepOut,
   type ToolOut,
@@ -19,6 +21,8 @@ export type {
   InputSetOut,
   JobOut,
   JobPage,
+  ModelOut,
+  ModelsOut,
   ReviewOut,
   StepOut,
   ToolOut,
@@ -109,6 +113,10 @@ export async function listJobs(limit = 20): Promise<JobPage> {
   return unwrap(
     await client.GET("/api/v1/jobs", { params: { query: { limit } } }),
   );
+}
+
+export async function listModels(): Promise<ModelsOut> {
+  return unwrap(await client.GET("/api/v1/models", {}));
 }
 
 export async function listTools(): Promise<ToolOut[]> {

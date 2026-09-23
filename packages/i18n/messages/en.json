@@ -260,6 +260,15 @@
   "settings.api": "Analysis service",
   "settings.reachable": "Reachable",
   "settings.unreachable": "Not reachable",
+  "settings.models.title": "Models on this machine",
+  "settings.models.body": "A step with no model here answers from fixture data, and the trace says so.",
+  "settings.models.installed": "Installed",
+  "settings.models.missing": "Not installed",
+  "settings.models.count": "{available} of {total} installed",
+  "settings.models.measuring": "{measuring} of {total} steps measure something; the rest return fixtures.",
+  "settings.models.directory": "Weights directory",
+  "settings.models.revision": "Revision",
+  "settings.models.empty": "No models are installed yet. Every step runs on fixture data.",
   "workspace.bands.presetName.sentinel-2-l2a": "Sentinel-2 L2A",
   "workspace.bands.presetName.landsat-8-9-oli": "Landsat 8/9 OLI",
   "workspace.bands.presetName.resourcesat-2-liss3": "Resourcesat-2 LISS-III",
@@ -274,5 +283,6 @@
   "job.not_found": "That analysis is no longer available.",
   "upload.error.unsupportedType": "That file type cannot be analysed.",
   "upload.error.unreadable": "This file could not be read as imagery.",
-  "bands.error.outOfRange": "That band number is outside this image."
+  "bands.error.outOfRange": "That band number is outside this image.",
+  "request.invalid": "Something in the form was not accepted. Check the highlighted fields."
 }

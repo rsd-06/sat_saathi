@@ -1119,5 +1119,55 @@
     "reviewed": false,
     "source": "Language to work in",
     "translation": "কাজ করার ভাষা"
+  },
+  "settings.models.title": {
+    "reviewed": false,
+    "source": "Models on this machine",
+    "translation": "এই মেশিনে থাকা মডেল"
+  },
+  "settings.models.body": {
+    "reviewed": false,
+    "source": "A step with no model here answers from fixture data, and the trace says so.",
+    "translation": "যে ধাপের মডেল এখানে নেই সেটি নমুনা তথ্য থেকে উত্তর দেয়, আর ট্রেস তা জানিয়ে দেয়।"
+  },
+  "settings.models.installed": {
+    "reviewed": false,
+    "source": "Installed",
+    "translation": "ইনস্টল করা"
+  },
+  "settings.models.missing": {
+    "reviewed": false,
+    "source": "Not installed",
+    "translation": "ইনস্টল করা নেই"
+  },
+  "settings.models.count": {
+    "reviewed": false,
+    "source": "{available} of {total} installed",
+    "translation": "{total}টির মধ্যে {available}টি ইনস্টল করা"
+  },
+  "settings.models.measuring": {
+    "reviewed": false,
+    "source": "{measuring} of {total} steps measure something; the rest return fixtures.",
+    "translation": "{total}টি ধাপের মধ্যে {measuring}টি সত্যিই মাপে; বাকিগুলি নমুনা ফল দেয়।"
+  },
+  "settings.models.directory": {
+    "reviewed": false,
+    "source": "Weights directory",
+    "translation": "ওয়েট ডিরেক্টরি"
+  },
+  "settings.models.revision": {
+    "reviewed": false,
+    "source": "Revision",
+    "translation": "সংস্করণ"
+  },
+  "settings.models.empty": {
+    "reviewed": false,
+    "source": "No models are installed yet. Every step runs on fixture data.",
+    "translation": "এখনও কোনো মডেল ইনস্টল করা নেই। প্রতিটি ধাপ নমুনা তথ্যে চলে।"
+  },
+  "request.invalid": {
+    "reviewed": false,
+    "source": "Something in the form was not accepted. Check the highlighted fields.",
+    "translation": "ফর্মের কিছু গ্রহণ করা হয়নি। চিহ্নিত ঘরগুলি দেখুন।"
   }
 }

@@ -260,6 +260,15 @@
   "settings.api": "विश्लेषण सेवा",
   "settings.reachable": "पहुँच में",
   "settings.unreachable": "पहुँच से बाहर",
+  "settings.models.title": "इस मशीन पर मॉडल",
+  "settings.models.body": "जिस चरण का मॉडल यहाँ नहीं है वह नमूना डेटा से उत्तर देता है, और ट्रेस यह बताता है।",
+  "settings.models.installed": "स्थापित",
+  "settings.models.missing": "स्थापित नहीं",
+  "settings.models.count": "{total} में से {available} स्थापित",
+  "settings.models.measuring": "{total} में से {measuring} चरण वास्तविक माप करते हैं; बाकी नमूना परिणाम देते हैं।",
+  "settings.models.directory": "वेट्स डायरेक्टरी",
+  "settings.models.revision": "संशोधन",
+  "settings.models.empty": "अभी कोई मॉडल स्थापित नहीं है। हर चरण नमूना डेटा पर चलता है।",
   "workspace.bands.presetName.sentinel-2-l2a": "Sentinel-2 L2A",
   "workspace.bands.presetName.landsat-8-9-oli": "Landsat 8/9 OLI",
   "workspace.bands.presetName.resourcesat-2-liss3": "Resourcesat-2 LISS-III",
@@ -274,5 +283,6 @@
   "job.not_found": "वह विश्लेषण अब उपलब्ध नहीं है।",
   "upload.error.unsupportedType": "इस प्रकार की फ़ाइल का विश्लेषण नहीं हो सकता।",
   "upload.error.unreadable": "यह फ़ाइल चित्र के रूप में पढ़ी नहीं जा सकी।",
-  "bands.error.outOfRange": "वह बैंड संख्या इस चित्र में नहीं है।"
+  "bands.error.outOfRange": "वह बैंड संख्या इस चित्र में नहीं है।",
+  "request.invalid": "फ़ॉर्म में कुछ स्वीकार नहीं हुआ। चिह्नित फ़ील्ड जाँचें।"
 }
