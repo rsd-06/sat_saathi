@@ -16,7 +16,7 @@ from satsaathi_core.models import InputSet, Job, JobStatus
 from satsaathi_jobs import service as jobs_service
 from satsaathi_jobs.runner import event_bus
 
-from ..deps import Session, SettingsDep, api_error
+from ..deps import Session, SettingsDep, StorageDep, api_error
 from ..dispatch import dispatch_job
 from ..schemas import ErrorBody, JobIn, JobOut, JobPage, JobSummary, StepOut
 
@@ -46,6 +46,7 @@ def _to_out(job: Job) -> JobOut:
 async def create_job(
     session: Session,
     settings: SettingsDep,
+    storage: StorageDep,
     body: JobIn,
     background: BackgroundTasks,
 ) -> JobOut:
@@ -72,10 +73,15 @@ async def create_job(
         query_lang=body.query_lang,
         ui_lang=body.ui_lang,
     )
+    # Plan before dispatching. The interface can then show the whole route
+    # immediately, and the dispatcher knows which hardware the job needs.
+    _planned, queue = await jobs_service.plan_job(
+        session, job, storage=storage, settings=settings
+    )
     job_id = job.id
     await session.commit()
 
-    dispatch_job(job_id, settings, background)
+    dispatch_job(job_id, settings, background, queue=queue)
 
     reloaded = await jobs_service.load_job(session, job_id)
     return _to_out(reloaded or job)

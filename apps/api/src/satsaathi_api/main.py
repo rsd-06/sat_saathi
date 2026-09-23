@@ -1,7 +1,10 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from satsaathi_core.db import dispose_engine
 from satsaathi_core.settings import get_settings
 
 from .routers.assets import router as assets_router
@@ -9,10 +12,26 @@ from .routers.auth import router as auth_router
 from .routers.health import router as health_router
 from .routers.input_sets import router as input_sets_router
 from .routers.jobs import router as jobs_router
+from .routers.models import router as models_router
 from .routers.review import router as review_router
 from .routers.tools import router as tools_router
 
-app = FastAPI(title="SatSaathi API", version="0.1.0")
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    """Hand the database its connections back on the way out.
+
+    The engine is cached per process and its connections belong to the event
+    loop that opened them. Leaving the pool open at shutdown strands sockets
+    on a loop that is about to close, which the driver reports much later as
+    `'NoneType' object has no attribute 'send'` — the same failure the Celery
+    worker hit for the same reason.
+    """
+    yield
+    await dispose_engine()
+
+
+app = FastAPI(title="SatSaathi API", version="0.1.0", lifespan=lifespan)
 
 settings = get_settings()
 
@@ -53,6 +72,7 @@ for router in (
     assets_router,
     input_sets_router,
     jobs_router,
+    models_router,
     review_router,
     tools_router,
 ):

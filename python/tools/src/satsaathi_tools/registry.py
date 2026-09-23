@@ -71,11 +71,11 @@ class PlannedStep:
 
 #: Which vision-language tool answers which intent.
 _VLM_BY_INTENT: dict[Intent, str] = {
-    "vqa": "vlm.vqa.stub",
-    "caption": "vlm.caption.stub",
-    "grounding": "vlm.grounding.stub",
-    "change": "vlm.change.stub",
-    "fusion": "vlm.fusion.stub",
+    "vqa": "vlm.vqa",
+    "caption": "vlm.caption",
+    "grounding": "vlm.grounding",
+    "change": "vlm.change",
+    "fusion": "vlm.fusion",
 }
 
 #: Which index a given intent wants computed, when one is computable at all.
@@ -123,7 +123,14 @@ def plan(
 
     vlm = _VLM_BY_INTENT.get(intent)
     if vlm is None:
-        vlm = "vlm.change.stub" if mode == "change" else "vlm.vqa.stub"
+        if mode == "change":
+            vlm = "vlm.change"
+        elif mode == "fusion":
+            vlm = "vlm.fusion"
+        else:
+            # A SAR-only scene is read by the SAR model: an optical model
+            # reading backscatter as brightness is confidently wrong.
+            vlm = "vlm.sar" if mode == "sar" else "vlm.vqa"
     steps.append(PlannedStep("vision_language", vlm, {}))
 
     steps.append(PlannedStep("verify", "verify.crosscheck", {}))
@@ -134,3 +141,28 @@ def plan(
 def plan_is_complete(steps: list[PlannedStep]) -> bool:
     """A plan must cover every step key exactly once, in the fixed order."""
     return tuple(s.step_key for s in steps) == STEP_KEYS
+
+
+#: Queue precedence. A plan runs as one task, so it needs the scarcest queue
+#: any of its steps asks for — a job with one GPU step must not be handed to a
+#: CPU worker that would fail at that step.
+_QUEUE_RANK = {"cpu": 0, "lang": 1, "gpu": 2}
+
+
+def queue_for(steps: list[PlannedStep], registry: Registry) -> str:
+    """The queue a whole plan must run on.
+
+    Unknown tools are ignored rather than raising: a plan is validated when it
+    executes, and refusing to route it here would turn a bad plan into a
+    dispatch crash instead of a recorded step failure.
+    """
+    queue = "cpu"
+    for step in steps:
+        try:
+            tool = registry.get(step.tool_name)
+        except UnknownToolError:
+            continue
+        candidate = getattr(tool, "queue", "cpu")
+        if _QUEUE_RANK.get(candidate, 0) > _QUEUE_RANK.get(queue, 0):
+            queue = candidate
+    return queue

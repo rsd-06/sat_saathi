@@ -126,7 +126,7 @@ def test_exported_trace_validates_against_the_schema(registry, ctx, scene):
 
 def test_a_failing_step_is_recorded_and_the_rest_are_skipped(registry, ctx, scene):
     class Exploding(BaseTool):
-        name = "vlm.vqa.stub"  # replaces the registered one below
+        name = "vlm.vqa"  # replaces the registered one below
         version = "0.1.0"
         params_schema = NoParams
         is_stub = True
@@ -134,7 +134,7 @@ def test_a_failing_step_is_recorded_and_the_rest_are_skipped(registry, ctx, scen
         def run(self, inputs, params, ctx):
             raise RuntimeError("model unavailable")
 
-    registry._tools["vlm.vqa.stub"] = Exploding()
+    registry._tools["vlm.vqa"] = Exploding()
     trace = run_pipeline(registry, ctx, scene, intent="vqa")
 
     by_key = {s.step_key: s for s in trace.steps}
@@ -151,14 +151,14 @@ def test_a_failing_step_is_recorded_and_the_rest_are_skipped(registry, ctx, scen
 
 def test_errors_are_message_keys_not_sentences(registry, ctx, scene):
     class Exploding(BaseTool):
-        name = "vlm.vqa.stub"
+        name = "vlm.vqa"
         version = "0.1.0"
         params_schema = NoParams
 
         def run(self, inputs, params, ctx):
             raise RuntimeError("boom")
 
-    registry._tools["vlm.vqa.stub"] = Exploding()
+    registry._tools["vlm.vqa"] = Exploding()
     trace = run_pipeline(registry, ctx, scene, intent="vqa")
     error = next(s for s in trace.steps if s.status == "failed").error
 
@@ -195,7 +195,7 @@ def test_a_rejected_parameter_fails_the_step_not_the_process(registry, ctx, scen
         PlannedStep("preprocess", "preprocess.noop", {}),
         # threshold is out of the permitted range.
         PlannedStep("compute", "indices.compute", {"index": "ndvi", "threshold": 12}),
-        PlannedStep("vision_language", "vlm.vqa.stub", {}),
+        PlannedStep("vision_language", "vlm.vqa", {}),
         PlannedStep("verify", "verify.crosscheck", {}),
         PlannedStep("answer", "answer.template", {}),
     ]

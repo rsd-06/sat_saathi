@@ -24,6 +24,7 @@ from pydantic import BaseModel, Field
 from satsaathi_core import indices as index_maths
 from satsaathi_core.raster import inspect as inspect_raster
 
+from .model_backed import ModelBackedTool
 from .protocol import Artifact, BaseTool, NoParams, ToolContext, ToolResult
 
 # --------------------------------------------------------------------------
@@ -325,45 +326,60 @@ class PreprocessCoregister(BaseTool):
         )
 
 
-class _FixtureVLM(BaseTool):
-    """Shared shape for the vision-language stubs."""
+class _VisionLanguage(ModelBackedTool):
+    """A vision-language step: a real model when its weights are here.
 
-    task = "vqa"
+    The fixture is not a placeholder to be deleted later. It is what this step
+    does on a machine without the weights, and the trace says so every time,
+    so an installation with no models is honest rather than broken.
+    """
+
     required_modalities = ["raster"]
     params_schema = NoParams
-    is_stub = True
+    base_version = "0.1.0"
     caption = "fixture caption"
     boxes: list[dict] = []
 
-    def run(self, inputs, params, ctx: ToolContext) -> ToolResult:
+    def fixture(self, inputs, params, ctx: ToolContext) -> ToolResult:
         return ToolResult(
-            output_summary={
-                "caption": self.caption,
-                "boxes": len(self.boxes),
-                "source": "fixture",
-            },
+            output_summary={"caption": self.caption, "boxes": len(self.boxes)},
             evidence={"boxes": self.boxes},
         )
 
+    def predict(self, model, inputs, params, ctx: ToolContext) -> ToolResult:
+        """Run the loaded model over the scene.
 
-class VlmVqa(_FixtureVLM):
-    name = "vlm.vqa.stub"
-    version = "0.1.0"
+        Unimplemented on purpose: the weights decide the call signature, and
+        guessing it now would be a wrapper nobody can use. Until a model is
+        chosen this never runs, because `model_available` stays false without
+        weights on disk. Raising here rather than silently returning the
+        fixture keeps the two paths from blurring.
+        """
+        raise NotImplementedError(
+            f"{self.name}: weights for {self.model_name} are present but no "
+            f"inference path is implemented yet"
+        )
+
+
+class VlmVqa(_VisionLanguage):
+    name = "vlm.vqa"
+    task = "vqa"
+    model_name = "vqa-optical"
     caption = "A river channel crosses cultivated parcels."
     boxes = [{"label": "water", "bbox": [12, 40, 210, 96], "score": 0.81}]
 
 
-class VlmCaption(_FixtureVLM):
-    name = "vlm.caption.stub"
-    version = "0.1.0"
+class VlmCaption(_VisionLanguage):
+    name = "vlm.caption"
     task = "caption"
+    model_name = "vqa-optical"
     caption = "Agricultural land bisected by a watercourse."
 
 
-class VlmGrounding(_FixtureVLM):
-    name = "vlm.grounding.stub"
-    version = "0.1.0"
+class VlmGrounding(_VisionLanguage):
+    name = "vlm.grounding"
     task = "grounding"
+    model_name = "vqa-optical"
     caption = "Two water bodies located."
     boxes = [
         {"label": "water", "bbox": [12, 40, 210, 96], "score": 0.81},
@@ -371,19 +387,27 @@ class VlmGrounding(_FixtureVLM):
     ]
 
 
-class VlmChange(_FixtureVLM):
-    name = "vlm.change.stub"
-    version = "0.1.0"
+class VlmChange(_VisionLanguage):
+    name = "vlm.change"
     task = "change_vqa"
+    model_name = "change-detection"
     caption = "Inundation has expanded along the eastern bank."
 
 
-class VlmFusion(_FixtureVLM):
-    name = "vlm.fusion.stub"
-    version = "0.1.0"
+class VlmFusion(_VisionLanguage):
+    name = "vlm.fusion"
     task = "optical_sar_fusion"
+    model_name = "fusion-optical-sar"
     required_modalities = ["optical", "sar"]
     caption = "SAR shows standing water beneath cloud in the optical scene."
+
+
+class VlmSar(_VisionLanguage):
+    name = "vlm.sar"
+    task = "vqa"
+    model_name = "vqa-sar"
+    required_modalities = ["sar"]
+    caption = "Backscatter is low over the inundated parcels."
 
 
 class AnswerParams(BaseModel):
@@ -420,8 +444,13 @@ class AnswerTemplate(BaseTool):
         )
 
 
-def build_default_registry():
-    """Every tool the system currently has, in one place."""
+def build_default_registry(catalog=None):
+    """Every tool the system currently has, in one place.
+
+    `catalog` decides whether the model-backed tools have anything to run.
+    Passing None is the same as a machine with no weights installed: every
+    such tool reports itself as fixture output, which is the truth.
+    """
     from .registry import Registry
 
     registry = Registry()
@@ -433,11 +462,12 @@ def build_default_registry():
         PreprocessCoregister(),
         IndicesCompute(),
         IndicesUnavailable(),
-        VlmVqa(),
-        VlmCaption(),
-        VlmGrounding(),
-        VlmChange(),
-        VlmFusion(),
+        VlmVqa(catalog),
+        VlmSar(catalog),
+        VlmCaption(catalog),
+        VlmGrounding(catalog),
+        VlmChange(catalog),
+        VlmFusion(catalog),
         VerifyCrosscheck(),
         AnswerTemplate(),
     ):

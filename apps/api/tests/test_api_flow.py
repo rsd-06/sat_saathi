@@ -303,7 +303,7 @@ class TestToolsAndVoice:
         tools = {t["name"]: t for t in client.get("/api/v1/tools").json()}
 
         assert tools["indices.compute"]["is_stub"] is False
-        assert tools["vlm.vqa.stub"]["is_stub"] is True
+        assert tools["vlm.vqa"]["is_stub"] is True
         assert set(
             tools["indices.compute"]["params_schema"]["properties"]
         ) == {"index", "threshold"}

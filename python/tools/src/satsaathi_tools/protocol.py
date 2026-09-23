@@ -63,6 +63,16 @@ class ToolResult:
     """Set when a tool declines to produce a figure it cannot support."""
     note: str | None = None
 
+    #: What actually happened, when it differs from what the tool expected.
+    #:
+    #: A model-backed tool reports `is_stub = False` while its weights are
+    #: installed, but a load can still fail at the moment of use and send it
+    #: down the fixture path. The trace must record the run that happened, not
+    #: the one that was planned, so a result may correct both of these and the
+    #: pipeline prefers them over the tool's own properties.
+    is_stub: bool | None = None
+    tool_version: str | None = None
+
 
 @dataclass
 class ToolContext:
@@ -86,6 +96,9 @@ class Tool(Protocol):
     required_modalities: list[str]
     params_schema: type[BaseModel]
     is_stub: bool
+    #: Which worker queue can run this. A tool that needs a GPU says so here
+    #: rather than discovering it has no device halfway through a job.
+    queue: str
 
     def run(
         self, inputs: dict[str, Any], params: BaseModel, ctx: ToolContext
@@ -101,6 +114,7 @@ class BaseTool:
     required_modalities: list[str] = []
     params_schema: type[BaseModel] = NoParams
     is_stub: bool = True
+    queue: str = "cpu"
 
     def validate_params(self, params: dict[str, Any] | None) -> BaseModel:
         try:
@@ -116,6 +130,7 @@ class BaseTool:
             "required_modalities": list(self.required_modalities),
             "params_schema": self.params_schema.model_json_schema(),
             "is_stub": self.is_stub,
+            "queue": self.queue,
         }
 
     def run(

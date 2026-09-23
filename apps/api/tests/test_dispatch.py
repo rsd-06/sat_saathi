@@ -27,16 +27,19 @@ def test_celery_dispatch_enqueues_by_name_and_queues_nothing_locally(
 ):
     sent = {}
 
-    def fake_send(jid, _settings):
+    def fake_send(jid, _settings, queue):
         sent["id"] = jid
+        sent["queue"] = queue
 
     monkeypatch.setattr("satsaathi_api.dispatch.send_to_celery", fake_send)
     settings = Settings(job_dispatch="celery")
     background = BackgroundTasks()
 
-    dispatch_job(job_id, settings, background)
+    dispatch_job(job_id, settings, background, queue="gpu")
 
     assert sent["id"] == job_id
+    # A plan needing a GPU must reach a GPU worker, not the default queue.
+    assert sent["queue"] == "gpu"
     assert background.tasks == []
 
 
@@ -45,7 +48,7 @@ def test_an_unreachable_broker_falls_back_rather_than_stranding_the_job(
 ):
     # A job left queued for ever with nothing to explain it is the worst of
     # the available outcomes: the user waits, and no trace says why.
-    def boom(_jid, _settings):
+    def boom(_jid, _settings, _queue):
         raise ConnectionError("no broker")
 
     monkeypatch.setattr("satsaathi_api.dispatch.send_to_celery", boom)

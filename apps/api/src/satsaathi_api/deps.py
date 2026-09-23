@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from satsaathi_core.db import get_session
 from satsaathi_core.settings import Settings, get_settings
 from satsaathi_core.storage import Storage, build_storage
+from satsaathi_models import ModelCatalog
 from satsaathi_tools.builtin import build_default_registry
 from satsaathi_tools.registry import Registry
 
@@ -22,13 +23,31 @@ def settings_dep() -> Settings:
 
 SettingsDep = Annotated[Settings, Depends(settings_dep)]
 
+_catalog: ModelCatalog | None = None
+
+
+def catalog_dep(settings: SettingsDep) -> ModelCatalog:
+    global _catalog
+    if _catalog is None:
+        _catalog = ModelCatalog(settings.models_dir)
+    return _catalog
+
+
+CatalogDep = Annotated[ModelCatalog, Depends(catalog_dep)]
+
 _registry: Registry | None = None
 
 
-def registry_dep() -> Registry:
+def registry_dep(catalog: CatalogDep) -> Registry:
+    """The tool registry, resolved against whatever models this box has.
+
+    Built once per process. A model appearing on disk mid-process does not
+    change what the API reports until it restarts, which is the right
+    trade: the alternative is a filesystem check on every request.
+    """
     global _registry
     if _registry is None:
-        _registry = build_default_registry()
+        _registry = build_default_registry(catalog)
     return _registry
 
 

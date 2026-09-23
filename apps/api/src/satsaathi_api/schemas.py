@@ -61,6 +61,32 @@ class SessionOut(BaseModel):
     user: UserOut
 
 
+class ModelOut(BaseModel):
+    """One model, and whether this machine actually has it."""
+
+    name: str
+    task: str
+    revision: str
+    runtime: str
+    queue: str
+    available: bool
+    path: str
+    #: Digest of the weights on disk; None when they are absent.
+    fingerprint: str | None = None
+    vram_mb: int | None = None
+    #: Operator-facing detail, not interface chrome, so it is prose.
+    note: str = ""
+
+
+class ModelsOut(BaseModel):
+    models: list[ModelOut]
+    models_dir: str
+    available_count: int
+    #: How many tools would return fixture output rather than a measurement.
+    stub_tool_count: int
+    tool_count: int
+
+
 class BandOut(BaseModel):
     index: int
     description: str | None = None
@@ -183,6 +209,15 @@ class JobPage(BaseModel):
     offset: int
 
 
+class ToolModelOut(BaseModel):
+    """The model a tool would use, if this machine has it."""
+
+    name: str
+    available: bool
+    revision: str | None = None
+    fingerprint: str | None = None
+
+
 class ToolOut(BaseModel):
     name: str
     version: str
@@ -190,6 +225,10 @@ class ToolOut(BaseModel):
     required_modalities: list[str]
     params_schema: dict[str, Any]
     is_stub: bool
+    #: Which worker queue can run this, given what is installed here.
+    queue: str = "cpu"
+    #: Absent for tools that never involved a model, such as index maths.
+    model: ToolModelOut | None = None
 
 
 class ReviewOut(BaseModel):

@@ -10,7 +10,14 @@ dev = [
 ]
 
 [tool.uv.workspace]
-members = ["python/core", "python/tools", "python/jobs", "apps/api", "apps/worker"]
+members = [
+    "python/core",
+    "python/tools",
+    "python/models",
+    "python/jobs",
+    "apps/api",
+    "apps/worker",
+]
 
 [tool.ruff]
 target-version = "py312"
@@ -27,6 +34,7 @@ select = ["E", "F", "I", "UP"]
 known-first-party = [
     "satsaathi_core",
     "satsaathi_tools",
+    "satsaathi_models",
     "satsaathi_jobs",
     "satsaathi_api",
     "satsaathi_worker",
@@ -36,6 +44,7 @@ known-first-party = [
 include = [
     "python/core/src",
     "python/tools/src",
+    "python/models/src",
     "python/jobs/src",
     "apps/api/src",
     "apps/worker/src",

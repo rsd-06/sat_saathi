@@ -32,9 +32,57 @@ from satsaathi_core.storage import Storage
 from satsaathi_tools import pipeline
 from satsaathi_tools.builtin import build_default_registry
 from satsaathi_tools.protocol import ToolContext
-from satsaathi_tools.registry import STEP_KEYS, plan
+from satsaathi_tools.registry import STEP_KEYS, PlannedStep, plan, queue_for
 
 STEP_ORDER = {key: i for i, key in enumerate(STEP_KEYS)}
+
+
+def build_registry(settings: Settings):
+    """The tool registry for this machine, models and all.
+
+    Built fresh per call rather than cached, because the API and the worker
+    both use it and a worker that has just had weights installed should see
+    them on its next job rather than its next restart.
+    """
+    from satsaathi_models import ModelCatalog
+
+    return build_default_registry(ModelCatalog(settings.models_dir))
+
+
+async def plan_job(
+    session: AsyncSession, job: Job, *, storage: Storage, settings: Settings
+) -> tuple[list, str]:
+    """Classify the question and choose a plan, before anything is dispatched.
+
+    Planning at creation rather than inside the worker buys two things: the
+    interface can show the whole plan the moment a job exists, and the
+    dispatcher knows which queue the job needs — a plan with a GPU step must
+    not be handed to a CPU worker that would only discover that at the step.
+
+    Returns the plan and the queue it must run on.
+    """
+    registry = build_registry(settings)
+    inputs, _summary, mode = await _gather_inputs(session, job, storage)
+
+    unavailable = available_indices(inputs.get("band_map") or {})
+    available = [n for n in ("ndvi", "ndwi", "lswi") if n not in unavailable]
+
+    ctx = ToolContext(
+        job_id=str(job.id), storage=storage, settings=settings, inputs=inputs
+    )
+    intent_tool = registry.get("intent.keyword")
+    intent = intent_tool.run(
+        {"question": job.query_text}, intent_tool.validate_params({}), ctx
+    ).output_summary["intent"]
+
+    planned = plan(intent, mode, available_indices=available)
+    job.intent = intent
+    job.plan = [
+        {"step_key": s.step_key, "tool": s.tool_name, "params": s.params}
+        for s in planned
+    ]
+    await session.flush()
+    return planned, queue_for(planned, registry)
 
 
 async def create_job(
@@ -142,29 +190,34 @@ async def execute(
     settings: Settings,
     publish=None,
 ) -> pipeline.Trace:
-    """Run the job's plan and write every step back as it settles."""
-    registry = build_default_registry()
-    inputs, input_summary, mode = await _gather_inputs(session, job, storage)
+    """Run the job's plan and write every step back as it settles.
 
-    unavailable = available_indices(inputs["band_map"])
-    available = [n for n in ("ndvi", "ndwi", "lswi") if n not in unavailable]
+    The plan was chosen when the job was created, so the worker executes a
+    decision rather than making one. Re-planning here could pick a different
+    route than the one the interface already showed, and than the one the
+    queue was chosen for.
+    """
+    registry = build_registry(settings)
+    inputs, input_summary, _mode = await _gather_inputs(session, job, storage)
 
-    # A first pass classifies intent so the plan can be chosen; the planner is
-    # rule-based, so this costs nothing but a keyword scan.
     ctx = ToolContext(
         job_id=str(job.id), storage=storage, settings=settings, inputs=inputs
     )
-    intent_tool = registry.get("intent.keyword")
-    intent = intent_tool.run(
-        {"question": job.query_text}, intent_tool.validate_params({}), ctx
-    ).output_summary["intent"]
 
-    planned = plan(intent, mode, available_indices=available)
-    job.intent = intent
-    job.plan = [
-        {"step_key": s.step_key, "tool": s.tool_name, "params": s.params}
-        for s in planned
-    ]
+    if job.plan:
+        planned = [
+            PlannedStep(row["step_key"], row["tool"], row.get("params") or {})
+            for row in job.plan
+        ]
+        intent = job.intent or "land_cover"
+    else:
+        # A job created before plans were stored, or by a caller that skipped
+        # planning. Plan it now rather than refusing to run it.
+        planned, _queue = await plan_job(
+            session, job, storage=storage, settings=settings
+        )
+        intent = job.intent or "land_cover"
+
     job.status = JobStatus.running
     await session.flush()
 

@@ -7,6 +7,7 @@ WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
 COPY python/core/pyproject.toml python/core/pyproject.toml
 COPY python/tools/pyproject.toml python/tools/pyproject.toml
+COPY python/models/pyproject.toml python/models/pyproject.toml
 COPY python/jobs/pyproject.toml python/jobs/pyproject.toml
 COPY apps/api/pyproject.toml apps/api/pyproject.toml
 COPY apps/worker/pyproject.toml apps/worker/pyproject.toml
@@ -15,6 +16,7 @@ RUN uv sync --frozen --package satsaathi-worker --no-install-project
 
 COPY python/core python/core
 COPY python/tools python/tools
+COPY python/models python/models
 COPY python/jobs python/jobs
 COPY apps/worker apps/worker
 

@@ -50,7 +50,7 @@ def test_tools_declare_whether_they_are_stubs(registry: Registry):
     # The distinction is the reason the trace is worth showing.
     assert by_name["indices.compute"] is False
     assert by_name["imagery.inspect"] is False
-    assert by_name["vlm.vqa.stub"] is True
+    assert by_name["vlm.vqa"] is True
     assert by_name["answer.template"] is True
 
 
@@ -132,7 +132,7 @@ class TestPlanner:
         steps = plan("fusion", "fusion", available_indices=["ndvi"])
         vlm = next(s for s in steps if s.step_key == "vision_language")
 
-        assert vlm.tool_name == "vlm.fusion.stub"
+        assert vlm.tool_name == "vlm.fusion"
 
     def test_an_unknown_intent_still_produces_a_complete_plan(self):
         steps = plan("something_new", "single", available_indices=["ndvi"])

@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://satsaathi:satsaathi@localhost:5432/satsaathi"
     redis_url: str = "redis://localhost:6379/0"
     storage_dir: Path = Path("./.data/storage")
+    #: Where model weights live. Kept out of storage: rasters are user
+    #: data and get backed up and cleared, weights are part of the build.
+    models_dir: Path = Path("./.data/models")
     tiler_url: str = "http://localhost:8001"
 
     storage_backend: Literal["local", "s3"] = "local"

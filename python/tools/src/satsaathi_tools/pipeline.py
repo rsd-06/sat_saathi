@@ -187,6 +187,15 @@ def run(
             )
             results[planned.step_key] = result
 
+            # A tool that expected to run a model but fell back to a fixture
+            # says so here, and that correction wins: a trace claiming a model
+            # ran when one did not is the exact failure this product exists to
+            # prevent.
+            if result.is_stub is not None:
+                record.is_stub = result.is_stub
+            if result.tool_version is not None:
+                record.tool_version = result.tool_version
+
             record.output_summary = result.output_summary
             record.note = result.note
             record.artifacts = [asdict(a) for a in result.artifacts]

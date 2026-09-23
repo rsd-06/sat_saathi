@@ -258,8 +258,11 @@ def test_answer_template_says_nothing_when_nothing_was_measured(registry, ctx):
     assert result.evidence["text"] == "No measurement was available."
 
 
-def test_stub_vlms_declare_their_output_as_fixture(registry, ctx):
-    for name in ("vlm.vqa.stub", "vlm.change.stub", "vlm.fusion.stub"):
+def test_vlms_declare_their_output_as_fixture_without_weights(registry, ctx):
+    # This registry is built with no model catalog, which is the same as a
+    # machine with no weights installed. Every vision-language step must then
+    # say in the trace that it produced fixture output.
+    for name in ("vlm.vqa", "vlm.sar", "vlm.change", "vlm.fusion"):
         result = run(registry, name, {}, {}, ctx)
         assert result.output_summary["source"] == "fixture"
         assert registry.get(name).is_stub is True
