@@ -24,6 +24,7 @@
     "@satsaathi/api-client": "workspace:*",
     "@satsaathi/i18n": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",
+    "lenis": "^1.3.26",
     "next": "16.3.5",
     "next-intl": "^4.14.5",
     "postcss": "^8.5.28",

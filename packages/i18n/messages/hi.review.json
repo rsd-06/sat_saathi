@@ -1054,5 +1054,70 @@
       "source": "Optional",
       "translation": "वैकल्पिक"
     }
+  },
+  "auth.error.badCredentials": {
+    "reviewed": false,
+    "source": "Email or password is not right. Check both and try again.",
+    "translation": "ईमेल या पासवर्ड सही नहीं है। दोनों जाँचकर फिर कोशिश करें।"
+  },
+  "auth.error.emailTaken": {
+    "reviewed": false,
+    "source": "An account already uses this email. Sign in instead.",
+    "translation": "इस ईमेल से पहले से एक खाता है। इसके बजाय साइन इन करें।"
+  },
+  "auth.error.notSignedIn": {
+    "reviewed": false,
+    "source": "Sign in to continue.",
+    "translation": "जारी रखने के लिए साइन इन करें।"
+  },
+  "auth.error.badRequest": {
+    "reviewed": false,
+    "source": "The form could not be read. Try again.",
+    "translation": "फ़ॉर्म पढ़ा नहीं जा सका। फिर कोशिश करें।"
+  },
+  "auth.error.unknownAction": {
+    "reviewed": false,
+    "source": "That action does not exist.",
+    "translation": "ऐसी कोई क्रिया नहीं है।"
+  },
+  "auth.error.emailInvalid": {
+    "reviewed": false,
+    "source": "Enter a complete email address.",
+    "translation": "पूरा ईमेल पता दर्ज करें।"
+  },
+  "auth.error.nameRequired": {
+    "reviewed": false,
+    "source": "Enter your name.",
+    "translation": "अपना नाम दर्ज करें।"
+  },
+  "auth.error.passwordShort": {
+    "reviewed": false,
+    "source": "Use at least {min} characters.",
+    "translation": "कम से कम {min} अक्षर इस्तेमाल करें।"
+  },
+  "auth.action.signingIn": {
+    "reviewed": false,
+    "source": "Signing in…",
+    "translation": "साइन इन हो रहा है…"
+  },
+  "auth.action.creating": {
+    "reviewed": false,
+    "source": "Creating account…",
+    "translation": "खाता बन रहा है…"
+  },
+  "auth.signedInAs": {
+    "reviewed": false,
+    "source": "Signed in as {name}",
+    "translation": "{name} के रूप में साइन इन"
+  },
+  "auth.field.departmentHint": {
+    "reviewed": false,
+    "source": "Optional. Appears on reports you export.",
+    "translation": "वैकल्पिक। निर्यात की गई रिपोर्ट पर दिखता है।"
+  },
+  "auth.signUp.localeLabel": {
+    "reviewed": false,
+    "source": "Language to work in",
+    "translation": "काम करने की भाषा"
   }
 }

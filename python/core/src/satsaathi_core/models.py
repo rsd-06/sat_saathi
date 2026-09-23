@@ -102,6 +102,69 @@ class ReviewStatus(enum.StrEnum):
     rejected = "rejected"
 
 
+class User(Base):
+    """A person who signs in.
+
+    Email is stored lowercased and unique. Department and district are the
+    context an officer works in and appear on reports, so they are part of
+    the account rather than a profile bolted on later.
+    """
+
+    __tablename__ = "users"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
+    #: Argon2id. The plaintext is never stored, logged or returned.
+    password_hash: Mapped[str] = mapped_column(String(512))
+    full_name: Mapped[str] = mapped_column(String(200))
+    department: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    district: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    #: The locale to open the app in, so a Tamil speaker is not shown English
+    #: once before their preference loads.
+    preferred_locale: Mapped[str] = mapped_column(String(8), default="en")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow
+    )
+    last_seen_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    sessions: Mapped[list[UserSession]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+
+
+class UserSession(Base):
+    """One sign-in, revocable on its own.
+
+    Only a hash of the token is stored, so a copy of this table does not let
+    anyone sign in as anybody. Rows are kept after revocation rather than
+    deleted: "when did this account last sign out" is a question worth being
+    able to answer.
+    """
+
+    __tablename__ = "user_sessions"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    token_hash: Mapped[str] = mapped_column(String(128), unique=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow
+    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    user: Mapped[User] = relationship(back_populates="sessions")
+
+
 class Asset(Base):
     __tablename__ = "assets"
 

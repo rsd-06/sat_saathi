@@ -1054,5 +1054,70 @@
       "source": "Optional",
       "translation": "விருப்பத்தேர்வு"
     }
+  },
+  "auth.error.badCredentials": {
+    "reviewed": false,
+    "source": "Email or password is not right. Check both and try again.",
+    "translation": "மின்னஞ்சல் அல்லது கடவுச்சொல் சரியில்லை. இரண்டையும் சரிபார்த்து மீண்டும் முயலுங்கள்."
+  },
+  "auth.error.emailTaken": {
+    "reviewed": false,
+    "source": "An account already uses this email. Sign in instead.",
+    "translation": "இந்த மின்னஞ்சலில் ஏற்கெனவே கணக்கு உள்ளது. அதற்குப் பதிலாக உள்நுழையுங்கள்."
+  },
+  "auth.error.notSignedIn": {
+    "reviewed": false,
+    "source": "Sign in to continue.",
+    "translation": "தொடர உள்நுழையுங்கள்."
+  },
+  "auth.error.badRequest": {
+    "reviewed": false,
+    "source": "The form could not be read. Try again.",
+    "translation": "படிவத்தைப் படிக்க முடியவில்லை. மீண்டும் முயலுங்கள்."
+  },
+  "auth.error.unknownAction": {
+    "reviewed": false,
+    "source": "That action does not exist.",
+    "translation": "அத்தகைய செயல் இல்லை."
+  },
+  "auth.error.emailInvalid": {
+    "reviewed": false,
+    "source": "Enter a complete email address.",
+    "translation": "முழு மின்னஞ்சல் முகவரியை உள்ளிடுங்கள்."
+  },
+  "auth.error.nameRequired": {
+    "reviewed": false,
+    "source": "Enter your name.",
+    "translation": "உங்கள் பெயரை உள்ளிடுங்கள்."
+  },
+  "auth.error.passwordShort": {
+    "reviewed": false,
+    "source": "Use at least {min} characters.",
+    "translation": "குறைந்தது {min} எழுத்துகளைப் பயன்படுத்துங்கள்."
+  },
+  "auth.action.signingIn": {
+    "reviewed": false,
+    "source": "Signing in…",
+    "translation": "உள்நுழைகிறது…"
+  },
+  "auth.action.creating": {
+    "reviewed": false,
+    "source": "Creating account…",
+    "translation": "கணக்கு உருவாக்கப்படுகிறது…"
+  },
+  "auth.signedInAs": {
+    "reviewed": false,
+    "source": "Signed in as {name}",
+    "translation": "{name} ஆக உள்நுழைந்துள்ளீர்கள்"
+  },
+  "auth.field.departmentHint": {
+    "reviewed": false,
+    "source": "Optional. Appears on reports you export.",
+    "translation": "விருப்பத்தேர்வு. நீங்கள் ஏற்றுமதி செய்யும் அறிக்கைகளில் தோன்றும்."
+  },
+  "auth.signUp.localeLabel": {
+    "reviewed": false,
+    "source": "Language to work in",
+    "translation": "பணிபுரியும் மொழி"
   }
 }

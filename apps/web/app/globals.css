@@ -50,6 +50,10 @@
   --text-marginal: 0.6875rem;
   --text-marginal--line-height: 1.45;
   --text-marginal--letter-spacing: 0.04em;
+
+  /* One easing for everything that draws: long, shallow, no overshoot.
+     A plotter arm decelerates; it does not bounce. */
+  --ease-draw: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 :root {
@@ -102,12 +106,182 @@ body {
   }
 }
 
+/* Registration marks: the crosshairs a survey sheet carries at its corners so
+   successive printings line up. Here they mark the sheet as a sheet. */
+.sheet-marks::before,
+.sheet-marks::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--color-rule-strong), var(--color-rule-strong)),
+    linear-gradient(var(--color-rule-strong), var(--color-rule-strong));
+  background-size:
+    100% 1px,
+    1px 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.sheet-marks::before {
+  top: -5px;
+  left: -5px;
+}
+
+.sheet-marks::after {
+  right: -5px;
+  bottom: -5px;
+}
+
+/* ---------------------------------------------------------------------------
+   Drawing, not fading.
+
+   Everything that arrives on this site is drawn: a hairline crosses the width
+   first, then the content resolves behind it. It is the one motion idea, used
+   everywhere, so the interface reads as a single instrument rather than a
+   catalogue of effects.
+   --------------------------------------------------------------------------- */
+
+.register {
+  position: relative;
+}
+
+.register-rule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  transform-origin: left center;
+  background-color: var(--color-rule-strong);
+  transition: transform 620ms var(--ease-draw);
+}
+
+/* Hidden only once a script has confirmed it is running and will reveal it.
+   Without the flag — JavaScript off, a bundle that failed to load, a crawler —
+   the content is simply on the page. Content must never depend on an effect
+   firing to be readable. */
+[data-motion="on"] .register-body {
+  opacity: 0;
+  /* A short lift, not a slide: the content resolves onto the paper. */
+  transform: translateY(6px);
+  transition:
+    opacity 520ms var(--ease-draw) 180ms,
+    transform 520ms var(--ease-draw) 180ms;
+}
+
+[data-motion="on"] .register[data-drawn="true"] .register-body {
+  opacity: 1;
+  transform: none;
+}
+
+/* Same rule for the rule itself. */
+[data-motion="on"] .register-rule {
+  transform: scaleX(0);
+}
+
+[data-motion="on"] .register[data-drawn="true"] .register-rule {
+  transform: scaleX(1);
+}
+
+/* ---------------------------------------------------------------------------
+   The opening sequence.
+
+   One orchestrated moment on first paint, in the order a sheet is actually
+   made: the frame is ruled, the survey washes in, then the measurement is
+   annotated on top. Nothing else on the site animates unprompted.
+   --------------------------------------------------------------------------- */
+
+@keyframes rule-across {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes wash-in {
+  from {
+    opacity: 0;
+    /* Very slightly over-scaled, as a wash spreading past its edge. */
+    transform: scale(1.015);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes annotate {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes leader-drop {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.open-frame {
+  transform-origin: left center;
+  animation: rule-across 700ms var(--ease-draw) both;
+}
+
+.open-wash {
+  animation: wash-in 900ms var(--ease-draw) 380ms both;
+}
+
+.open-annotate {
+  animation: annotate 620ms var(--ease-draw) 1000ms both;
+}
+
+.open-leader {
+  transform-origin: top center;
+  animation: leader-drop 420ms var(--ease-draw) 900ms both;
+}
+
+.open-line {
+  animation: annotate 700ms var(--ease-draw) both;
+}
+
+/* Route changes: the new sheet is laid down over the old one. */
+@keyframes lay-down {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.page-enter {
+  animation: lay-down 420ms var(--ease-draw) both;
+}
+
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
   border-radius: 1px;
 }
 
+/* Reduced motion is honoured everywhere, including the opening sequence: the
+   content is already in its final state, so killing the animation leaves it
+   correct rather than invisible. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

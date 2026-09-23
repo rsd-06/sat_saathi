@@ -12,7 +12,7 @@ import uuid
 from datetime import datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
 
 Mode = Literal["single", "fusion", "change"]
 Role = Literal["single", "optical", "sar", "before", "after"]
@@ -25,6 +25,40 @@ class ErrorBody(BaseModel):
 
 class ErrorResponse(BaseModel):
     error: ErrorBody
+
+
+class RegisterIn(BaseModel):
+    email: EmailStr
+    #: Length is the only rule worth enforcing. Composition rules push people
+    #: towards "Password1!" and NIST stopped recommending them years ago.
+    password: str = Field(min_length=12, max_length=256)
+    full_name: str = Field(min_length=1, max_length=200)
+    department: str | None = Field(default=None, max_length=200)
+    district: str | None = Field(default=None, max_length=200)
+    preferred_locale: Literal["en", "hi", "ta", "bn"] = "en"
+
+
+class LoginIn(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=1, max_length=256)
+
+
+class UserOut(BaseModel):
+    id: uuid.UUID
+    email: str
+    full_name: str
+    department: str | None = None
+    district: str | None = None
+    preferred_locale: str
+    created_at: datetime
+
+
+class SessionOut(BaseModel):
+    """The token is returned once and never again; only its holder has it."""
+
+    token: str
+    expires_at: datetime
+    user: UserOut
 
 
 class BandOut(BaseModel):

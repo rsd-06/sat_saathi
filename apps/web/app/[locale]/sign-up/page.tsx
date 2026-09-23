@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { AuthForm } from "@/components/auth-form";
 import { AuthLayout } from "@/components/auth-layout";
-import { Field } from "@/components/field";
 import { Link } from "@/i18n/navigation";
 
 export default async function SignUpPage({
@@ -17,6 +17,7 @@ export default async function SignUpPage({
     <AuthLayout
       title={t("auth.signUp.title")}
       subtitle={t("auth.signUp.subtitle")}
+      sheet="flood"
       footer={
         <>
           {t("auth.switch.toSignIn")}{" "}
@@ -29,50 +30,7 @@ export default async function SignUpPage({
         </>
       }
     >
-      <div className="mt-7 space-y-4">
-        <Field
-          id="name"
-          autoComplete="name"
-          label={t("auth.field.name")}
-          placeholder="—"
-        />
-        <Field
-          id="email"
-          type="email"
-          autoComplete="email"
-          label={t("auth.field.email")}
-          hint={t("auth.field.emailHint")}
-          placeholder="name@nic.in"
-        />
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field
-            id="department"
-            label={t("auth.field.department")}
-            placeholder="—"
-          />
-          <Field
-            id="district"
-            label={t("auth.field.district")}
-            placeholder="—"
-          />
-        </div>
-        <Field
-          id="password"
-          type="password"
-          autoComplete="new-password"
-          label={t("auth.field.password")}
-          hint={t("auth.field.passwordHint")}
-        />
-
-        <div className="pt-1">
-          <Link
-            href="/dashboard"
-            className="bg-accent hover:bg-accent-hover inline-block rounded-xs px-5 py-2.5 text-sm font-medium text-white transition-colors"
-          >
-            {t("auth.action.signUp")}
-          </Link>
-        </div>
-      </div>
+      <AuthForm mode="sign-up" locale={locale} />
     </AuthLayout>
   );
 }

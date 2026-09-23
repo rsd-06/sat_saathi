@@ -15,7 +15,7 @@ export default async function DashboardPage({
 
   return (
     <>
-      <SiteHeader signedIn />
+      <SiteHeader />
       <main className="mx-auto max-w-[88rem] px-4 py-10 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

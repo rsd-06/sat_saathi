@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from satsaathi_core.settings import get_settings
 
 from .routers.assets import router as assets_router
+from .routers.auth import router as auth_router
 from .routers.health import router as health_router
 from .routers.input_sets import router as input_sets_router
 from .routers.jobs import router as jobs_router
@@ -48,6 +49,7 @@ async def message_key_errors(request: Request, exc: HTTPException) -> JSONRespon
 
 for router in (
     health_router,
+    auth_router,
     assets_router,
     input_sets_router,
     jobs_router,

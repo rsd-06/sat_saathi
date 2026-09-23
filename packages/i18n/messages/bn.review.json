@@ -1054,5 +1054,70 @@
       "source": "Optional",
       "translation": "ঐচ্ছিক"
     }
+  },
+  "auth.error.badCredentials": {
+    "reviewed": false,
+    "source": "Email or password is not right. Check both and try again.",
+    "translation": "ইমেল বা পাসওয়ার্ড ঠিক নয়। দুটোই দেখে আবার চেষ্টা করুন।"
+  },
+  "auth.error.emailTaken": {
+    "reviewed": false,
+    "source": "An account already uses this email. Sign in instead.",
+    "translation": "এই ইমেলে ইতিমধ্যে একটি অ্যাকাউন্ট আছে। বরং সাইন ইন করুন।"
+  },
+  "auth.error.notSignedIn": {
+    "reviewed": false,
+    "source": "Sign in to continue.",
+    "translation": "চালিয়ে যেতে সাইন ইন করুন।"
+  },
+  "auth.error.badRequest": {
+    "reviewed": false,
+    "source": "The form could not be read. Try again.",
+    "translation": "ফর্মটি পড়া গেল না। আবার চেষ্টা করুন।"
+  },
+  "auth.error.unknownAction": {
+    "reviewed": false,
+    "source": "That action does not exist.",
+    "translation": "এমন কোনো ক্রিয়া নেই।"
+  },
+  "auth.error.emailInvalid": {
+    "reviewed": false,
+    "source": "Enter a complete email address.",
+    "translation": "সম্পূর্ণ ইমেল ঠিকানা লিখুন।"
+  },
+  "auth.error.nameRequired": {
+    "reviewed": false,
+    "source": "Enter your name.",
+    "translation": "আপনার নাম লিখুন।"
+  },
+  "auth.error.passwordShort": {
+    "reviewed": false,
+    "source": "Use at least {min} characters.",
+    "translation": "অন্তত {min}টি অক্ষর ব্যবহার করুন।"
+  },
+  "auth.action.signingIn": {
+    "reviewed": false,
+    "source": "Signing in…",
+    "translation": "সাইন ইন হচ্ছে…"
+  },
+  "auth.action.creating": {
+    "reviewed": false,
+    "source": "Creating account…",
+    "translation": "অ্যাকাউন্ট তৈরি হচ্ছে…"
+  },
+  "auth.signedInAs": {
+    "reviewed": false,
+    "source": "Signed in as {name}",
+    "translation": "{name} হিসেবে সাইন ইন করা"
+  },
+  "auth.field.departmentHint": {
+    "reviewed": false,
+    "source": "Optional. Appears on reports you export.",
+    "translation": "ঐচ্ছিক। আপনার রপ্তানি করা প্রতিবেদনে দেখা যায়।"
+  },
+  "auth.signUp.localeLabel": {
+    "reviewed": false,
+    "source": "Language to work in",
+    "translation": "কাজ করার ভাষা"
   }
 }

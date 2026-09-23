@@ -14,7 +14,7 @@ export default async function ReviewPage({
 
   return (
     <>
-      <SiteHeader signedIn />
+      <SiteHeader />
       <main className="mx-auto max-w-[60rem] px-4 py-10 sm:px-6">
         <h1 className="font-serif text-ink text-3xl tracking-tight">
           {t("review.title")}

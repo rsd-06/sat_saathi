@@ -1,15 +1,18 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { AuthForm } from "@/components/auth-form";
 import { AuthLayout } from "@/components/auth-layout";
-import { Field } from "@/components/field";
 import { Link } from "@/i18n/navigation";
 
 export default async function SignInPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ next?: string }>;
 }) {
   const { locale } = await params;
+  const { next } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations();
 
@@ -17,6 +20,7 @@ export default async function SignInPage({
     <AuthLayout
       title={t("auth.signIn.title")}
       subtitle={t("auth.signIn.subtitle")}
+      sheet="sar"
       footer={
         <>
           {t("auth.switch.toSignUp")}{" "}
@@ -29,35 +33,7 @@ export default async function SignInPage({
         </>
       }
     >
-      {/* No auth backend yet: this is a link, not a submit. */}
-      <div className="mt-7 space-y-4">
-        <Field
-          id="email"
-          type="email"
-          autoComplete="email"
-          label={t("auth.field.email")}
-          hint={t("auth.field.emailHint")}
-          placeholder="name@nic.in"
-        />
-        <Field
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          label={t("auth.field.password")}
-        />
-
-        <div className="flex items-center justify-between pt-1">
-          <Link
-            href="/dashboard"
-            className="bg-accent hover:bg-accent-hover rounded-xs px-5 py-2.5 text-sm font-medium text-white transition-colors"
-          >
-            {t("auth.action.signIn")}
-          </Link>
-          <span className="text-ink-faint text-sm">
-            {t("auth.action.forgot")}
-          </span>
-        </div>
-      </div>
+      <AuthForm mode="sign-in" locale={locale} next={next} />
     </AuthLayout>
   );
 }

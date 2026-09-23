@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { PageEnter } from "@/components/motion/page-enter";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { routing } from "@/i18n/routing";
 
 export function generateStaticParams() {
@@ -35,9 +37,25 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        {/* Arms the scroll reveals before first paint. The stylesheet only
+            hides a section once this flag is set, so a page whose JavaScript
+            never arrives shows all of its content instead of none of it.
+            Reduced motion never arms, so that reader gets the page whole. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)" +
+              "document.documentElement.dataset.motion='on'}catch(e){}",
+          }}
+        />
+      </head>
       <body className="min-h-dvh antialiased">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <SmoothScroll />
+          <PageEnter>{children}</PageEnter>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

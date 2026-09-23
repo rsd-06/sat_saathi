@@ -13,7 +13,7 @@ export default async function WorkspacePage({
 
   return (
     <>
-      <SiteHeader signedIn />
+      <SiteHeader />
       <main>
         <Workspace />
       </main>
