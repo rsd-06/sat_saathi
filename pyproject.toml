@@ -10,7 +10,7 @@ dev = [
 ]
 
 [tool.uv.workspace]
-members = ["python/core", "python/tools", "apps/api", "apps/worker"]
+members = ["python/core", "python/tools", "python/jobs", "apps/api", "apps/worker"]
 
 [tool.ruff]
 target-version = "py312"
@@ -24,9 +24,21 @@ select = ["E", "F", "I", "UP"]
 "python/core/migrations/versions/*.py" = ["E501"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["satsaathi_core", "satsaathi_tools", "satsaathi_api", "satsaathi_worker"]
+known-first-party = [
+    "satsaathi_core",
+    "satsaathi_tools",
+    "satsaathi_jobs",
+    "satsaathi_api",
+    "satsaathi_worker",
+]
 
 [tool.pyright]
-include = ["python/core/src", "python/tools/src", "apps/api/src", "apps/worker/src"]
+include = [
+    "python/core/src",
+    "python/tools/src",
+    "python/jobs/src",
+    "apps/api/src",
+    "apps/worker/src",
+]
 pythonVersion = "3.12"
 typeCheckingMode = "basic"

@@ -6,6 +6,7 @@ requires-python = "==3.12.*"
 members = [
     "satsaathi-api",
     "satsaathi-core",
+    "satsaathi-jobs",
     "satsaathi-tools",
     "satsaathi-worker",
     "satsaathi-workspace",
@@ -656,6 +657,18 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest-asyncio"
+version = "0.26.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/8e/c4/453c52c659521066969523e87d85d54139bbd17b78f09532fb8eb8cdb58e/pytest_asyncio-0.26.0.tar.gz", hash = "sha256:c4df2a697648241ff39e7f0e4a73050b03f123f760673956cf0d72a4990e312f", size = 54156, upload-time = "2025-03-25T06:22:28.883Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/20/7f/338843f449ace853647ace35870874f69a764d251872ed1b4de9f234822c/pytest_asyncio-0.26.0-py3-none-any.whl", hash = "sha256:7b51ed894f4fbea1340262bdae5135797ebbe21d8638978e35d31c6d19f72fb0", size = 19694, upload-time = "2025-03-25T06:22:27.807Z" },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -814,6 +827,7 @@ version = "0.1.0"
 source = { editable = "apps/api" }
 dependencies = [
     { name = "asyncpg" },
+    { name = "celery" },
     { name = "fastapi" },
     { name = "httpx" },
     { name = "pydantic" },
@@ -821,6 +835,7 @@ dependencies = [
     { name = "python-multipart" },
     { name = "redis" },
     { name = "satsaathi-core" },
+    { name = "satsaathi-jobs" },
     { name = "satsaathi-tools" },
     { name = "sse-starlette" },
     { name = "uvicorn", extra = ["standard"] },
@@ -835,6 +850,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "asyncpg", specifier = ">=0.30,<1" },
+    { name = "celery", specifier = "==5.6.3" },
     { name = "fastapi", specifier = "==0.141.1" },
     { name = "httpx", specifier = ">=0.28,<1" },
     { name = "pydantic", specifier = "==2.13.5" },
@@ -842,6 +858,7 @@ requires-dist = [
     { name = "python-multipart", specifier = ">=0.0.20,<1" },
     { name = "redis", specifier = "==6.4.0" },
     { name = "satsaathi-core", editable = "python/core" },
+    { name = "satsaathi-jobs", editable = "python/jobs" },
     { name = "satsaathi-tools", editable = "python/tools" },
     { name = "sse-starlette", specifier = "==3.4.11" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.34,<1" },
@@ -902,6 +919,35 @@ provides-extras = ["s3"]
 dev = [{ name = "pytest", specifier = ">=8,<9" }]
 
 [[package]]
+name = "satsaathi-jobs"
+version = "0.1.0"
+source = { editable = "python/jobs" }
+dependencies = [
+    { name = "satsaathi-core" },
+    { name = "satsaathi-tools" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "aiosqlite" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "satsaathi-core", editable = "python/core" },
+    { name = "satsaathi-tools", editable = "python/tools" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "aiosqlite", specifier = ">=0.20,<1" },
+    { name = "pytest", specifier = ">=8,<9" },
+    { name = "pytest-asyncio", specifier = ">=0.24,<1" },
+]
+
+[[package]]
 name = "satsaathi-tools"
 version = "0.1.0"
 source = { editable = "python/tools" }
@@ -940,6 +986,7 @@ dependencies = [
     { name = "celery" },
     { name = "redis" },
     { name = "satsaathi-core" },
+    { name = "satsaathi-jobs" },
 ]
 
 [package.dev-dependencies]
@@ -952,6 +999,7 @@ requires-dist = [
     { name = "celery", specifier = "==5.6.3" },
     { name = "redis", specifier = "==6.4.0" },
     { name = "satsaathi-core", editable = "python/core" },
+    { name = "satsaathi-jobs", editable = "python/jobs" },
 ]
 
 [package.metadata.requires-dev]

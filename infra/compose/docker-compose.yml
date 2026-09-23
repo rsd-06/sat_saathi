@@ -45,6 +45,9 @@ services:
     env_file: ../../.env
     environment:
       TILER_URL: http://tiler:80
+      # A worker is running in this stack, so jobs belong on the queue rather
+      # than inside the API process.
+      JOB_DISPATCH: celery
     ports:
       - "8000:8000"
     depends_on:
@@ -60,6 +63,10 @@ services:
     profiles: ["core", "offline"]
     env_file: ../../.env
     depends_on:
+      # The worker writes the trace itself, so it needs the database as much
+      # as the broker.
+      postgres:
+        condition: service_healthy
       redis:
         condition: service_healthy
 

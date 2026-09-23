@@ -16,7 +16,7 @@ from __future__ import annotations
 import asyncio
 import json
 from collections import defaultdict
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from typing import Any, Protocol
 
 CHANNEL_PREFIX = "satsaathi:job:"
@@ -29,7 +29,7 @@ def channel_for(job_id: str) -> str:
 class EventBus(Protocol):
     async def publish(self, job_id: str, payload: dict[str, Any]) -> None: ...
 
-    def subscribe(self, job_id: str) -> AsyncIterator[dict[str, Any]]: ...
+    def subscribe(self, job_id: str) -> AsyncGenerator[dict[str, Any], None]: ...
 
 
 class InProcessEventBus:
@@ -46,7 +46,7 @@ class InProcessEventBus:
         for queue in list(self._queues.get(job_id, ())):
             queue.put_nowait(payload)
 
-    async def subscribe(self, job_id: str) -> AsyncIterator[dict[str, Any]]:
+    async def subscribe(self, job_id: str) -> AsyncGenerator[dict[str, Any], None]:
         queue: asyncio.Queue = asyncio.Queue()
         self._queues[job_id].add(queue)
         try:
@@ -83,7 +83,7 @@ class RedisEventBus:
         client = self._connect()
         await client.publish(channel_for(job_id), json.dumps(payload))
 
-    async def subscribe(self, job_id: str) -> AsyncIterator[dict[str, Any]]:
+    async def subscribe(self, job_id: str) -> AsyncGenerator[dict[str, Any], None]:
         client = self._connect()
         pubsub = client.pubsub()
         await pubsub.subscribe(channel_for(job_id))

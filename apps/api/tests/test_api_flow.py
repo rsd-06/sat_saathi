@@ -8,6 +8,7 @@ still run on a laptop with nothing up.
 
 from __future__ import annotations
 
+import asyncio
 import io
 import os
 import uuid
@@ -194,6 +195,57 @@ class TestJobs:
         # NIR 0.50 / Red 0.10 -> NDVI 0.6667 across all 16 pixels.
         assert compute["output_summary"]["mean"] == pytest.approx(0.6667, abs=1e-3)
         assert compute["output_summary"]["area_ha"] == pytest.approx(0.16)
+
+    def test_the_stream_finishes_even_when_the_broker_says_nothing(
+        self, client, monkeypatch
+    ):
+        """Regression: a job that finished before the browser subscribed.
+
+        Redis pub/sub has no replay. Once the worker ran jobs in another
+        process they routinely completed before the subscription existed, and
+        every frame went into an empty channel — the page then sat on
+        "running" for ever. A silent broker must not be able to hang the
+        stream, so this replaces it with one that never yields anything.
+        """
+        created = client.post(
+            "/api/v1/jobs",
+            json={
+                "input_set_id": self._ready_input_set(client),
+                "query_text": "how much vegetation is there",
+                "query_lang": "en",
+                "ui_lang": "en",
+            },
+        ).json()
+
+        class SilentBus:
+            async def publish(self, job_id, payload):
+                pass
+
+            async def subscribe(self, job_id):
+                while True:
+                    await asyncio.sleep(3600)
+                    yield {}
+
+        from satsaathi_api.routers import jobs as jobs_router
+
+        monkeypatch.setattr(
+            jobs_router, "event_bus", lambda _settings: (SilentBus(), True)
+        )
+        # Poll fast enough that the test does not wait on the real interval.
+        monkeypatch.setattr(jobs_router, "POLL_SECONDS", 0.1)
+
+        with client.stream("GET", f"/api/v1/jobs/{created['id']}/events") as response:
+            assert response.status_code == 200
+            events = []
+            for line in response.iter_lines():
+                if line.startswith("event: "):
+                    events.append(line[7:])
+                if events and events[-1] == "done":
+                    break
+
+        assert events[-1] == "done"
+        assert "snapshot" in events
+
 
     def test_the_trace_export_is_a_complete_versioned_document(self, client):
         created = client.post(

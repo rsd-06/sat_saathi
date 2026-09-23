@@ -5,7 +5,6 @@ from __future__ import annotations
 import asyncio
 import json
 import uuid
-from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Query, Response, status
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -13,28 +12,15 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
 
 from satsaathi_core.db import session_scope
-from satsaathi_core.events import InProcessEventBus, RedisEventBus
 from satsaathi_core.models import InputSet, Job, JobStatus
+from satsaathi_jobs import service as jobs_service
+from satsaathi_jobs.runner import event_bus
 
-from .. import jobs_service
-from ..deps import Session, SettingsDep, StorageDep, api_error
+from ..deps import Session, SettingsDep, api_error
+from ..dispatch import dispatch_job
 from ..schemas import ErrorBody, JobIn, JobOut, JobPage, JobSummary, StepOut
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
-
-#: Falls back to an in-process bus when Redis is unreachable, so a developer
-#: without a broker still gets a live trace — from this process only.
-_fallback_bus = InProcessEventBus()
-_redis_bus: RedisEventBus | None = None
-
-
-def _bus(settings) -> tuple[Any, bool]:
-    global _redis_bus
-    if settings.redis_url:
-        if _redis_bus is None:
-            _redis_bus = RedisEventBus(settings.redis_url)
-        return _redis_bus, True
-    return _fallback_bus, False
 
 
 def _to_out(job: Job) -> JobOut:
@@ -60,7 +46,6 @@ def _to_out(job: Job) -> JobOut:
 async def create_job(
     session: Session,
     settings: SettingsDep,
-    storage: StorageDep,
     body: JobIn,
     background: BackgroundTasks,
 ) -> JobOut:
@@ -90,65 +75,10 @@ async def create_job(
     job_id = job.id
     await session.commit()
 
-    background.add_task(run_job_task, job_id)
+    dispatch_job(job_id, settings, background)
 
     reloaded = await jobs_service.load_job(session, job_id)
     return _to_out(reloaded or job)
-
-
-async def run_job_task(job_id: uuid.UUID) -> None:
-    """Execute the job and publish each snapshot as it happens."""
-    from satsaathi_core.settings import get_settings
-    from satsaathi_core.storage import build_storage
-
-    settings = get_settings()
-    storage = build_storage(
-        settings.storage_backend,
-        local_root=settings.storage_dir,
-        bucket=settings.s3_bucket,
-        offline=settings.is_offline,
-    )
-    bus, _ = _bus(settings)
-    queue: asyncio.Queue = asyncio.Queue()
-
-    def publish(snapshot: dict[str, Any]) -> None:
-        queue.put_nowait(snapshot)
-
-    async def drain() -> None:
-        while True:
-            snapshot = await queue.get()
-            if snapshot is None:
-                return
-            try:
-                await bus.publish(str(job_id), snapshot)
-            except Exception:
-                # A dead broker must not fail the job; the trace is persisted.
-                pass
-
-    drainer = asyncio.create_task(drain())
-    try:
-        async with session_scope() as session:
-            job = await jobs_service.load_job(session, job_id)
-            if job is None:
-                return
-            try:
-                await jobs_service.execute(
-                    session,
-                    job,
-                    storage=storage,
-                    settings=settings,
-                    # Every frame leaves in the job shape, so the client never
-                    # has to tell a trace document from a job document.
-                    publish=lambda snap: publish(
-                        jobs_service.snapshot_for_stream(job, snap)
-                    ),
-                )
-            except Exception as exc:  # noqa: BLE001
-                job.status = JobStatus.failed
-                job.error = {"key": "job.failed", "params": {"detail": str(exc)}}
-    finally:
-        queue.put_nowait(None)
-        await drainer
 
 
 @router.get("", response_model=JobPage)
@@ -198,6 +128,24 @@ async def get_job(session: Session, job_id: uuid.UUID) -> JobOut:
     return _to_out(job)
 
 
+#: How long the stream waits on the broker before checking the database
+#: instead. See `job_events` for why it cannot only wait.
+POLL_SECONDS = 2.0
+
+TERMINAL = {"succeeded", "failed", "needs_review"}
+
+
+def _sse(event: str, payload: dict) -> str:
+    return f"event: {event}\ndata: {json.dumps(payload)}\n\n"
+
+
+async def _current(job_id: uuid.UUID) -> dict | None:
+    """Re-read the job on its own session, outside the request's."""
+    async with session_scope() as session:
+        job = await jobs_service.load_job(session, job_id)
+        return _to_out(job).model_dump(mode="json") if job else None
+
+
 @router.get("/{job_id}/events")
 async def job_events(
     session: Session, settings: SettingsDep, job_id: uuid.UUID
@@ -206,33 +154,61 @@ async def job_events(
 
     A snapshot rather than a delta, so a browser that reconnects mid-job
     recovers on the next message with nothing to replay.
+
+    Redis pub/sub has no replay, which makes the broker alone unsafe to wait
+    on: a job that finishes between this handler reading the row and the
+    subscription being established publishes every one of its frames into an
+    empty channel, and the browser then waits for a message that never comes.
+    A worker that finishes a job in under a second loses that race routinely.
+    So the stream falls back to re-reading the row whenever the broker goes
+    quiet, which doubles as the keep-alive that proxies want to see.
     """
     job = await jobs_service.load_job(session, job_id)
     if job is None:
         raise api_error(status.HTTP_404_NOT_FOUND, "job.not_found", id=str(job_id))
 
     initial = _to_out(job).model_dump(mode="json")
-    bus, cross_process = _bus(settings)
-    terminal = {"succeeded", "failed", "needs_review"}
+    bus, _cross_process = event_bus(settings)
 
     async def stream():
-        yield f"event: snapshot\ndata: {json.dumps(initial)}\n\n"
-        if initial["status"] in terminal:
-            yield "event: done\ndata: {}\n\n"
+        yield _sse("snapshot", initial)
+        if initial["status"] in TERMINAL:
+            yield _sse("done", {})
             return
+
+        frames = bus.subscribe(str(job_id))
         try:
-            async for snapshot in bus.subscribe(str(job_id)):
-                yield f"event: snapshot\ndata: {json.dumps(snapshot)}\n\n"
-                if snapshot.get("status") in terminal:
-                    yield "event: done\ndata: {}\n\n"
+            while True:
+                try:
+                    snapshot = await asyncio.wait_for(
+                        frames.__anext__(), timeout=POLL_SECONDS
+                    )
+                except TimeoutError:
+                    settled = await _current(job_id)
+                    if settled and settled["status"] in TERMINAL:
+                        yield _sse("snapshot", settled)
+                        yield _sse("done", {})
+                        return
+                    # A comment line keeps the connection open without the
+                    # client mistaking it for a frame.
+                    yield ": waiting\n\n"
+                    continue
+                except StopAsyncIteration:
+                    break
+
+                yield _sse("snapshot", snapshot)
+                if snapshot.get("status") in TERMINAL:
+                    yield _sse("done", {})
                     return
         except asyncio.CancelledError:
             raise
         except Exception as exc:  # noqa: BLE001
-            payload = json.dumps(
-                {"error": {"key": "events.stream_failed", "params": {"detail": str(exc)}}}
+            yield _sse(
+                "error",
+                {"key": "events.stream_failed", "params": {"detail": str(exc)}},
             )
-            yield f"event: error\ndata: {payload}\n\n"
+        finally:
+            await frames.aclose()
 
     return StreamingResponse(
         stream(),

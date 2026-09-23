@@ -31,6 +31,10 @@ class Settings(BaseSettings):
     #: Artificial delay per stub step, so the live trace can be watched.
     stub_delay_ms: int = Field(default=0, ge=0)
 
+    #: Where a job runs. "inline" needs no broker and is the default so a
+    #: checkout runs with one command; "celery" hands the job to a worker.
+    job_dispatch: Literal["inline", "celery"] = "inline"
+
     translation_provider: Literal["passthrough", "indictrans2", "bhashini"] = (
         "passthrough"
     )
