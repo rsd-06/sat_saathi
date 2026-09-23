@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -10,15 +11,48 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(extra="ignore")
 
-    mode: str = Field(default="online", validation_alias="SATSAATHI_MODE")
+    mode: Literal["online", "offline"] = Field(
+        default="online", validation_alias="SATSAATHI_MODE"
+    )
     database_url: str = "postgresql+asyncpg://satsaathi:satsaathi@localhost:5432/satsaathi"
     redis_url: str = "redis://localhost:6379/0"
     storage_dir: Path = Path("./.data/storage")
     tiler_url: str = "http://localhost:8001"
 
+    storage_backend: Literal["local", "s3"] = "local"
+    s3_bucket: str | None = None
+
+    #: Answers scoring below this are held for a specialist instead of shown.
+    confidence_threshold: float = Field(default=0.75, ge=0.0, le=1.0)
+    max_upload_mb: int = Field(default=512, gt=0)
+    #: Rasters larger than this are not index-computed inline.
+    max_index_pixels: int = Field(default=4096 * 4096, gt=0)
+    pair_min_overlap_pct: float = Field(default=90.0, ge=0.0, le=100.0)
+    #: Artificial delay per stub step, so the live trace can be watched.
+    stub_delay_ms: int = Field(default=0, ge=0)
+
+    translation_provider: Literal["passthrough", "indictrans2", "bhashini"] = (
+        "passthrough"
+    )
+    llm_provider: Literal["stub", "ollama"] = "stub"
+
+    @property
+    def is_offline(self) -> bool:
+        return self.mode == "offline"
+
     @property
     def database_url_asyncpg_dsn(self) -> str:
         return self.database_url.replace("postgresql+asyncpg://", "postgresql://", 1)
+
+    def assert_provider_allowed(self, provider: str) -> None:
+        """Offline mode must not reach the network, so online-only providers
+        are refused at startup rather than failing mid-job."""
+        online_only = {"bhashini"}
+        if self.is_offline and provider in online_only:
+            raise ValueError(
+                f"provider {provider!r} needs a network connection and "
+                f"SATSAATHI_MODE is offline"
+            )
 
 
 @lru_cache
