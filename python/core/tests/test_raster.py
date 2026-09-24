@@ -106,3 +106,41 @@ def test_a_file_with_no_crs_reports_no_pixel_size(tmp_path):
 
     assert meta.is_georeferenced is False
     assert meta.pixel_size is None
+
+
+class TestGreyscaleChips:
+    """8-bit greyscale is what the SAR adapter trained on; colour is optical."""
+
+    def _png(self, path, arr):
+        from PIL import Image
+
+        Image.fromarray(arr).save(path)
+        return path
+
+    def test_a_grey_png_is_inferred_as_sar_and_says_so(self, tmp_path):
+        import numpy as np
+
+        grey = (np.arange(128 * 128) % 251).astype("uint8").reshape(128, 128)
+        meta = inspect(self._png(tmp_path / "chip.png", grey))
+
+        assert meta.sensor_type == "sar"
+        assert "sensor.inferred_sar_from_greyscale" in meta.warnings
+        assert "sensor.unknown_choose_preset" not in meta.warnings
+
+    def test_grey_stored_as_rgb_is_still_grey(self, tmp_path):
+        import numpy as np
+
+        grey = (np.arange(64 * 64) % 200).astype("uint8").reshape(64, 64)
+        meta = inspect(self._png(tmp_path / "chip.png", np.stack([grey] * 3, -1)))
+
+        assert meta.sensor_type == "sar"
+
+    def test_a_colour_png_stays_optical(self, tmp_path):
+        import numpy as np
+
+        rng = np.random.default_rng(0)
+        rgb = rng.integers(0, 255, (64, 64, 3), dtype="uint8")
+        meta = inspect(self._png(tmp_path / "scene.png", rgb))
+
+        assert meta.sensor_type == "optical"
+        assert "sensor.inferred_sar_from_greyscale" not in meta.warnings

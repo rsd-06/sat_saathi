@@ -214,3 +214,36 @@ def sar_water_mask(
         regions(water, "water", scale_to=scale_to),
         notes,
     )
+
+
+def sar_bright_targets(
+    backscatter: np.ndarray,
+    *,
+    k_sigma: float = 3.0,
+    scale_to: tuple[int, int] | None = None,
+    max_targets: int = 20,
+) -> MaskResult:
+    """Strong point scatterers (ships, vehicles, structures) against clutter.
+
+    A global CFAR: pixels more than `k_sigma` robust deviations above the
+    scene's median, in dB. Crude on purpose — its job is to corroborate or
+    fail to corroborate a SAR grounding box, never to be shown on its own.
+    Works on 8-bit chips too, since a monotonic stretch keeps bright bright.
+    """
+    from .imaging import to_db
+
+    arr = np.asarray(backscatter, dtype=np.float64)
+    finite = np.isfinite(arr)
+    values = to_db(arr) if (finite.any() and np.nanmax(arr) > 255) else arr
+    v = values[np.isfinite(values)]
+    if v.size == 0:
+        return MaskResult("cfar", 0.0, 0.0, 0.0, [], ["sar_targets.no_signal"])
+    median = float(np.median(v))
+    mad = float(np.median(np.abs(v - median))) * 1.4826
+    if mad == 0:
+        return MaskResult("cfar", median, 0.0, 0.0, [], ["sar_targets.no_signal"])
+    threshold = median + k_sigma * mad
+    mask = np.isfinite(values) & (values > threshold)
+    fraction = 100.0 * float(mask.sum()) / float(v.size)
+    boxes = regions(mask, "bright_target", scale_to=scale_to, k=max_targets, min_frac=0.0002)
+    return MaskResult("cfar", round(threshold, 3), 0.0, round(fraction, 3), boxes, [])

@@ -97,6 +97,16 @@ def _step_inputs(
         inputs["measured"] = compute.output_summary
     vlm = results.get("vision_language")
     if vlm is not None:
+        # What the model said, how sure it is, and how it got there — for
+        # verify to judge and answer to phrase. Whole text travels in
+        # evidence; the trace itself only keeps the summary.
+        inputs["vision"] = {
+            **vlm.output_summary,
+            "text": (vlm.evidence or {}).get("text"),
+            "confidence": vlm.confidence,
+            "needs_review": vlm.needs_review,
+            "note": vlm.note,
+        }
         inputs["claims"] = {
             "caption": vlm.output_summary.get("caption"),
             "index": base.get("planned_index"),
@@ -205,8 +215,14 @@ def run(
             )
             if result.confidence is not None:
                 trace.confidence = result.confidence
-                if result.confidence < confidence_threshold:
+            # A tool that judged its own output (a model answer, calibrated
+            # against held-out accuracy) has the last word; otherwise the
+            # measured-answer threshold decides.
+            if result.needs_review is not None:
+                if result.needs_review:
                     record.status = "needs_review"
+            elif result.confidence is not None and result.confidence < confidence_threshold:
+                record.status = "needs_review"
 
         except RejectedParamsError as exc:
             failed = True
@@ -235,7 +251,7 @@ def run(
 
     if failed:
         trace.status = "failed"
-    elif trace.confidence is not None and trace.confidence < confidence_threshold:
+    elif any(step.status == "needs_review" for step in trace.steps):
         trace.status = "needs_review"
     else:
         trace.status = "succeeded"

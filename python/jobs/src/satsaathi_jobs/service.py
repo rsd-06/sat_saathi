@@ -32,7 +32,13 @@ from satsaathi_core.storage import Storage
 from satsaathi_tools import pipeline
 from satsaathi_tools.builtin import build_default_registry
 from satsaathi_tools.protocol import ToolContext
-from satsaathi_tools.registry import STEP_KEYS, PlannedStep, plan, queue_for
+from satsaathi_tools.registry import (
+    STEP_KEYS,
+    PlannedStep,
+    effective_sensor,
+    plan,
+    queue_for,
+)
 
 STEP_ORDER = {key: i for i, key in enumerate(STEP_KEYS)}
 
@@ -75,7 +81,13 @@ async def plan_job(
         {"question": job.query_text}, intent_tool.validate_params({}), ctx
     ).output_summary["intent"]
 
-    planned = plan(intent, mode, available_indices=available)
+    planned = plan(
+        intent,
+        mode,
+        available_indices=available,
+        sensor=inputs.get("sensor_type"),
+        vlm_indices=_readable_indices(registry, inputs.get("band_map") or {}),
+    )
     job.intent = intent
     job.plan = [
         {"step_key": s.step_key, "tool": s.tool_name, "params": s.params}
@@ -83,6 +95,25 @@ async def plan_job(
     ]
     await session.flush()
     return planned, queue_for(planned, registry)
+
+
+def _readable_indices(registry, band_map: dict[str, int]) -> list[str]:
+    """Indices whose reading adapter is installed and can see its training inputs.
+
+    The index adapters were trained on a true-colour image next to the index
+    map, so they need blue, green and red besides the index's own bands (and
+    SWIR for NDWI's MNDWI line). Bands are never substituted: without them,
+    the question goes to the optical adapter instead.
+    """
+    from satsaathi_core.index_contract import INDEX_ROLES
+
+    out = []
+    for index, tool_name in (("ndvi", "vlm.index.ndvi"), ("ndwi", "vlm.index.ndwi")):
+        if tool_name not in registry or registry.get(tool_name).is_stub:
+            continue
+        if all(role in band_map for role in INDEX_ROLES[index.upper()]):
+            out.append(index)
+    return out
 
 
 async def create_job(
@@ -153,6 +184,20 @@ async def _gather_inputs(
         "question": job.query_text,
         "path": storage.local_path(primary.storage_key),
         "band_map": primary.band_map or {},
+        "sensor_type": effective_sensor(primary.sensor_type, primary.band_map),
+        # Every image by role, so a pair step reads both dates or both
+        # sensors rather than only the primary one.
+        "assets": {
+            role: {
+                "path": storage.local_path(asset.storage_key),
+                "band_map": asset.band_map or {},
+                "sensor_type": effective_sensor(asset.sensor_type, asset.band_map),
+                "crs": asset.crs,
+                "width": asset.width,
+                "height": asset.height,
+            }
+            for role, asset in by_role.items()
+        },
     }
     summary = {
         "mode": input_set.mode.value,

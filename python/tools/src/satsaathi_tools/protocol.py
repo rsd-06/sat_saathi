@@ -72,6 +72,11 @@ class ToolResult:
     #: pipeline prefers them over the tool's own properties.
     is_stub: bool | None = None
     tool_version: str | None = None
+    #: A tool's own verdict on whether its output must be held for a person.
+    #: None leaves it to the pipeline's confidence threshold, which is right
+    #: for a measured-only step and wrong for a model answer whose confidence
+    #: is calibrated against held-out accuracy (see `confidence.py`).
+    needs_review: bool | None = None
 
 
 @dataclass

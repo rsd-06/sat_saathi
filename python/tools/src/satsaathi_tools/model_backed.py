@@ -5,14 +5,23 @@ runs them; when they are not it produces the fixture its stub always produced.
 What it must never do is blur the two, so the switch is visible in three
 places the trace records:
 
-  * `is_stub` flips to False only when a model actually ran,
+  * `is_stub` flips to False only when a model (or a classical measurement)
+    actually ran,
   * `version` carries the model revision, so two answers from different
     weights are not recorded as the same system,
-  * `output_summary["source"]` says "model" or "fixture" in words.
+  * `output_summary["source"]` says "model", "classical" or "fixture" in words.
 
 This is the whole reason the trace is worth showing. A system that quietly
 degraded to a plausible-looking fixture, and reported the same confidence
 either way, would be worse than one that had no model at all.
+
+Failures map onto that rule:
+
+  * load failure, missing GPU stack  -> fixture, note `model.not_loadable`
+  * out of GPU memory                -> fixture, note `model.oom`
+  * the model answered, unparseably  -> model (it did run), note
+    `model.output_unparseable`, and the step is held for review — decided
+    inside `predict`, which knows what shape it wanted.
 """
 
 from __future__ import annotations
@@ -23,6 +32,8 @@ from typing import Any
 from pydantic import BaseModel
 
 from .protocol import BaseTool, ToolContext, ToolResult
+
+SOURCES = ("model", "classical", "fixture")
 
 
 class ModelBackedTool(BaseTool):
@@ -72,7 +83,7 @@ class ModelBackedTool(BaseTool):
         return self.base_version
 
     @property
-    def queue(self) -> str:
+    def queue(self) -> str:  # type: ignore[override]
         """Where this tool must run.
 
         A model-backed tool needs its model's hardware only when the weights
@@ -112,20 +123,41 @@ class ModelBackedTool(BaseTool):
         if status is None or not status.available:
             return self._tagged(self.fixture(inputs, params, ctx), "fixture", None)
 
-        from satsaathi_models import ModelUnavailableError, load
+        from satsaathi_models import (
+            ModelOOMError,
+            ModelUnavailableError,
+            load,
+        )
+
+        model: Any = None
+        if status.spec.kind != "classical":
+            try:
+                model = load(status.spec, Path(self._catalog.root))
+            except ModelUnavailableError:
+                # Declared and present but not loadable — a missing runtime,
+                # most often. Answering with a fixture is fine; pretending it
+                # came from the model is not, so this takes the fixture path
+                # in full.
+                return self._fallback(inputs, params, ctx, "model.not_loadable")
 
         try:
-            model = load(status.spec, Path(self._catalog.root))
+            result = self.predict(model, inputs, params, ctx)
+        except ModelOOMError:
+            return self._fallback(inputs, params, ctx, "model.oom")
         except ModelUnavailableError:
-            # Declared and present but not loadable — a missing runtime, most
-            # often. Answering with a fixture is fine; pretending it came from
-            # the model is not, so this takes the fixture path in full.
-            return self._tagged(
-                self.fixture(inputs, params, ctx), "fixture", "model.not_loadable"
-            )
+            # The runtime loads its weights on first use, so a broken install
+            # surfaces here rather than at `load`. Same rule: fixture, said so.
+            return self._fallback(inputs, params, ctx, "model.not_loadable")
 
-        result = self.predict(model, inputs, params, ctx)
-        return self._tagged(result, "model", None)
+        source = result.output_summary.get("source") or (
+            "classical" if status.spec.kind == "classical" else "model"
+        )
+        return self._tagged(result, source, None)
+
+    def _fallback(
+        self, inputs: dict[str, Any], params: BaseModel, ctx: ToolContext, note: str
+    ) -> ToolResult:
+        return self._tagged(self.fixture(inputs, params, ctx), "fixture", note)
 
     def _tagged(self, result: ToolResult, source: str, note: str | None) -> ToolResult:
         """Stamp the result with what actually ran.
@@ -134,12 +166,17 @@ class ModelBackedTool(BaseTool):
         trace. All three have to agree, and they only can if they are set from
         the same branch that produced the output.
         """
-        ran_model = source == "model"
+        assert source in SOURCES, source
+        ran = source != "fixture"
         result.output_summary = {**result.output_summary, "source": source}
-        result.is_stub = not ran_model
-        result.tool_version = self.version if ran_model else self.base_version
+        result.is_stub = not ran
+        result.tool_version = self.version if ran else self.base_version
         if note and not result.note:
             result.note = note
+        if not ran:
+            # A fixture carries no confidence of its own; whatever the stub
+            # hard-coded must not reach verify as if it were measured.
+            result.confidence = None
         return result
 
     def fixture(

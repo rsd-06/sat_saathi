@@ -1,7 +1,8 @@
 """Reading what a GeoTIFF actually says about itself.
 
-Header-only: nothing here loads a full raster into memory, because the
-inspection runs synchronously inside the upload request. Band *data* is only
+Header-only, apart from one 64 x 64 sample of 8-bit imagery to tell a
+greyscale (SAR) chip from colour: nothing here loads a full raster into
+memory, because the inspection runs synchronously inside the upload request. Band *data* is only
 touched by the index computation in `indices.py`, which has its own size cap.
 """
 
@@ -114,6 +115,22 @@ def _detect_sensor(
     return "unknown", warnings
 
 
+def _looks_greyscale(src: rasterio.DatasetReader) -> bool:
+    """One 8-bit band, or three identical ones, on a small decimated read.
+
+    The only data read during inspection, capped at 64 x 64 pixels.
+    """
+    if src.count == 1:
+        return True
+    side = 64
+    shape = (3, min(side, src.height), min(side, src.width))
+    try:
+        sample = src.read([1, 2, 3], out_shape=shape)
+    except Exception:  # noqa: BLE001 - an unreadable sample is not greyscale
+        return False
+    return bool((sample[0] == sample[1]).all() and (sample[1] == sample[2]).all())
+
+
 def _footprint_4326(src: rasterio.DatasetReader) -> dict | None:
     if src.crs is None:
         return None
@@ -129,6 +146,14 @@ def inspect(path: str | Path) -> RasterMetadata:
         descriptions = list(src.descriptions)
         dtype = src.dtypes[0] if src.dtypes else "unknown"
         sensor, warnings = _detect_sensor(src.count, descriptions, dtype)
+        if dtype == "uint8" and src.count in (1, 3) and _looks_greyscale(src):
+            # An 8-bit greyscale chip is what the SAR adapter was trained on,
+            # and in this product's scope (SAR and optical) far more likely
+            # SAR than panchromatic. Said out loud, so a wrong guess is
+            # visible and a band preset overrides it.
+            sensor = "sar"
+            warnings = [w for w in warnings if w != "sensor.unknown_choose_preset"]
+            warnings.append("sensor.inferred_sar_from_greyscale")
 
         bands = [
             BandInfo(

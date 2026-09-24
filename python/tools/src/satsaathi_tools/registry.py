@@ -69,15 +69,6 @@ class PlannedStep:
     params: dict
 
 
-#: Which vision-language tool answers which intent.
-_VLM_BY_INTENT: dict[Intent, str] = {
-    "vqa": "vlm.vqa",
-    "caption": "vlm.caption",
-    "grounding": "vlm.grounding",
-    "change": "vlm.change",
-    "fusion": "vlm.fusion",
-}
-
 #: Which index a given intent wants computed, when one is computable at all.
 _INDEX_BY_INTENT: dict[Intent, str] = {
     "water": "ndwi",
@@ -85,20 +76,55 @@ _INDEX_BY_INTENT: dict[Intent, str] = {
     "moisture": "lswi",
 }
 
+#: Index -> the vision-language tool that reads its rendered map.
+_INDEX_VLM: dict[str, str] = {"ndvi": "vlm.index.ndvi", "ndwi": "vlm.index.ndwi"}
+
+_SAR_ROLES = {"vv", "vh", "hh", "hv"}
+_OPTICAL_ROLES = {"blue", "green", "red", "nir", "swir1"}
+
+
+def effective_sensor(sensor_type: str | None, band_map: dict | None) -> str:
+    """What the upload is, for routing: "sar", "optical" or "unknown".
+
+    The officer's band mapping wins over the file's headers — choosing the
+    Sentinel-1 preset is a statement that the scene is SAR — and headers win
+    over nothing. Inspection already inferred SAR from 8-bit greyscale.
+    """
+    roles = set((band_map or {}).keys())
+    if roles & _SAR_ROLES:
+        return "sar"
+    if roles & _OPTICAL_ROLES:
+        return "optical"
+    if sensor_type in ("sar", "optical"):
+        return sensor_type
+    return "unknown"
+
 
 def plan(
     intent: Intent,
     mode: InputMode,
     *,
     available_indices: list[str] | None = None,
+    sensor: str | None = None,
+    vlm_indices: list[str] | None = None,
 ) -> list[PlannedStep]:
-    """Map (intent, mode) to an ordered plan over the eight fixed steps.
+    """Map (intent, mode, sensor) to an ordered plan over the eight fixed steps.
 
     `available_indices` is what the band mapping actually supports. An index
     the input cannot support is never planned, so the pipeline does not
     discover the problem halfway through and improvise.
+
+    `sensor` routes the vision-language step to the adapter trained on that
+    kind of image — SAR to the SAR adapter, optical to the optical one. An
+    optical model reading backscatter as brightness is confidently wrong.
+
+    `vlm_indices` are indices whose reading adapter is installed *and* whose
+    training inputs the bands can reproduce; a water or vegetation question
+    over such bands is answered by that adapter.
     """
     supported = set(available_indices or [])
+    readable = set(vlm_indices or [])
+    is_sar = mode == "sar" or (mode == "single" and sensor == "sar")
     steps: list[PlannedStep] = [
         PlannedStep("ask", "intake.text", {}),
         PlannedStep("imagery", "imagery.inspect", {}),
@@ -111,7 +137,10 @@ def plan(
         steps.append(PlannedStep("preprocess", "preprocess.noop", {}))
 
     wanted = _INDEX_BY_INTENT.get(intent)
-    if wanted and wanted in supported:
+    if is_sar and intent == "water":
+        # SAR has no spectral index; its water measurement is backscatter.
+        steps.append(PlannedStep("compute", "sar.water_mask", {}))
+    elif wanted and wanted in supported:
         steps.append(PlannedStep("compute", "indices.compute", {"index": wanted}))
     elif supported:
         # Compute something the input genuinely supports rather than nothing.
@@ -121,16 +150,20 @@ def plan(
     else:
         steps.append(PlannedStep("compute", "indices.unavailable", {}))
 
-    vlm = _VLM_BY_INTENT.get(intent)
-    if vlm is None:
-        if mode == "change":
-            vlm = "vlm.change"
-        elif mode == "fusion":
-            vlm = "vlm.fusion"
-        else:
-            # A SAR-only scene is read by the SAR model: an optical model
-            # reading backscatter as brightness is confidently wrong.
-            vlm = "vlm.sar" if mode == "sar" else "vlm.vqa"
+    if mode == "change":
+        vlm = "vlm.change"
+    elif mode == "fusion":
+        vlm = "vlm.fusion"
+    elif is_sar:
+        vlm = "vlm.sar"
+    elif intent == "caption":
+        vlm = "vlm.caption"
+    elif intent == "grounding":
+        vlm = "vlm.grounding"
+    elif wanted in _INDEX_VLM and wanted in readable and wanted in supported:
+        vlm = _INDEX_VLM[wanted]
+    else:
+        vlm = "vlm.vqa"
     steps.append(PlannedStep("vision_language", vlm, {}))
 
     steps.append(PlannedStep("verify", "verify.crosscheck", {}))

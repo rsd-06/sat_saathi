@@ -45,7 +45,7 @@ class TestWithoutWeights:
     def test_the_version_carries_no_model_revision(self, tmp_path):
         registry = build_default_registry(ModelCatalog(tmp_path))
 
-        assert registry.get("vlm.vqa").version == "0.1.0"
+        assert registry.get("vlm.vqa").version == "0.2.0"
 
     def test_it_stays_on_the_cpu_queue(self, tmp_path):
         # A fixture is a dictionary lookup. Routing it to a GPU worker would
@@ -77,7 +77,7 @@ class TestWithWeights:
 
         # Two answers from different weights must not be recorded as the same
         # system, so the revision is part of the version the trace stores.
-        assert registry.get("vlm.vqa").version == "0.1.0+vqa-optical@v1"
+        assert registry.get("vlm.vqa").version == "0.2.0+vqa-optical@v1"
 
     def test_it_moves_to_the_queue_its_model_needs(self, tmp_path):
         install(tmp_path, "vqa-optical")
@@ -123,25 +123,37 @@ class TestWithWeights:
 
         # What the tool expects, before it tries.
         assert tool.is_stub is False
-        assert tool.version == "0.1.0+vqa-optical@v1"
+        assert tool.version == "0.2.0+vqa-optical@v1"
 
         result = tool.run({}, tool.validate_params({}), ctx)
 
         # What actually happened.
         assert result.is_stub is True
-        assert result.tool_version == "0.1.0"
+        assert result.tool_version == "0.2.0"
         assert result.output_summary["source"] == "fixture"
 
     def test_a_loadable_model_is_used_and_marked_as_a_model(self, tmp_path, ctx):
-        install(tmp_path, "vqa-optical")
-        register_loader("torch", lambda spec, directory: {"name": spec.name})
-        registry = build_default_registry(ModelCatalog(tmp_path))
-        tool = registry.get("vlm.vqa")
+        from PIL import Image
 
-        # The shipped tools have no inference path yet, so a real load reaches
-        # a deliberate NotImplementedError rather than inventing an answer.
-        with pytest.raises(NotImplementedError):
-            tool.run({}, tool.validate_params({}), ctx)
+        from .fakes import FakeModel
+
+        install(tmp_path, "vqa-optical")
+        catalog = ModelCatalog(tmp_path)
+        register_loader("torch", lambda spec, directory: FakeModel(catalog, "A harbour."))
+        registry = build_default_registry(catalog)
+        tool = registry.get("vlm.vqa")
+        Image.new("RGB", (64, 64), (40, 90, 160)).save(tmp_path / "scene.png")
+
+        result = tool.run(
+            {"question": "What is this?", "path": str(tmp_path / "scene.png")},
+            tool.validate_params({}),
+            ctx,
+        )
+
+        assert result.is_stub is False
+        assert result.tool_version == "0.2.0+vqa-optical@v1"
+        assert result.output_summary["source"] == "model"
+        assert result.output_summary["answer"] == "A harbour."
 
 
 class TestQueueRouting:
@@ -224,6 +236,6 @@ def test_the_trace_records_the_run_that_happened(tmp_path):
 
     step = next(s for s in trace.steps if s.step_key == "vision_language")
     assert step.is_stub is True
-    assert step.tool_version == "0.1.0"
+    assert step.tool_version == "0.2.0"
     assert step.output_summary["source"] == "fixture"
     assert step.note == "model.not_loadable"

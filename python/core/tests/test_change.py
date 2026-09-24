@@ -86,3 +86,17 @@ def test_sar_water_is_the_dark_part():
     assert result.boxes[0]["label"] == "water"
     assert result.boxes[0]["bbox_px"][1] >= 60
     assert result.notes == []
+
+
+def test_bright_targets_find_a_ship_on_dark_sea():
+    from satsaathi_core.change import sar_bright_targets
+
+    rng = np.random.default_rng(3)
+    sea = rng.normal(30, 4, (256, 256)).clip(0, 255)
+    sea[100:112, 150:170] = 240  # a vessel
+
+    result = sar_bright_targets(sea)
+
+    assert result.boxes
+    x1, y1, x2, y2 = result.boxes[0]["bbox_px"]
+    assert (x1, y1, x2, y2) == (150.0, 100.0, 170.0, 112.0)

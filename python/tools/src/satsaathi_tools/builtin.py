@@ -24,8 +24,18 @@ from pydantic import BaseModel, Field
 from satsaathi_core import indices as index_maths
 from satsaathi_core.raster import inspect as inspect_raster
 
-from .model_backed import ModelBackedTool
 from .protocol import Artifact, BaseTool, NoParams, ToolContext, ToolResult
+from .vlm import (
+    SarWaterMask,
+    VlmCaption,
+    VlmChange,
+    VlmFusion,
+    VlmGrounding,
+    VlmIndexNdvi,
+    VlmIndexNdwi,
+    VlmSar,
+    VlmVqa,
+)
 
 # --------------------------------------------------------------------------
 # Real tools
@@ -181,6 +191,14 @@ class VerifyCrosscheck(BaseTool):
     def run(self, inputs, params: VerifyParams, ctx: ToolContext) -> ToolResult:
         measured: dict[str, Any] = inputs.get("measured") or {}
         claims: dict[str, Any] = inputs.get("claims") or {}
+        vision: dict[str, Any] = inputs.get("vision") or {}
+
+        if vision.get("source") == "model" and isinstance(vision.get("confidence"), float):
+            return self._model_answer(vision, measured, claims, ctx)
+        if vision.get("source") == "classical":
+            # A classical map with no model answer: its numbers are measured,
+            # so it is judged like any measured-only step.
+            measured = {**measured, **{"above_threshold_pct": vision.get("changed_pct")}}
 
         confidence = 0.9
         reasons: list[str] = []
@@ -205,6 +223,44 @@ class VerifyCrosscheck(BaseTool):
                 "reasons": ",".join(reasons) or "none",
             },
             confidence=confidence,
+        )
+
+    def _model_answer(
+        self, vision: dict[str, Any], measured: dict[str, Any], claims: dict[str, Any],
+        ctx: ToolContext,
+    ) -> ToolResult:
+        """A model answer carries a calibrated confidence; verify checks it.
+
+        The confidence already folds in the held-out prior, so it is judged
+        against the model thresholds (`confidence_low` / `_high`), not the
+        0.75 used for measured-only answers — against which even the best
+        adapter here (optical VQA, 0.60 held-out) could never pass.
+        """
+        from .confidence import band, thresholds
+
+        high, low = thresholds(ctx.settings)
+        confidence = float(vision["confidence"])
+        reasons: list[str] = ["model_confidence"]
+        if measured.get("area_ha") is None and claims.get("mentions_area"):
+            confidence *= 0.7
+            reasons.append("area_claimed_without_crs")
+        if vision.get("box_status") and "unverified" in str(vision.get("box_status")):
+            reasons.append("sar_boxes_unverified")
+        if vision.get("note"):
+            reasons.append(str(vision["note"]))
+        level = band(confidence, high, low)
+        held = level == "low" or bool(vision.get("needs_review"))
+        return ToolResult(
+            output_summary={
+                "confidence": round(confidence, 3),
+                "confidence_band": level,
+                "verdict": "held_for_review" if held else "released",
+                "reasons": ",".join(reasons),
+                "threshold_low": low,
+                "threshold_high": high,
+            },
+            confidence=confidence,
+            needs_review=held,
         )
 
 
@@ -326,90 +382,6 @@ class PreprocessCoregister(BaseTool):
         )
 
 
-class _VisionLanguage(ModelBackedTool):
-    """A vision-language step: a real model when its weights are here.
-
-    The fixture is not a placeholder to be deleted later. It is what this step
-    does on a machine without the weights, and the trace says so every time,
-    so an installation with no models is honest rather than broken.
-    """
-
-    required_modalities = ["raster"]
-    params_schema = NoParams
-    base_version = "0.1.0"
-    caption = "fixture caption"
-    boxes: list[dict] = []
-
-    def fixture(self, inputs, params, ctx: ToolContext) -> ToolResult:
-        return ToolResult(
-            output_summary={"caption": self.caption, "boxes": len(self.boxes)},
-            evidence={"boxes": self.boxes},
-        )
-
-    def predict(self, model, inputs, params, ctx: ToolContext) -> ToolResult:
-        """Run the loaded model over the scene.
-
-        Unimplemented on purpose: the weights decide the call signature, and
-        guessing it now would be a wrapper nobody can use. Until a model is
-        chosen this never runs, because `model_available` stays false without
-        weights on disk. Raising here rather than silently returning the
-        fixture keeps the two paths from blurring.
-        """
-        raise NotImplementedError(
-            f"{self.name}: weights for {self.model_name} are present but no "
-            f"inference path is implemented yet"
-        )
-
-
-class VlmVqa(_VisionLanguage):
-    name = "vlm.vqa"
-    task = "vqa"
-    model_name = "vqa-optical"
-    caption = "A river channel crosses cultivated parcels."
-    boxes = [{"label": "water", "bbox": [12, 40, 210, 96], "score": 0.81}]
-
-
-class VlmCaption(_VisionLanguage):
-    name = "vlm.caption"
-    task = "caption"
-    model_name = "vqa-optical"
-    caption = "Agricultural land bisected by a watercourse."
-
-
-class VlmGrounding(_VisionLanguage):
-    name = "vlm.grounding"
-    task = "grounding"
-    model_name = "vqa-optical"
-    caption = "Two water bodies located."
-    boxes = [
-        {"label": "water", "bbox": [12, 40, 210, 96], "score": 0.81},
-        {"label": "water", "bbox": [150, 120, 190, 150], "score": 0.64},
-    ]
-
-
-class VlmChange(_VisionLanguage):
-    name = "vlm.change"
-    task = "change_vqa"
-    model_name = "change-detection"
-    caption = "Inundation has expanded along the eastern bank."
-
-
-class VlmFusion(_VisionLanguage):
-    name = "vlm.fusion"
-    task = "optical_sar_fusion"
-    model_name = "fusion-optical-sar"
-    required_modalities = ["optical", "sar"]
-    caption = "SAR shows standing water beneath cloud in the optical scene."
-
-
-class VlmSar(_VisionLanguage):
-    name = "vlm.sar"
-    task = "vqa"
-    model_name = "vqa-sar"
-    required_modalities = ["sar"]
-    caption = "Backscatter is low over the inundated parcels."
-
-
 class AnswerParams(BaseModel):
     model_config = {"extra": "forbid"}
 
@@ -428,7 +400,15 @@ class AnswerTemplate(BaseTool):
 
     def run(self, inputs, params: AnswerParams, ctx: ToolContext) -> ToolResult:
         measured = inputs.get("measured") or {}
+        vision = inputs.get("vision") or {}
         pieces: list[str] = []
+        if vision.get("source") in ("model", "classical") and vision.get("answer"):
+            pieces.append(str(vision.get("text") or vision["answer"]).strip())
+            if "unverified" in str(vision.get("box_status", "")):
+                pieces.append(
+                    "The SAR locations are unverified: no independent detection "
+                    "confirms them."
+                )
         if measured.get("above_threshold_pct") is not None:
             pieces.append(
                 f"{measured['above_threshold_pct']}% of valid pixels exceed the "
@@ -436,7 +416,11 @@ class AnswerTemplate(BaseTool):
             )
         if measured.get("area_ha") is not None:
             pieces.append(f"covering {measured['area_ha']} ha")
-        text = ", ".join(pieces) if pieces else "No measurement was available."
+        if measured.get("water_pct") is not None:
+            pieces.append(f"SAR backscatter marks {measured['water_pct']}% of the scene as water")
+        text = " ".join(p if p.endswith(".") else p + "." for p in pieces) if pieces else (
+            "No measurement was available."
+        )
 
         return ToolResult(
             output_summary={"chars": len(text), "target_lang": params.target_lang},
@@ -462,12 +446,15 @@ def build_default_registry(catalog=None):
         PreprocessCoregister(),
         IndicesCompute(),
         IndicesUnavailable(),
+        SarWaterMask(catalog),
         VlmVqa(catalog),
         VlmSar(catalog),
         VlmCaption(catalog),
         VlmGrounding(catalog),
         VlmChange(catalog),
         VlmFusion(catalog),
+        VlmIndexNdvi(catalog),
+        VlmIndexNdwi(catalog),
         VerifyCrosscheck(),
         AnswerTemplate(),
     ):
