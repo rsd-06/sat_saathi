@@ -20,3 +20,6 @@ next-env.d.ts
 .playwright-mcp/
 test-results/
 playwright-report/
+
+# Git worktrees live inside the repo but are never part of it.
+.claude/worktrees/
