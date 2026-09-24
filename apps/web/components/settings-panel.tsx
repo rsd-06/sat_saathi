@@ -67,7 +67,13 @@ export function SettingsPanel() {
               <span className="marginal">{name}</span>
               <span className="marginal flex items-center gap-1.5">
                 <StatusDot
-                  status={check.status === "ok" ? "succeeded" : "failed"}
+                  status={
+                    check.status === "ok"
+                      ? "succeeded"
+                      : check.status === "skipped"
+                        ? "pending"
+                        : "failed"
+                  }
                 />
                 {check.status}
               </span>

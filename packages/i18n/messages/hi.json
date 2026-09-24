@@ -302,5 +302,7 @@
   "auth.error.googleUnverifiedEmail": "इस ईमेल से पहले से एक खाता है, और Google ने इस पते की पुष्टि नहीं की है। इसके बजाय अपने पासवर्ड से साइन इन करें।",
   "auth.error.googleCancelled": "साइन-इन रद्द कर दिया गया।",
   "auth.error.googleState": "वह साइन-इन लिंक समाप्त हो गया या यहाँ से शुरू नहीं हुआ था। फिर कोशिश करें।",
-  "auth.error.googleFailed": "Google साइन-इन पूरा नहीं हुआ। फिर कोशिश करें।"
+  "auth.error.googleFailed": "Google साइन-इन पूरा नहीं हुआ। फिर कोशिश करें।",
+  "auth.error.sessionExpired": "आपका सत्र समाप्त हो गया। जारी रखने के लिए फिर से साइन इन करें।",
+  "service.databaseUnavailable": "सेवा अभी अपने डेटाबेस तक नहीं पहुँच पा रही है। थोड़ी देर में फिर कोशिश करें।"
 }

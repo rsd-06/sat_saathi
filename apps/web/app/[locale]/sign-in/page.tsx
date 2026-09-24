@@ -4,6 +4,8 @@ import { AuthForm } from "@/components/auth-form";
 import { AuthLayout } from "@/components/auth-layout";
 import { GoogleButton } from "@/components/google-button";
 import { Link } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/session";
 
 /** Callback failures arrive as a short code in the URL, mapped to a key here. */
 const OAUTH_ERRORS: Record<string, string> = {
@@ -13,6 +15,7 @@ const OAUTH_ERRORS: Record<string, string> = {
   google_unavailable: "auth.error.googleDisabled",
   google_failed: "auth.error.googleFailed",
   api_unreachable: "error.apiUnreachable.title",
+  session_expired: "auth.error.sessionExpired",
 };
 
 export default async function SignInPage({
@@ -26,6 +29,12 @@ export default async function SignInPage({
   const { next, error } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations();
+
+  // Asked of the API, not inferred from a cookie. A dead cookie leaves
+  // the form reachable; the next sign-in simply replaces it.
+  if ((await getSession()).state === "signed-in") {
+    redirect(`/${locale}/dashboard`);
+  }
 
   const errorKey = error ? OAUTH_ERRORS[error] : undefined;
 

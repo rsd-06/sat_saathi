@@ -10,9 +10,6 @@ const SESSION_COOKIE = "satsaathi_session";
 /** Everything that shows somebody's own work. */
 const PROTECTED = ["/dashboard", "/workspace", "/history", "/review", "/settings", "/jobs"];
 
-/** Signing in while already signed in is a dead end; go to the work instead. */
-const SIGNED_OUT_ONLY = ["/sign-in", "/sign-up"];
-
 function firstSegment(pathname: string): string {
   return pathname.split("/")[1] ?? "";
 }
@@ -38,9 +35,14 @@ function localeOf(pathname: string): string {
  *
  * The cookie is only checked for presence here. Whether it is still valid is
  * the API's answer to give, and asking it on every navigation would put a
- * network round trip in front of every page. A revoked token therefore gets
- * one render before the page itself finds out and redirects — which is the
- * right trade for a tool people use all day.
+ * network round trip in front of every page. The signed-in layout asks
+ * instead, and clears a cookie the API no longer honours.
+ *
+ * This deliberately does not send a cookie-holder away from /sign-in. It used
+ * to, and a stale cookie — left by a database reset or a move to a new
+ * database — then bounced every visit to /sign-in onto a dashboard that could
+ * not load, so the form was unreachable. The sign-in page decides that itself,
+ * against the API.
  */
 export default function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -53,10 +55,6 @@ export default function proxy(request: NextRequest) {
     // Come back to where they were trying to go, not to a generic landing.
     url.searchParams.set("next", `${pathname}${search}`);
     return NextResponse.redirect(url);
-  }
-
-  if (signedIn && SIGNED_OUT_ONLY.includes(route)) {
-    return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
   }
 
   return intl(request);

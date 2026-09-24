@@ -50,9 +50,8 @@ def _include_object(obj, name, type_, reflected, compare_to):
 
 
 def _sync_url() -> str:
-    settings = get_settings()
-    # The app runs on asyncpg; migrations swap in psycopg for a sync run.
-    return settings.database_url.replace("+asyncpg", "+psycopg")
+    # The app runs on asyncpg; migrations run synchronously on psycopg.
+    return get_settings().sync_database_url
 
 
 def run_migrations_offline() -> None:
@@ -74,7 +73,11 @@ def run_migrations_online() -> None:
     section["sqlalchemy.url"] = _sync_url()
 
     connectable = engine_from_config(
-        section, prefix="sqlalchemy.", poolclass=pool.NullPool
+        section,
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+        # TLS for a hosted database, spelled the way psycopg wants it.
+        connect_args=get_settings().psycopg_connect_args(),
     )
 
     with connectable.connect() as connection:

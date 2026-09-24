@@ -4,6 +4,8 @@ import { AuthForm } from "@/components/auth-form";
 import { AuthLayout } from "@/components/auth-layout";
 import { GoogleButton } from "@/components/google-button";
 import { Link } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/session";
 
 export default async function SignUpPage({
   params,
@@ -13,6 +15,12 @@ export default async function SignUpPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
+
+  // Asked of the API, not inferred from a cookie. A dead cookie leaves
+  // the form reachable; the next sign-in simply replaces it.
+  if ((await getSession()).state === "signed-in") {
+    redirect(`/${locale}/dashboard`);
+  }
 
   return (
     <AuthLayout

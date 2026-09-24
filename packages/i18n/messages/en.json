@@ -302,5 +302,7 @@
   "auth.error.googleUnverifiedEmail": "An account already uses this email, and Google has not verified the address. Sign in with your password instead.",
   "auth.error.googleCancelled": "Sign-in was cancelled.",
   "auth.error.googleState": "That sign-in link expired or did not start here. Try again.",
-  "auth.error.googleFailed": "Google sign-in did not complete. Try again."
+  "auth.error.googleFailed": "Google sign-in did not complete. Try again.",
+  "auth.error.sessionExpired": "Your session ended. Sign in again to continue.",
+  "service.databaseUnavailable": "The service cannot reach its database right now. Try again in a moment."
 }

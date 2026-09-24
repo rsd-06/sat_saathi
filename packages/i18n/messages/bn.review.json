@@ -1274,5 +1274,15 @@
     "reviewed": false,
     "source": "Google sign-in did not complete. Try again.",
     "translation": "Google সাইন-ইন সম্পূর্ণ হয়নি। আবার চেষ্টা করুন।"
+  },
+  "auth.error.sessionExpired": {
+    "reviewed": false,
+    "source": "Your session ended. Sign in again to continue.",
+    "translation": "আপনার সেশন শেষ হয়েছে। চালিয়ে যেতে আবার সাইন ইন করুন।"
+  },
+  "service.databaseUnavailable": {
+    "reviewed": false,
+    "source": "The service cannot reach its database right now. Try again in a moment.",
+    "translation": "পরিষেবাটি এখন তার ডেটাবেসে পৌঁছাতে পারছে না। একটু পরে আবার চেষ্টা করুন।"
   }
 }

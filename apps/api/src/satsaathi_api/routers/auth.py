@@ -159,6 +159,12 @@ async def logout(
 
 @router.get("/me", response_model=UserOut)
 async def me(session: Session, user: CurrentUser) -> UserOut:
-    user.last_seen_at = datetime.now(UTC)
-    await session.commit()
+    """Who is signed in. Asked on nearly every page, so kept to one query.
+
+    `last_seen_at` is refreshed at most every few minutes rather than on each
+    call: a write per page load is a commit per page load.
+    """
+    if auth_service.needs_last_seen_update(user):
+        user.last_seen_at = datetime.now(UTC)
+        await session.commit()
     return UserOut.model_validate(user, from_attributes=True)
