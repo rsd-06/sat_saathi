@@ -26,14 +26,10 @@ def ctx():
     return ToolContext(job_id="job-1", storage=None, settings=None)
 
 
-def install(root, name: str, revision: str = "v0") -> None:
-    from satsaathi_models import CATALOG
+def install(root, name: str) -> None:
+    from satsaathi_models.testing import install_fake
 
-    spec = next(s for s in CATALOG if s.name == name)
-    assert spec.revision == revision
-    path = spec.weights_path(root)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(b"pretend weights")
+    install_fake(root, name)
 
 
 class TestWithoutWeights:
@@ -81,7 +77,7 @@ class TestWithWeights:
 
         # Two answers from different weights must not be recorded as the same
         # system, so the revision is part of the version the trace stores.
-        assert registry.get("vlm.vqa").version == "0.1.0+vqa-optical@v0"
+        assert registry.get("vlm.vqa").version == "0.1.0+vqa-optical@v1"
 
     def test_it_moves_to_the_queue_its_model_needs(self, tmp_path):
         install(tmp_path, "vqa-optical")
@@ -127,7 +123,7 @@ class TestWithWeights:
 
         # What the tool expects, before it tries.
         assert tool.is_stub is False
-        assert tool.version == "0.1.0+vqa-optical@v0"
+        assert tool.version == "0.1.0+vqa-optical@v1"
 
         result = tool.run({}, tool.validate_params({}), ctx)
 

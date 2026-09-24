@@ -36,6 +36,23 @@ class ModelUnavailableError(RuntimeError):
     """The weights are not on this machine, or no runtime can load them."""
 
 
+class ModelOOMError(RuntimeError):
+    """The device ran out of memory mid-call. The model did not answer."""
+
+
+class ModelOutputUnparseableError(ValueError):
+    """The model answered, but not in the shape the task needs.
+
+    Distinct from the two above on purpose: here a model *did* run, so the
+    trace records it as a model step that produced nothing usable, not as a
+    fixture.
+    """
+
+    def __init__(self, message: str, raw_text: str = ""):
+        super().__init__(message)
+        self.raw_text = raw_text
+
+
 def register_loader(runtime: str, fn: LoaderFn) -> None:
     """Teach the process how to load one runtime's models."""
     _loaders[runtime] = fn
@@ -54,7 +71,8 @@ def load(spec: ModelSpec, root: Path) -> Any:
     """
     if not spec.is_available(root):
         raise ModelUnavailableError(
-            f"{spec.slug}: no weights at {spec.weights_path(root)}"
+            f"{spec.slug}: missing {', '.join(spec.missing_files(root)) or 'weights'}"
+            f" under {spec.directory(root)}"
         )
 
     loader = _loaders.get(spec.runtime)

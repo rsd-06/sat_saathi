@@ -5,8 +5,10 @@ about *whether* a model exists and *how* it would be loaded; actually loading
 one happens in `loader.load`, which imports its runtime at that moment.
 """
 
-from .catalog import CATALOG, ModelCatalog, ModelStatus
+from .catalog import BASE_NAME, CATALOG, ModelCatalog, ModelStatus, prior_from_eval
 from .loader import (
+    ModelOOMError,
+    ModelOutputUnparseableError,
     ModelUnavailableError,
     clear_loaders,
     has_loader,
@@ -15,10 +17,15 @@ from .loader import (
     register_loader,
     unload_all,
 )
-from .spec import ModelSpec, Queue, Runtime
+from .spec import Kind, ModelSpec, Queue, Runtime
 
 __all__ = [
+    "BASE_NAME",
     "CATALOG",
+    "Kind",
+    "ModelOOMError",
+    "ModelOutputUnparseableError",
+    "prior_from_eval",
     "ModelCatalog",
     "ModelSpec",
     "ModelStatus",

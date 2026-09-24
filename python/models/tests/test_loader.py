@@ -28,9 +28,9 @@ def spec():
 
 
 def install(root, spec):
-    path = spec.weights_path(root)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(b"weights")
+    from satsaathi_models.testing import install_fake
+
+    install_fake(root, spec, specs=(spec,))
 
 
 def test_missing_weights_raise_rather_than_returning_a_placeholder(tmp_path, spec):
