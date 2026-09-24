@@ -1234,5 +1234,45 @@
     "reviewed": false,
     "source": "Upload a scene and ask a question. Every step is shown as it runs.",
     "translation": "एक दृश्य अपलोड करें और प्रश्न पूछें। हर चरण चलते हुए दिखता है।"
+  },
+  "auth.google.continue": {
+    "reviewed": false,
+    "source": "Continue with Google",
+    "translation": "Google से जारी रखें"
+  },
+  "auth.google.or": {
+    "reviewed": false,
+    "source": "or",
+    "translation": "या"
+  },
+  "auth.error.googleDisabled": {
+    "reviewed": false,
+    "source": "Google sign-in is not set up on this server. Use your password.",
+    "translation": "इस सर्वर पर Google साइन-इन सेट नहीं है। अपना पासवर्ड इस्तेमाल करें।"
+  },
+  "auth.error.googleRejected": {
+    "reviewed": false,
+    "source": "Google could not confirm that sign-in. Try again.",
+    "translation": "Google उस साइन-इन की पुष्टि नहीं कर सका। फिर कोशिश करें।"
+  },
+  "auth.error.googleUnverifiedEmail": {
+    "reviewed": false,
+    "source": "An account already uses this email, and Google has not verified the address. Sign in with your password instead.",
+    "translation": "इस ईमेल से पहले से एक खाता है, और Google ने इस पते की पुष्टि नहीं की है। इसके बजाय अपने पासवर्ड से साइन इन करें।"
+  },
+  "auth.error.googleCancelled": {
+    "reviewed": false,
+    "source": "Sign-in was cancelled.",
+    "translation": "साइन-इन रद्द कर दिया गया।"
+  },
+  "auth.error.googleState": {
+    "reviewed": false,
+    "source": "That sign-in link expired or did not start here. Try again.",
+    "translation": "वह साइन-इन लिंक समाप्त हो गया या यहाँ से शुरू नहीं हुआ था। फिर कोशिश करें।"
+  },
+  "auth.error.googleFailed": {
+    "reviewed": false,
+    "source": "Google sign-in did not complete. Try again.",
+    "translation": "Google साइन-इन पूरा नहीं हुआ। फिर कोशिश करें।"
   }
 }

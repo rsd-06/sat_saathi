@@ -294,5 +294,13 @@
   "dashboard.stats.measured": "পরিমাপ করা",
   "dashboard.stats.held": "পর্যালোচনার জন্য রাখা",
   "dashboard.empty.title": "এখনও কিছু বিশ্লেষণ করা হয়নি",
-  "dashboard.empty.body": "একটি দৃশ্য আপলোড করে প্রশ্ন করুন। প্রতিটি ধাপ চলার সময়েই দেখা যায়।"
+  "dashboard.empty.body": "একটি দৃশ্য আপলোড করে প্রশ্ন করুন। প্রতিটি ধাপ চলার সময়েই দেখা যায়।",
+  "auth.google.continue": "Google দিয়ে চালিয়ে যান",
+  "auth.google.or": "অথবা",
+  "auth.error.googleDisabled": "এই সার্ভারে Google সাইন-ইন সেট করা নেই। আপনার পাসওয়ার্ড ব্যবহার করুন।",
+  "auth.error.googleRejected": "Google সেই সাইন-ইন নিশ্চিত করতে পারেনি। আবার চেষ্টা করুন।",
+  "auth.error.googleUnverifiedEmail": "এই ইমেলে ইতিমধ্যে একটি অ্যাকাউন্ট আছে, আর Google ঠিকানাটি যাচাই করেনি। বরং আপনার পাসওয়ার্ড দিয়ে সাইন ইন করুন।",
+  "auth.error.googleCancelled": "সাইন-ইন বাতিল করা হয়েছে।",
+  "auth.error.googleState": "সেই সাইন-ইন লিঙ্কের মেয়াদ শেষ, বা সেটি এখান থেকে শুরু হয়নি। আবার চেষ্টা করুন।",
+  "auth.error.googleFailed": "Google সাইন-ইন সম্পূর্ণ হয়নি। আবার চেষ্টা করুন।"
 }

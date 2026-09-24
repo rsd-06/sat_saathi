@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { AuthForm } from "@/components/auth-form";
 import { AuthLayout } from "@/components/auth-layout";
+import { GoogleButton } from "@/components/google-button";
 import { Link } from "@/i18n/navigation";
 
 export default async function SignUpPage({
@@ -30,6 +31,7 @@ export default async function SignUpPage({
         </>
       }
     >
+      <GoogleButton locale={locale} />
       <AuthForm mode="sign-up" locale={locale} />
     </AuthLayout>
   );

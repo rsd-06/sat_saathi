@@ -1234,5 +1234,45 @@
     "reviewed": false,
     "source": "Upload a scene and ask a question. Every step is shown as it runs.",
     "translation": "একটি দৃশ্য আপলোড করে প্রশ্ন করুন। প্রতিটি ধাপ চলার সময়েই দেখা যায়।"
+  },
+  "auth.google.continue": {
+    "reviewed": false,
+    "source": "Continue with Google",
+    "translation": "Google দিয়ে চালিয়ে যান"
+  },
+  "auth.google.or": {
+    "reviewed": false,
+    "source": "or",
+    "translation": "অথবা"
+  },
+  "auth.error.googleDisabled": {
+    "reviewed": false,
+    "source": "Google sign-in is not set up on this server. Use your password.",
+    "translation": "এই সার্ভারে Google সাইন-ইন সেট করা নেই। আপনার পাসওয়ার্ড ব্যবহার করুন।"
+  },
+  "auth.error.googleRejected": {
+    "reviewed": false,
+    "source": "Google could not confirm that sign-in. Try again.",
+    "translation": "Google সেই সাইন-ইন নিশ্চিত করতে পারেনি। আবার চেষ্টা করুন।"
+  },
+  "auth.error.googleUnverifiedEmail": {
+    "reviewed": false,
+    "source": "An account already uses this email, and Google has not verified the address. Sign in with your password instead.",
+    "translation": "এই ইমেলে ইতিমধ্যে একটি অ্যাকাউন্ট আছে, আর Google ঠিকানাটি যাচাই করেনি। বরং আপনার পাসওয়ার্ড দিয়ে সাইন ইন করুন।"
+  },
+  "auth.error.googleCancelled": {
+    "reviewed": false,
+    "source": "Sign-in was cancelled.",
+    "translation": "সাইন-ইন বাতিল করা হয়েছে।"
+  },
+  "auth.error.googleState": {
+    "reviewed": false,
+    "source": "That sign-in link expired or did not start here. Try again.",
+    "translation": "সেই সাইন-ইন লিঙ্কের মেয়াদ শেষ, বা সেটি এখান থেকে শুরু হয়নি। আবার চেষ্টা করুন।"
+  },
+  "auth.error.googleFailed": {
+    "reviewed": false,
+    "source": "Google sign-in did not complete. Try again.",
+    "translation": "Google সাইন-ইন সম্পূর্ণ হয়নি। আবার চেষ্টা করুন।"
   }
 }

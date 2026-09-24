@@ -294,5 +294,13 @@
   "dashboard.stats.measured": "मापे गए",
   "dashboard.stats.held": "समीक्षा हेतु रोके गए",
   "dashboard.empty.title": "अभी तक कुछ विश्लेषित नहीं",
-  "dashboard.empty.body": "एक दृश्य अपलोड करें और प्रश्न पूछें। हर चरण चलते हुए दिखता है।"
+  "dashboard.empty.body": "एक दृश्य अपलोड करें और प्रश्न पूछें। हर चरण चलते हुए दिखता है।",
+  "auth.google.continue": "Google से जारी रखें",
+  "auth.google.or": "या",
+  "auth.error.googleDisabled": "इस सर्वर पर Google साइन-इन सेट नहीं है। अपना पासवर्ड इस्तेमाल करें।",
+  "auth.error.googleRejected": "Google उस साइन-इन की पुष्टि नहीं कर सका। फिर कोशिश करें।",
+  "auth.error.googleUnverifiedEmail": "इस ईमेल से पहले से एक खाता है, और Google ने इस पते की पुष्टि नहीं की है। इसके बजाय अपने पासवर्ड से साइन इन करें।",
+  "auth.error.googleCancelled": "साइन-इन रद्द कर दिया गया।",
+  "auth.error.googleState": "वह साइन-इन लिंक समाप्त हो गया या यहाँ से शुरू नहीं हुआ था। फिर कोशिश करें।",
+  "auth.error.googleFailed": "Google साइन-इन पूरा नहीं हुआ। फिर कोशिश करें।"
 }

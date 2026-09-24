@@ -9,7 +9,10 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .data/
+# Secrets. .env.example is the committed template; anything real is local.
 .env
+.env.local
+.env.*.local
 next-env.d.ts
 *.tsbuildinfo
 

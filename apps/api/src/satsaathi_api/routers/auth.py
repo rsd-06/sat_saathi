@@ -14,9 +14,15 @@ from fastapi import APIRouter, Depends, Header, status
 
 from satsaathi_core.models import User
 
-from .. import auth_service
-from ..deps import Session, api_error
-from ..schemas import LoginIn, RegisterIn, SessionOut, UserOut
+from .. import auth_service, google_identity
+from ..deps import Session, SettingsDep, api_error
+from ..schemas import (
+    GoogleTokenIn,
+    LoginIn,
+    RegisterIn,
+    SessionOut,
+    UserOut,
+)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -49,11 +55,12 @@ async def optional_user(
 OptionalUser = Annotated[User | None, Depends(optional_user)]
 
 
-def _session_out(token: str, user: User) -> SessionOut:
+def _session_out(token: str, user: User, created: bool = False) -> SessionOut:
     return SessionOut(
         token=token,
         expires_at=datetime.now(UTC) + auth_service.SESSION_LIFETIME,
         user=UserOut.model_validate(user, from_attributes=True),
+        created=created,
     )
 
 
@@ -94,6 +101,51 @@ async def login(session: Session, body: LoginIn) -> SessionOut:
     token = await auth_service.start_session(session, user)
     await session.commit()
     return _session_out(token, user)
+
+
+@router.post("/google", response_model=SessionOut)
+async def sign_in_with_google(
+    session: Session, settings: SettingsDep, body: GoogleTokenIn
+) -> SessionOut:
+    """Sign in with a Google ID token, verified here.
+
+    The caller has already exchanged an authorization code for this token, but
+    that is not evidence of anything on its own: a token can be minted for a
+    different application, or replayed after expiry. Every claim that matters
+    is checked against Google's own keys before an account is touched.
+    """
+    if not settings.google_sign_in_enabled:
+        raise api_error(status.HTTP_503_SERVICE_UNAVAILABLE, "auth.error.googleDisabled")
+
+    try:
+        identity = google_identity.verify(
+            body.id_token, client_id=settings.google_client_id
+        )
+    except google_identity.InvalidGoogleToken:
+        # The reason is deliberately not reported. A caller with a bad token
+        # learns that it was bad, and nothing about why.
+        raise api_error(
+            status.HTTP_401_UNAUTHORIZED, "auth.error.googleRejected"
+        ) from None
+
+    try:
+        user, created = await auth_service.sign_in_with_provider(
+            session,
+            provider="google",
+            subject=identity.subject,
+            email=identity.email,
+            email_verified=identity.email_verified,
+            full_name=identity.name,
+            preferred_locale=body.preferred_locale,
+        )
+    except auth_service.UnverifiedProviderEmail:
+        raise api_error(
+            status.HTTP_409_CONFLICT, "auth.error.googleUnverifiedEmail"
+        ) from None
+
+    token = await auth_service.start_session(session, user)
+    await session.commit()
+    return _session_out(token, user, created)
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
