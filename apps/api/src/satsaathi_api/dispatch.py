@@ -50,6 +50,16 @@ def dispatch_job(
     queue: str = DEFAULT_QUEUE,
 ) -> None:
     if settings.job_dispatch == "celery":
+        if queue == "gpu":
+            from .heartbeat import gpu_worker_alive_sync
+
+            if not gpu_worker_alive_sync(settings.redis_url):
+                # No GPU worker has said it is alive in the last 15 s. Queueing
+                # there would leave the job waiting for ever; on the CPU queue
+                # its model steps take the fixture path and the trace says
+                # `model.not_loadable`, which is the truth.
+                logger.warning("no GPU worker alive; job %s runs on cpu as fixtures", job_id)
+                queue = "cpu"
         try:
             send_to_celery(job_id, settings, queue)
             return

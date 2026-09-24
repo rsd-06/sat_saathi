@@ -1053,6 +1053,176 @@
       "reviewed": false,
       "source": "Optional",
       "translation": "ঐচ্ছিক"
+    },
+    "model.not_installed": {
+      "reviewed": false,
+      "source": "Not installed — missing {missing}",
+      "translation": "ইনস্টল করা নেই — {missing} পাওয়া যায়নি"
+    },
+    "model.base_missing": {
+      "reviewed": false,
+      "source": "Needs its base model ({base}) installed first",
+      "translation": "আগে এর মূল মডেল ({base}) ইনস্টল করতে হবে"
+    },
+    "model.base_mismatch": {
+      "reviewed": false,
+      "source": "Refused: trained on {found}, not on {expected}",
+      "translation": "প্রত্যাখ্যাত: {expected} নয়, {found}-এর উপর প্রশিক্ষিত"
+    },
+    "model.adapter_config_unreadable": {
+      "reviewed": false,
+      "source": "The adapter's configuration file cannot be read",
+      "translation": "অ্যাডাপ্টারের কনফিগারেশন ফাইল পড়া যাচ্ছে না"
+    },
+    "model.dependency_missing": {
+      "reviewed": false,
+      "source": "Needs {model} to be available",
+      "translation": "{model} উপলব্ধ থাকতে হবে"
+    },
+    "model.stub": {
+      "reviewed": false,
+      "source": "Declared, not implemented yet",
+      "translation": "ঘোষিত, এখনও চালু হয়নি"
+    },
+    "model.unknown": {
+      "reviewed": false,
+      "source": "No model called {name}",
+      "translation": "{name} নামে কোনো মডেল নেই"
+    },
+    "model.unavailable": {
+      "reviewed": false,
+      "source": "This model is not available here",
+      "translation": "এই মডেল এখানে উপলব্ধ নয়"
+    },
+    "model.not_loadable": {
+      "reviewed": false,
+      "source": "The model could not be loaded, so this step shows example output",
+      "translation": "মডেল লোড করা যায়নি, তাই এই ধাপে উদাহরণ ফলাফল দেখানো হচ্ছে"
+    },
+    "model.oom": {
+      "reviewed": false,
+      "source": "The GPU ran out of memory, so this step shows example output",
+      "translation": "GPU-এর মেমরি ফুরিয়ে গেছে, তাই এই ধাপে উদাহরণ ফলাফল দেখানো হচ্ছে"
+    },
+    "model.output_unparseable": {
+      "reviewed": false,
+      "source": "The model answered, but not in a form that could be read — held for review",
+      "translation": "মডেল উত্তর দিয়েছে, কিন্তু পড়ার মতো আকারে নয় — পর্যালোচনার জন্য আটকে রাখা হয়েছে"
+    },
+    "model.inference_failed": {
+      "reviewed": false,
+      "source": "The model failed while answering",
+      "translation": "উত্তর দেওয়ার সময় মডেল ব্যর্থ হয়েছে"
+    },
+    "health.database_unreachable": {
+      "reviewed": false,
+      "source": "The database cannot be reached",
+      "translation": "ডেটাবেসে পৌঁছানো যাচ্ছে না"
+    },
+    "health.migrations_behind": {
+      "reviewed": false,
+      "source": "The database schema is not up to date",
+      "translation": "ডেটাবেস স্কিমা হালনাগাদ নয়"
+    },
+    "health.migrations_unknown": {
+      "reviewed": false,
+      "source": "The expected database schema version cannot be determined",
+      "translation": "প্রত্যাশিত ডেটাবেস স্কিমা সংস্করণ নির্ধারণ করা যাচ্ছে না"
+    },
+    "health.redis_unreachable": {
+      "reviewed": false,
+      "source": "The job queue cannot be reached",
+      "translation": "কাজের সারিতে পৌঁছানো যাচ্ছে না"
+    },
+    "health.cpu_worker_missing": {
+      "reviewed": false,
+      "source": "No worker is taking analysis jobs",
+      "translation": "কোনো ওয়ার্কার বিশ্লেষণের কাজ নিচ্ছে না"
+    },
+    "health.gpu_worker_missing": {
+      "reviewed": false,
+      "source": "No GPU worker is running the models",
+      "translation": "কোনো GPU ওয়ার্কার মডেল চালাচ্ছে না"
+    },
+    "selftest.disabled": {
+      "reviewed": false,
+      "source": "Model self-tests are turned off on this deployment",
+      "translation": "এই ডিপ্লয়মেন্টে মডেলের স্ব-পরীক্ষা বন্ধ আছে"
+    },
+    "selftest.no_fixtures": {
+      "reviewed": false,
+      "source": "No test samples are installed for this model",
+      "translation": "এই মডেলের জন্য কোনো পরীক্ষার নমুনা ইনস্টল নেই"
+    },
+    "selftest.crashed": {
+      "reviewed": false,
+      "source": "The self-test stopped with an error",
+      "translation": "স্ব-পরীক্ষা ত্রুটির কারণে থেমে গেছে"
+    },
+    "vlm.no_boxes": {
+      "reviewed": false,
+      "source": "A location was asked for, but the model answered without one",
+      "translation": "অবস্থান জানতে চাওয়া হয়েছিল, কিন্তু মডেল অবস্থান ছাড়াই উত্তর দিয়েছে"
+    },
+    "change.sar_classical_only": {
+      "reviewed": false,
+      "source": "SAR pair: changes measured from backscatter only, without a model explanation",
+      "translation": "SAR জোড়া: পরিবর্তন শুধু ব্যাকস্ক্যাটার থেকে মাপা হয়েছে, মডেলের ব্যাখ্যা ছাড়া"
+    },
+    "change.model_disagrees_with_map": {
+      "reviewed": false,
+      "source": "The model's answer disagrees with the measured change map",
+      "translation": "মডেলের উত্তর মাপা পরিবর্তন মানচিত্রের সঙ্গে মেলে না"
+    },
+    "change.no_signal": {
+      "reviewed": false,
+      "source": "The two images show no measurable difference",
+      "translation": "দুটি ছবিতে কোনো পরিমাপযোগ্য পার্থক্য নেই"
+    },
+    "change.weak_separation": {
+      "reviewed": false,
+      "source": "Changed and unchanged areas are hard to separate; treat the regions with caution",
+      "translation": "পরিবর্তিত ও অপরিবর্তিত এলাকা আলাদা করা কঠিন; অঞ্চলগুলো সাবধানে দেখুন"
+    },
+    "index.unquoted_numbers": {
+      "reviewed": false,
+      "source": "The answer quotes a number that is not in the computed statistics — held for review",
+      "translation": "উত্তরে এমন সংখ্যা আছে যা গণনা করা পরিসংখ্যানে নেই — পর্যালোচনার জন্য আটকে রাখা হয়েছে"
+    },
+    "sar_water.not_bimodal": {
+      "reviewed": false,
+      "source": "Water and land are not clearly separable in this SAR scene; treat the water extent with caution",
+      "translation": "এই SAR দৃশ্যে জল ও স্থল স্পষ্টভাবে আলাদা নয়; জলের বিস্তার সাবধানে দেখুন"
+    },
+    "sar_water.no_signal": {
+      "reviewed": false,
+      "source": "This SAR scene has no usable backscatter values",
+      "translation": "এই SAR দৃশ্যে ব্যবহারযোগ্য ব্যাকস্ক্যাটার মান নেই"
+    },
+    "sar_water.fixture": {
+      "reviewed": false,
+      "source": "Example water figure; no SAR measurement ran",
+      "translation": "উদাহরণ জলের হিসাব; কোনো SAR পরিমাপ চালানো হয়নি"
+    },
+    "sensor.inferred_sar_from_greyscale": {
+      "reviewed": false,
+      "source": "Treated as SAR because the image is greyscale — choose a band preset if it is not",
+      "translation": "ছবিটি ধূসর বলে SAR ধরা হয়েছে — তা না হলে ব্যান্ড প্রিসেট বেছে নিন"
+    },
+    "imaging.sar_8bit_chip": {
+      "reviewed": false,
+      "source": "8-bit SAR image used as is",
+      "translation": "৮-বিট SAR ছবি যেমন আছে তেমনই ব্যবহার করা হয়েছে"
+    },
+    "imaging.sar_db_stretch": {
+      "reviewed": false,
+      "source": "SAR backscatter converted to decibels and contrast-stretched for the model",
+      "translation": "মডেলের জন্য SAR ব্যাকস্ক্যাটার ডেসিবেলে রূপান্তর ও কনট্রাস্ট বাড়ানো হয়েছে"
+    },
+    "imaging.rgb_from_first_bands": {
+      "reviewed": false,
+      "source": "No red, green and blue bands mapped; the first three bands were shown to the model",
+      "translation": "লাল, সবুজ ও নীল ব্যান্ড ম্যাপ করা নেই; মডেলকে প্রথম তিনটি ব্যান্ড দেখানো হয়েছে"
     }
   },
   "auth.error.badCredentials": {

@@ -271,7 +271,7 @@ async def job_trace(session: Session, job_id: uuid.UUID) -> Response:
 
 
 @router.get("/{job_id}/result.geojson")
-async def job_geojson(session: Session, job_id: uuid.UUID) -> Response:
+async def job_geojson(session: Session, storage: StorageDep, job_id: uuid.UUID) -> Response:
     """Vector outputs as a FeatureCollection.
 
     Only geometry that was actually produced appears here; an input with no
@@ -309,6 +309,26 @@ async def job_geojson(session: Session, job_id: uuid.UUID) -> Response:
                 },
             }
         )
+
+    # Boxes and regions the steps produced, already in WGS84. A SAR box keeps
+    # its `status` ("unverified" unless corroborated) all the way to the map.
+    from satsaathi_core.models import Artifact, ArtifactKind
+
+    artifacts = await session.scalars(
+        select(Artifact).where(
+            Artifact.job_id == job.id, Artifact.kind == ArtifactKind.geojson
+        )
+    )
+    for artifact in artifacts:
+        try:
+            collection = json.loads(storage.get(artifact.storage_key))
+        except Exception:  # noqa: BLE001 - a missing file drops its features, not the map
+            continue
+        for feature in collection.get("features", []):
+            feature.setdefault("properties", {})["step"] = (
+                artifact.step_key.value if artifact.step_key else None
+            )
+            features.append(feature)
 
     return JSONResponse(
         {"type": "FeatureCollection", "features": features},

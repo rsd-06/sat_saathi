@@ -69,6 +69,7 @@ class ModelOut(BaseModel):
     revision: str
     runtime: str
     queue: str
+    #: Usable right now: own files, base or dependencies, and a matching base.
     available: bool
     path: str
     #: Digest of the weights on disk; None when they are absent.
@@ -76,6 +77,25 @@ class ModelOut(BaseModel):
     vram_mb: int | None = None
     #: Operator-facing detail, not interface chrome, so it is prose.
     note: str = ""
+    #: hf_base | lora_adapter | composite | classical | stub
+    kind: str = "hf_base"
+    #: This model's own files are present, whatever the state of its base.
+    installed: bool = False
+    missing_files: list[str] = Field(default_factory=list)
+    #: The base an adapter attaches to, or the models a composite runs.
+    base: str | None = None
+    uses: list[str] = Field(default_factory=list)
+    #: Whether an adapter was trained on the declared base; None if n/a.
+    compatible: bool | None = None
+    #: Why it is unavailable, as a message key plus params. None if available.
+    reason: ErrorBody | None = None
+    #: Held-out metrics from the adapter's eval.json ("base", "finetuned").
+    eval: dict[str, Any] | None = None
+    #: Resident on the GPU worker right now (from its heartbeat). None when
+    #: no GPU worker is alive to say.
+    loaded: bool | None = None
+    #: Its tools would return fixture output here. A declared stub always is.
+    is_stub: bool = True
 
 
 class ModelsOut(BaseModel):
@@ -85,6 +105,53 @@ class ModelsOut(BaseModel):
     #: How many tools would return fixture output rather than a measurement.
     stub_tool_count: int
     tool_count: int
+    #: Whether a GPU worker heartbeat was seen within its TTL.
+    gpu_worker: bool = False
+
+
+class RuntimeOut(BaseModel):
+    """The GPU worker's last heartbeat, or `no_gpu_worker`."""
+
+    status: Literal["up", "no_gpu_worker"]
+    worker_id: str | None = None
+    base_loaded: bool | None = None
+    adapters_loaded: list[str] = Field(default_factory=list)
+    vram_allocated_mb: float | None = None
+    vram_reserved_mb: float | None = None
+    vram_peak_mb: float | None = None
+    gpu_name: str | None = None
+    torch: str | None = None
+    transformers: str | None = None
+    peft: str | None = None
+    bitsandbytes: str | None = None
+    load_seconds: float | None = None
+    last_inference_ms: int | None = None
+    inferences_total: int | None = None
+    last_error_key: str | None = None
+    idle_seconds: float | None = None
+
+
+class SelftestStarted(BaseModel):
+    task_id: str
+    model: str
+
+
+class SelftestCheck(BaseModel):
+    sample: str | None = None
+    check: str
+    passed: bool
+    detail: str = ""
+
+
+class SelftestOut(BaseModel):
+    task_id: str
+    state: Literal["pending", "done", "failed"]
+    model: str | None = None
+    passed: bool | None = None
+    checks: list[SelftestCheck] = Field(default_factory=list)
+    latency_ms: int | None = None
+    vram_peak_mb: float | None = None
+    output_excerpt: str = ""
 
 
 class BandOut(BaseModel):

@@ -81,3 +81,127 @@ async def health() -> HealthResponse:
         "ok" if all(c.status == "ok" for c in checks.values()) else "degraded"
     )
     return HealthResponse(mode=settings.mode, status=overall, checks=checks)
+
+
+# -- liveness and readiness ---------------------------------------------------
+
+
+class LiveResponse(BaseModel):
+    status: Literal["live"] = "live"
+
+
+class ReadyCheck(BaseModel):
+    ok: bool
+    #: Message key naming what is wrong; None when ok.
+    key: str | None = None
+    params: dict = {}
+
+
+class ReadyResponse(BaseModel):
+    status: Literal["ready", "not_ready"]
+    failing: list[str]
+    checks: dict[str, ReadyCheck]
+
+
+@router.get("/health/live", response_model=LiveResponse)
+async def live() -> LiveResponse:
+    """The process is up. No dependency is touched, so it is always fast."""
+    return LiveResponse()
+
+
+def _migrations_head() -> str | None:
+    from pathlib import Path
+
+    from alembic.script import ScriptDirectory
+
+    import satsaathi_core
+
+    folder = Path(satsaathi_core.__file__).resolve().parents[2] / "migrations"
+    if not folder.is_dir():
+        return None
+    return ScriptDirectory(str(folder)).get_current_head()
+
+
+async def ready_database(settings: Settings) -> ReadyCheck:
+    try:
+        conn = await asyncpg.connect(dsn=settings.database_url_asyncpg_dsn, timeout=2)
+    except Exception as exc:  # noqa: BLE001
+        return ReadyCheck(ok=False, key="health.database_unreachable", params={"detail": str(exc)})
+    try:
+        try:
+            current = await conn.fetchval("SELECT version_num FROM alembic_version")
+        except Exception:  # noqa: BLE001 - no table means never migrated
+            current = None
+    finally:
+        await conn.close()
+    head = _migrations_head()
+    if head is None:
+        return ReadyCheck(ok=False, key="health.migrations_unknown")
+    if current != head:
+        return ReadyCheck(
+            ok=False, key="health.migrations_behind", params={"current": current, "head": head}
+        )
+    return ReadyCheck(ok=True)
+
+
+async def ready_redis(settings: Settings) -> ReadyCheck:
+    result = await check_redis(settings)
+    if result.status == "ok":
+        return ReadyCheck(ok=True)
+    return ReadyCheck(ok=False, key="health.redis_unreachable", params={"detail": result.detail})
+
+
+def required_queues(settings: Settings) -> list[str]:
+    """Queues that must have a live consumer for jobs to finish.
+
+    With inline dispatch the API runs jobs itself and needs no worker. With
+    Celery, the CPU queue always needs one, and the GPU queue does as soon as
+    any GPU model is usable here — otherwise its jobs would wait for ever.
+    """
+    if settings.job_dispatch != "celery":
+        return []
+    from satsaathi_models import ModelCatalog
+
+    queues = ["cpu"]
+    catalog = ModelCatalog(settings.models_dir)
+    if any(s.available and s.spec.queue == "gpu" for s in catalog.all_status()):
+        queues.append("gpu")
+    return queues
+
+
+async def ready_queues(settings: Settings) -> dict[str, ReadyCheck]:
+    from ..heartbeat import queue_consumers
+
+    wanted = required_queues(settings)
+    if not wanted:
+        return {}
+    alive = await queue_consumers(settings.redis_url, wanted)
+    return {
+        f"queue_{q}": (
+            ReadyCheck(ok=True)
+            if alive[q]
+            else ReadyCheck(ok=False, key=f"health.{q}_worker_missing")
+        )
+        for q in wanted
+    }
+
+
+@router.get(
+    "/health/ready",
+    response_model=ReadyResponse,
+    responses={503: {"model": ReadyResponse}},
+)
+async def ready():
+    """Ready to take a job end to end: 200, or 503 naming what is not."""
+    from fastapi.responses import JSONResponse
+
+    settings = get_settings()
+    database, redis_check, queues = await asyncio.gather(
+        ready_database(settings), ready_redis(settings), ready_queues(settings)
+    )
+    checks: dict[str, ReadyCheck] = {"database": database, "redis": redis_check, **queues}
+    failing = [c.key for c in checks.values() if not c.ok and c.key]
+    body = ReadyResponse(
+        status="not_ready" if failing else "ready", failing=failing, checks=checks
+    )
+    return JSONResponse(body.model_dump(), status_code=503 if failing else 200)

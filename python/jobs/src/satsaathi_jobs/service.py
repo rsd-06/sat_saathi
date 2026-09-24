@@ -17,6 +17,8 @@ from sqlalchemy.orm import selectinload
 
 from satsaathi_core.indices import available_indices
 from satsaathi_core.models import (
+    Artifact,
+    ArtifactKind,
     Asset,
     InputSet,
     InputSetAsset,
@@ -320,6 +322,24 @@ async def _persist(
             row.started_at = datetime.fromisoformat(record.started_at)
         if record.finished_at:
             row.finished_at = datetime.fromisoformat(record.finished_at)
+
+    # Files a step wrote (box GeoJSON, for one) are recorded once per job, so
+    # a re-run rewrites them rather than piling up duplicates.
+    old = await session.scalars(select(Artifact).where(Artifact.job_id == job.id))
+    for artifact in old:
+        await session.delete(artifact)
+    for record in trace.steps:
+        for art in record.artifacts:
+            session.add(
+                Artifact(
+                    job_id=job.id,
+                    step_key=StepKey(record.step_key),
+                    kind=ArtifactKind(art["kind"]),
+                    name=art["name"],
+                    storage_key=art["storage_key"],
+                    meta=art.get("meta") or {},
+                )
+            )
 
     job.confidence = trace.confidence
     job.answer = trace.answer

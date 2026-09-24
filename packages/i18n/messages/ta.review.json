@@ -1053,6 +1053,176 @@
       "reviewed": false,
       "source": "Optional",
       "translation": "விருப்பத்தேர்வு"
+    },
+    "model.not_installed": {
+      "reviewed": false,
+      "source": "Not installed — missing {missing}",
+      "translation": "நிறுவப்படவில்லை — {missing} இல்லை"
+    },
+    "model.base_missing": {
+      "reviewed": false,
+      "source": "Needs its base model ({base}) installed first",
+      "translation": "முதலில் இதன் அடிப்படை மாதிரி ({base}) நிறுவப்பட வேண்டும்"
+    },
+    "model.base_mismatch": {
+      "reviewed": false,
+      "source": "Refused: trained on {found}, not on {expected}",
+      "translation": "மறுக்கப்பட்டது: {expected} அல்ல, {found} மீது பயிற்றுவிக்கப்பட்டது"
+    },
+    "model.adapter_config_unreadable": {
+      "reviewed": false,
+      "source": "The adapter's configuration file cannot be read",
+      "translation": "அடாப்டரின் அமைப்புக் கோப்பைப் படிக்க முடியவில்லை"
+    },
+    "model.dependency_missing": {
+      "reviewed": false,
+      "source": "Needs {model} to be available",
+      "translation": "{model} கிடைக்க வேண்டும்"
+    },
+    "model.stub": {
+      "reviewed": false,
+      "source": "Declared, not implemented yet",
+      "translation": "அறிவிக்கப்பட்டது, இன்னும் செயல்படுத்தப்படவில்லை"
+    },
+    "model.unknown": {
+      "reviewed": false,
+      "source": "No model called {name}",
+      "translation": "{name} என்ற மாதிரி இல்லை"
+    },
+    "model.unavailable": {
+      "reviewed": false,
+      "source": "This model is not available here",
+      "translation": "இந்த மாதிரி இங்கே கிடைக்கவில்லை"
+    },
+    "model.not_loadable": {
+      "reviewed": false,
+      "source": "The model could not be loaded, so this step shows example output",
+      "translation": "மாதிரியை ஏற்ற முடியவில்லை, எனவே இந்தப் படி மாதிரி வெளியீட்டைக் காட்டுகிறது"
+    },
+    "model.oom": {
+      "reviewed": false,
+      "source": "The GPU ran out of memory, so this step shows example output",
+      "translation": "GPU நினைவகம் தீர்ந்தது, எனவே இந்தப் படி மாதிரி வெளியீட்டைக் காட்டுகிறது"
+    },
+    "model.output_unparseable": {
+      "reviewed": false,
+      "source": "The model answered, but not in a form that could be read — held for review",
+      "translation": "மாதிரி பதிலளித்தது, ஆனால் படிக்கக்கூடிய வடிவில் இல்லை — மதிப்பாய்வுக்கு நிறுத்தப்பட்டது"
+    },
+    "model.inference_failed": {
+      "reviewed": false,
+      "source": "The model failed while answering",
+      "translation": "பதிலளிக்கும்போது மாதிரி தோல்வியடைந்தது"
+    },
+    "health.database_unreachable": {
+      "reviewed": false,
+      "source": "The database cannot be reached",
+      "translation": "தரவுத்தளத்தை அணுக முடியவில்லை"
+    },
+    "health.migrations_behind": {
+      "reviewed": false,
+      "source": "The database schema is not up to date",
+      "translation": "தரவுத்தள அமைப்பு புதுப்பிக்கப்படவில்லை"
+    },
+    "health.migrations_unknown": {
+      "reviewed": false,
+      "source": "The expected database schema version cannot be determined",
+      "translation": "எதிர்பார்க்கப்படும் தரவுத்தள அமைப்பு பதிப்பைக் கண்டறிய முடியவில்லை"
+    },
+    "health.redis_unreachable": {
+      "reviewed": false,
+      "source": "The job queue cannot be reached",
+      "translation": "பணி வரிசையை அணுக முடியவில்லை"
+    },
+    "health.cpu_worker_missing": {
+      "reviewed": false,
+      "source": "No worker is taking analysis jobs",
+      "translation": "பகுப்பாய்வுப் பணிகளை எந்தப் பணியாளரும் எடுக்கவில்லை"
+    },
+    "health.gpu_worker_missing": {
+      "reviewed": false,
+      "source": "No GPU worker is running the models",
+      "translation": "மாதிரிகளை இயக்கும் GPU பணியாளர் இல்லை"
+    },
+    "selftest.disabled": {
+      "reviewed": false,
+      "source": "Model self-tests are turned off on this deployment",
+      "translation": "இந்த நிறுவலில் மாதிரி சுயசோதனைகள் முடக்கப்பட்டுள்ளன"
+    },
+    "selftest.no_fixtures": {
+      "reviewed": false,
+      "source": "No test samples are installed for this model",
+      "translation": "இந்த மாதிரிக்கு சோதனை மாதிரிகள் நிறுவப்படவில்லை"
+    },
+    "selftest.crashed": {
+      "reviewed": false,
+      "source": "The self-test stopped with an error",
+      "translation": "சுயசோதனை பிழையுடன் நின்றது"
+    },
+    "vlm.no_boxes": {
+      "reviewed": false,
+      "source": "A location was asked for, but the model answered without one",
+      "translation": "இடம் கேட்கப்பட்டது, ஆனால் மாதிரி இடமின்றி பதிலளித்தது"
+    },
+    "change.sar_classical_only": {
+      "reviewed": false,
+      "source": "SAR pair: changes measured from backscatter only, without a model explanation",
+      "translation": "SAR இணை: மாற்றங்கள் பின்சிதறலில் இருந்து மட்டுமே அளக்கப்பட்டன, மாதிரி விளக்கம் இல்லை"
+    },
+    "change.model_disagrees_with_map": {
+      "reviewed": false,
+      "source": "The model's answer disagrees with the measured change map",
+      "translation": "மாதிரியின் பதில் அளக்கப்பட்ட மாற்ற வரைபடத்துடன் ஒத்துப்போகவில்லை"
+    },
+    "change.no_signal": {
+      "reviewed": false,
+      "source": "The two images show no measurable difference",
+      "translation": "இரண்டு படங்களிலும் அளவிடக்கூடிய வேறுபாடு இல்லை"
+    },
+    "change.weak_separation": {
+      "reviewed": false,
+      "source": "Changed and unchanged areas are hard to separate; treat the regions with caution",
+      "translation": "மாறிய மற்றும் மாறாத பகுதிகளைப் பிரிப்பது கடினம்; பகுதிகளை எச்சரிக்கையுடன் பாருங்கள்"
+    },
+    "index.unquoted_numbers": {
+      "reviewed": false,
+      "source": "The answer quotes a number that is not in the computed statistics — held for review",
+      "translation": "கணக்கிடப்பட்ட புள்ளிவிவரங்களில் இல்லாத எண்ணை பதில் குறிப்பிடுகிறது — மதிப்பாய்வுக்கு நிறுத்தப்பட்டது"
+    },
+    "sar_water.not_bimodal": {
+      "reviewed": false,
+      "source": "Water and land are not clearly separable in this SAR scene; treat the water extent with caution",
+      "translation": "இந்த SAR காட்சியில் நீரையும் நிலத்தையும் தெளிவாகப் பிரிக்க முடியவில்லை; நீர்ப் பரப்பை எச்சரிக்கையுடன் பாருங்கள்"
+    },
+    "sar_water.no_signal": {
+      "reviewed": false,
+      "source": "This SAR scene has no usable backscatter values",
+      "translation": "இந்த SAR காட்சியில் பயன்படுத்தக்கூடிய பின்சிதறல் மதிப்புகள் இல்லை"
+    },
+    "sar_water.fixture": {
+      "reviewed": false,
+      "source": "Example water figure; no SAR measurement ran",
+      "translation": "மாதிரி நீர் எண்ணிக்கை; SAR அளவீடு நடக்கவில்லை"
+    },
+    "sensor.inferred_sar_from_greyscale": {
+      "reviewed": false,
+      "source": "Treated as SAR because the image is greyscale — choose a band preset if it is not",
+      "translation": "படம் சாம்பல் நிறத்தில் உள்ளதால் SAR ஆகக் கருதப்பட்டது — இல்லையெனில் பட்டை முன்னமைவைத் தேர்ந்தெடுக்கவும்"
+    },
+    "imaging.sar_8bit_chip": {
+      "reviewed": false,
+      "source": "8-bit SAR image used as is",
+      "translation": "8-பிட் SAR படம் அப்படியே பயன்படுத்தப்பட்டது"
+    },
+    "imaging.sar_db_stretch": {
+      "reviewed": false,
+      "source": "SAR backscatter converted to decibels and contrast-stretched for the model",
+      "translation": "மாதிரிக்காக SAR பின்சிதறல் டெசிபலாக மாற்றப்பட்டு ஒளிமாறுபாடு நீட்டிக்கப்பட்டது"
+    },
+    "imaging.rgb_from_first_bands": {
+      "reviewed": false,
+      "source": "No red, green and blue bands mapped; the first three bands were shown to the model",
+      "translation": "சிவப்பு, பச்சை, நீல பட்டைகள் வரைபடமாக்கப்படவில்லை; முதல் மூன்று பட்டைகள் மாதிரிக்குக் காட்டப்பட்டன"
     }
   },
   "auth.error.badCredentials": {

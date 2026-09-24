@@ -1053,6 +1053,176 @@
       "reviewed": false,
       "source": "Optional",
       "translation": "वैकल्पिक"
+    },
+    "model.not_installed": {
+      "reviewed": false,
+      "source": "Not installed — missing {missing}",
+      "translation": "इंस्टॉल नहीं है — {missing} नहीं मिला"
+    },
+    "model.base_missing": {
+      "reviewed": false,
+      "source": "Needs its base model ({base}) installed first",
+      "translation": "पहले इसका मूल मॉडल ({base}) इंस्टॉल करें"
+    },
+    "model.base_mismatch": {
+      "reviewed": false,
+      "source": "Refused: trained on {found}, not on {expected}",
+      "translation": "अस्वीकृत: {expected} पर नहीं, {found} पर प्रशिक्षित"
+    },
+    "model.adapter_config_unreadable": {
+      "reviewed": false,
+      "source": "The adapter's configuration file cannot be read",
+      "translation": "एडैप्टर की कॉन्फ़िगरेशन फ़ाइल पढ़ी नहीं जा सकती"
+    },
+    "model.dependency_missing": {
+      "reviewed": false,
+      "source": "Needs {model} to be available",
+      "translation": "{model} उपलब्ध होना चाहिए"
+    },
+    "model.stub": {
+      "reviewed": false,
+      "source": "Declared, not implemented yet",
+      "translation": "घोषित, अभी लागू नहीं"
+    },
+    "model.unknown": {
+      "reviewed": false,
+      "source": "No model called {name}",
+      "translation": "{name} नाम का कोई मॉडल नहीं"
+    },
+    "model.unavailable": {
+      "reviewed": false,
+      "source": "This model is not available here",
+      "translation": "यह मॉडल यहाँ उपलब्ध नहीं है"
+    },
+    "model.not_loadable": {
+      "reviewed": false,
+      "source": "The model could not be loaded, so this step shows example output",
+      "translation": "मॉडल लोड नहीं हो सका, इसलिए यह चरण उदाहरण आउटपुट दिखाता है"
+    },
+    "model.oom": {
+      "reviewed": false,
+      "source": "The GPU ran out of memory, so this step shows example output",
+      "translation": "GPU की मेमोरी खत्म हो गई, इसलिए यह चरण उदाहरण आउटपुट दिखाता है"
+    },
+    "model.output_unparseable": {
+      "reviewed": false,
+      "source": "The model answered, but not in a form that could be read — held for review",
+      "translation": "मॉडल ने उत्तर दिया, पर पढ़ने योग्य रूप में नहीं — समीक्षा के लिए रोका गया"
+    },
+    "model.inference_failed": {
+      "reviewed": false,
+      "source": "The model failed while answering",
+      "translation": "उत्तर देते समय मॉडल विफल हो गया"
+    },
+    "health.database_unreachable": {
+      "reviewed": false,
+      "source": "The database cannot be reached",
+      "translation": "डेटाबेस तक नहीं पहुँचा जा सकता"
+    },
+    "health.migrations_behind": {
+      "reviewed": false,
+      "source": "The database schema is not up to date",
+      "translation": "डेटाबेस स्कीमा अद्यतन नहीं है"
+    },
+    "health.migrations_unknown": {
+      "reviewed": false,
+      "source": "The expected database schema version cannot be determined",
+      "translation": "अपेक्षित डेटाबेस स्कीमा संस्करण तय नहीं किया जा सकता"
+    },
+    "health.redis_unreachable": {
+      "reviewed": false,
+      "source": "The job queue cannot be reached",
+      "translation": "जॉब कतार तक नहीं पहुँचा जा सकता"
+    },
+    "health.cpu_worker_missing": {
+      "reviewed": false,
+      "source": "No worker is taking analysis jobs",
+      "translation": "कोई वर्कर विश्लेषण कार्य नहीं ले रहा है"
+    },
+    "health.gpu_worker_missing": {
+      "reviewed": false,
+      "source": "No GPU worker is running the models",
+      "translation": "कोई GPU वर्कर मॉडल नहीं चला रहा है"
+    },
+    "selftest.disabled": {
+      "reviewed": false,
+      "source": "Model self-tests are turned off on this deployment",
+      "translation": "इस परिनियोजन पर मॉडल स्व-परीक्षण बंद हैं"
+    },
+    "selftest.no_fixtures": {
+      "reviewed": false,
+      "source": "No test samples are installed for this model",
+      "translation": "इस मॉडल के लिए कोई परीक्षण नमूना इंस्टॉल नहीं है"
+    },
+    "selftest.crashed": {
+      "reviewed": false,
+      "source": "The self-test stopped with an error",
+      "translation": "स्व-परीक्षण त्रुटि के साथ रुक गया"
+    },
+    "vlm.no_boxes": {
+      "reviewed": false,
+      "source": "A location was asked for, but the model answered without one",
+      "translation": "स्थान पूछा गया था, पर मॉडल ने बिना स्थान के उत्तर दिया"
+    },
+    "change.sar_classical_only": {
+      "reviewed": false,
+      "source": "SAR pair: changes measured from backscatter only, without a model explanation",
+      "translation": "SAR जोड़ी: परिवर्तन केवल बैकस्कैटर से मापे गए, मॉडल व्याख्या के बिना"
+    },
+    "change.model_disagrees_with_map": {
+      "reviewed": false,
+      "source": "The model's answer disagrees with the measured change map",
+      "translation": "मॉडल का उत्तर मापे गए परिवर्तन मानचित्र से मेल नहीं खाता"
+    },
+    "change.no_signal": {
+      "reviewed": false,
+      "source": "The two images show no measurable difference",
+      "translation": "दोनों छवियों में कोई मापने योग्य अंतर नहीं है"
+    },
+    "change.weak_separation": {
+      "reviewed": false,
+      "source": "Changed and unchanged areas are hard to separate; treat the regions with caution",
+      "translation": "बदले और न बदले क्षेत्रों को अलग करना कठिन है; क्षेत्रों को सावधानी से देखें"
+    },
+    "index.unquoted_numbers": {
+      "reviewed": false,
+      "source": "The answer quotes a number that is not in the computed statistics — held for review",
+      "translation": "उत्तर में ऐसी संख्या है जो गणना किए गए आँकड़ों में नहीं है — समीक्षा के लिए रोका गया"
+    },
+    "sar_water.not_bimodal": {
+      "reviewed": false,
+      "source": "Water and land are not clearly separable in this SAR scene; treat the water extent with caution",
+      "translation": "इस SAR दृश्य में पानी और भूमि स्पष्ट रूप से अलग नहीं हैं; जल-विस्तार को सावधानी से देखें"
+    },
+    "sar_water.no_signal": {
+      "reviewed": false,
+      "source": "This SAR scene has no usable backscatter values",
+      "translation": "इस SAR दृश्य में कोई उपयोगी बैकस्कैटर मान नहीं है"
+    },
+    "sar_water.fixture": {
+      "reviewed": false,
+      "source": "Example water figure; no SAR measurement ran",
+      "translation": "उदाहरण जल आँकड़ा; कोई SAR माप नहीं चला"
+    },
+    "sensor.inferred_sar_from_greyscale": {
+      "reviewed": false,
+      "source": "Treated as SAR because the image is greyscale — choose a band preset if it is not",
+      "translation": "छवि ग्रेस्केल है, इसलिए SAR माना गया — यदि ऐसा नहीं है तो बैंड प्रीसेट चुनें"
+    },
+    "imaging.sar_8bit_chip": {
+      "reviewed": false,
+      "source": "8-bit SAR image used as is",
+      "translation": "8-बिट SAR छवि जैसी है वैसी उपयोग की गई"
+    },
+    "imaging.sar_db_stretch": {
+      "reviewed": false,
+      "source": "SAR backscatter converted to decibels and contrast-stretched for the model",
+      "translation": "मॉडल के लिए SAR बैकस्कैटर को डेसिबल में बदला गया और कंट्रास्ट बढ़ाया गया"
+    },
+    "imaging.rgb_from_first_bands": {
+      "reviewed": false,
+      "source": "No red, green and blue bands mapped; the first three bands were shown to the model",
+      "translation": "लाल, हरा और नीला बैंड मैप नहीं थे; मॉडल को पहले तीन बैंड दिखाए गए"
     }
   },
   "auth.error.badCredentials": {

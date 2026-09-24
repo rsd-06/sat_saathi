@@ -21,6 +21,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/health/live": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Live
+         * @description The process is up. No dependency is touched, so it is always fast.
+         */
+        get: operations["live_api_v1_health_live_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/health/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Ready
+         * @description Ready to take a job end to end: 200, or 503 naming what is not.
+         */
+        get: operations["ready_api_v1_health_ready_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/register": {
         parameters: {
             query?: never;
@@ -325,6 +365,66 @@ export interface paths {
         };
         /** List Models */
         get: operations["list_models_api_v1_models_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/models/runtime": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Runtime
+         * @description The GPU worker's heartbeat: what is loaded, VRAM, versions, last error.
+         */
+        get: operations["runtime_api_v1_models_runtime_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/models/{name}/selftest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Start Selftest
+         * @description Run a model's golden fixtures on the GPU worker. Operators only.
+         *
+         *     Enabled by SATSAATHI_DEBUG=1: a self-test occupies the one GPU for
+         *     seconds, which is not something every signed-in user should trigger.
+         */
+        post: operations["start_selftest_api_v1_models__name__selftest_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/models/selftest/{task_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Selftest Result */
+        get: operations["selftest_result_api_v1_models_selftest__task_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -725,6 +825,15 @@ export interface components {
              */
             created_at: string;
         };
+        /** LiveResponse */
+        LiveResponse: {
+            /**
+             * Status
+             * @default live
+             * @constant
+             */
+            status: "live";
+        };
         /** LoginIn */
         LoginIn: {
             /**
@@ -763,6 +872,36 @@ export interface components {
              * @default
              */
             note: string;
+            /**
+             * Kind
+             * @default hf_base
+             */
+            kind: string;
+            /**
+             * Installed
+             * @default false
+             */
+            installed: boolean;
+            /** Missing Files */
+            missing_files?: string[];
+            /** Base */
+            base?: string | null;
+            /** Uses */
+            uses?: string[];
+            /** Compatible */
+            compatible?: boolean | null;
+            reason?: components["schemas"]["ErrorBody"] | null;
+            /** Eval */
+            eval?: {
+                [key: string]: unknown;
+            } | null;
+            /** Loaded */
+            loaded?: boolean | null;
+            /**
+             * Is Stub
+             * @default true
+             */
+            is_stub: boolean;
         };
         /** ModelsOut */
         ModelsOut: {
@@ -776,6 +915,11 @@ export interface components {
             stub_tool_count: number;
             /** Tool Count */
             tool_count: number;
+            /**
+             * Gpu Worker
+             * @default false
+             */
+            gpu_worker: boolean;
         };
         /**
          * PresignOut
@@ -794,6 +938,34 @@ export interface components {
             /** Headers */
             headers?: {
                 [key: string]: string;
+            };
+        };
+        /** ReadyCheck */
+        ReadyCheck: {
+            /** Ok */
+            ok: boolean;
+            /** Key */
+            key?: string | null;
+            /**
+             * Params
+             * @default {}
+             */
+            params: {
+                [key: string]: unknown;
+            };
+        };
+        /** ReadyResponse */
+        ReadyResponse: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "ready" | "not_ready";
+            /** Failing */
+            failing: string[];
+            /** Checks */
+            checks: {
+                [key: string]: components["schemas"]["ReadyCheck"];
             };
         };
         /** RegisterIn */
@@ -865,6 +1037,95 @@ export interface components {
             created_at: string;
             /** Resolved At */
             resolved_at: string | null;
+        };
+        /**
+         * RuntimeOut
+         * @description The GPU worker's last heartbeat, or `no_gpu_worker`.
+         */
+        RuntimeOut: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "up" | "no_gpu_worker";
+            /** Worker Id */
+            worker_id?: string | null;
+            /** Base Loaded */
+            base_loaded?: boolean | null;
+            /** Adapters Loaded */
+            adapters_loaded?: string[];
+            /** Vram Allocated Mb */
+            vram_allocated_mb?: number | null;
+            /** Vram Reserved Mb */
+            vram_reserved_mb?: number | null;
+            /** Vram Peak Mb */
+            vram_peak_mb?: number | null;
+            /** Gpu Name */
+            gpu_name?: string | null;
+            /** Torch */
+            torch?: string | null;
+            /** Transformers */
+            transformers?: string | null;
+            /** Peft */
+            peft?: string | null;
+            /** Bitsandbytes */
+            bitsandbytes?: string | null;
+            /** Load Seconds */
+            load_seconds?: number | null;
+            /** Last Inference Ms */
+            last_inference_ms?: number | null;
+            /** Inferences Total */
+            inferences_total?: number | null;
+            /** Last Error Key */
+            last_error_key?: string | null;
+            /** Idle Seconds */
+            idle_seconds?: number | null;
+        };
+        /** SelftestCheck */
+        SelftestCheck: {
+            /** Sample */
+            sample?: string | null;
+            /** Check */
+            check: string;
+            /** Passed */
+            passed: boolean;
+            /**
+             * Detail
+             * @default
+             */
+            detail: string;
+        };
+        /** SelftestOut */
+        SelftestOut: {
+            /** Task Id */
+            task_id: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "pending" | "done" | "failed";
+            /** Model */
+            model?: string | null;
+            /** Passed */
+            passed?: boolean | null;
+            /** Checks */
+            checks?: components["schemas"]["SelftestCheck"][];
+            /** Latency Ms */
+            latency_ms?: number | null;
+            /** Vram Peak Mb */
+            vram_peak_mb?: number | null;
+            /**
+             * Output Excerpt
+             * @default
+             */
+            output_excerpt: string;
+        };
+        /** SelftestStarted */
+        SelftestStarted: {
+            /** Task Id */
+            task_id: string;
+            /** Model */
+            model: string;
         };
         /**
          * SessionOut
@@ -1010,6 +1271,55 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    live_api_v1_health_live_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LiveResponse"];
+                };
+            };
+        };
+    };
+    ready_api_v1_health_ready_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadyResponse"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReadyResponse"];
                 };
             };
         };
@@ -1560,6 +1870,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ModelsOut"];
+                };
+            };
+        };
+    };
+    runtime_api_v1_models_runtime_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuntimeOut"];
+                };
+            };
+        };
+    };
+    start_selftest_api_v1_models__name__selftest_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SelftestStarted"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    selftest_result_api_v1_models_selftest__task_id__get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                task_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SelftestOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

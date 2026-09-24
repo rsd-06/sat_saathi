@@ -32,6 +32,8 @@ def test_celery_dispatch_enqueues_by_name_and_queues_nothing_locally(
         sent["queue"] = queue
 
     monkeypatch.setattr("satsaathi_api.dispatch.send_to_celery", fake_send)
+    # A GPU worker is alive; without one the job would fall back to cpu.
+    monkeypatch.setattr("satsaathi_api.heartbeat.gpu_worker_alive_sync", lambda _u: True)
     settings = Settings(job_dispatch="celery")
     background = BackgroundTasks()
 
