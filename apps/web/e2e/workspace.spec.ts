@@ -163,3 +163,36 @@ test("offers the trace and layers as real downloads", async ({ page }) => {
     /\/jobs\/[0-9a-f-]{36}\/result\.geojson$/,
   );
 });
+
+test("the file picker opens once when the drop zone is clicked", async ({ page }) => {
+  /**
+   * Regression: the picker would not open at all.
+   *
+   * The file input sat inside the clickable drop zone, so the synthetic click
+   * from the zone's own handler bubbled back into that handler, which fired
+   * it again — and the browser suppresses the dialog rather than recursing.
+   *
+   * Every other test here uses setInputFiles, which writes straight onto the
+   * input and never opens a dialog, so none of them could see this. This one
+   * counts dialogs: zero is the bug, more than one is the recursion behind it.
+   */
+  await page.goto("/en/workspace");
+  const zone = page.locator('[role="button"][aria-describedby="upload-accepts"]');
+  await expect(zone).toBeVisible();
+
+  let dialogs = 0;
+  page.on("filechooser", () => {
+    dialogs += 1;
+  });
+
+  await zone.click();
+  await page.waitForTimeout(1000);
+  expect(dialogs).toBe(1);
+
+  // The keyboard is the other way in, and must behave the same.
+  dialogs = 0;
+  await zone.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(1000);
+  expect(dialogs).toBe(1);
+});

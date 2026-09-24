@@ -191,6 +191,21 @@ export function ImageUpload({
 
   return (
     <div>
+      {/* The input is a sibling of the drop zone, never a child of it.
+          Inside, the synthetic click from `openPicker` bubbles straight back
+          into the zone's own onClick, which calls it again — and the browser
+          suppresses the file dialog rather than recursing. That looks exactly
+          like a picker that refuses to open. */}
+      <input
+        ref={inputRef}
+        type="file"
+        accept={ACCEPT}
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden
+        onChange={(e) => void accept(e.target.files?.[0])}
+      />
+
       {/* The whole area takes a drop, a click and the keyboard. A target this
           large that only responded to one small link inside it would be a
           worse target than a plain button. */}
@@ -221,13 +236,6 @@ export function ImageUpload({
         <p id="upload-accepts" className="marginal mt-1">
           {t("upload.accepts", { max: MAX_MB })}
         </p>
-        <input
-          ref={inputRef}
-          type="file"
-          accept={ACCEPT}
-          className="sr-only"
-          onChange={(e) => void accept(e.target.files?.[0])}
-        />
       </div>
       {error && (
         <p
