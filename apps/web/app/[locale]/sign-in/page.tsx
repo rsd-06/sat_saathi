@@ -2,19 +2,32 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { AuthForm } from "@/components/auth-form";
 import { AuthLayout } from "@/components/auth-layout";
+import { GoogleButton } from "@/components/google-button";
 import { Link } from "@/i18n/navigation";
+
+/** Callback failures arrive as a short code in the URL, mapped to a key here. */
+const OAUTH_ERRORS: Record<string, string> = {
+  cancelled: "auth.error.googleCancelled",
+  state_mismatch: "auth.error.googleState",
+  unverified_email: "auth.error.googleUnverifiedEmail",
+  google_unavailable: "auth.error.googleDisabled",
+  google_failed: "auth.error.googleFailed",
+  api_unreachable: "error.apiUnreachable.title",
+};
 
 export default async function SignInPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; error?: string }>;
 }) {
   const { locale } = await params;
-  const { next } = await searchParams;
+  const { next, error } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations();
+
+  const errorKey = error ? OAUTH_ERRORS[error] : undefined;
 
   return (
     <AuthLayout
@@ -33,6 +46,15 @@ export default async function SignInPage({
         </>
       }
     >
+      {errorKey && (
+        <p
+          role="alert"
+          className="border-alert bg-alert-wash/60 text-ink mt-6 rounded-xs border-l-2 px-3 py-2 text-sm leading-snug"
+        >
+          {t(errorKey)}
+        </p>
+      )}
+      <GoogleButton locale={locale} next={next} />
       <AuthForm mode="sign-in" locale={locale} next={next} />
     </AuthLayout>
   );

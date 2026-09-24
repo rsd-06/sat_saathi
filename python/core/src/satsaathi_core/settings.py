@@ -62,6 +62,16 @@ class Settings(BaseSettings):
     )
     llm_provider: Literal["stub", "ollama"] = "stub"
 
+    #: Google OAuth. The API needs only the client id, as the audience it will
+    #: accept in an ID token; the secret belongs to whoever exchanges codes.
+    #: Empty means Google sign-in is off, and the API refuses such tokens
+    #: rather than skipping the audience check.
+    google_client_id: str = ""
+
+    @property
+    def google_sign_in_enabled(self) -> bool:
+        return bool(self.google_client_id)
+
     @property
     def is_offline(self) -> bool:
         return self.mode == "offline"

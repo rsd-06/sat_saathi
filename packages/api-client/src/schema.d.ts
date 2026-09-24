@@ -95,6 +95,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/google": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sign In With Google
+         * @description Sign in with a Google ID token, verified here.
+         *
+         *     The caller has already exchanged an authorization code for this token, but
+         *     that is not evidence of anything on its own: a token can be minted for a
+         *     different application, or replayed after expiry. Every claim that matters
+         *     is checked against Google's own keys before an account is touched.
+         */
+        post: operations["sign_in_with_google_api_v1_auth_google_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/logout": {
         parameters: {
             query?: never;
@@ -670,6 +695,20 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /**
+         * GoogleTokenIn
+         * @description A Google ID token, to be verified here rather than trusted.
+         */
+        GoogleTokenIn: {
+            /** Id Token */
+            id_token: string;
+            /**
+             * Preferred Locale
+             * @default en
+             * @enum {string}
+             */
+            preferred_locale: "en" | "hi" | "ta" | "bn";
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1140,6 +1179,11 @@ export interface components {
              */
             expires_at: string;
             user: components["schemas"]["UserOut"];
+            /**
+             * Created
+             * @default false
+             */
+            created: boolean;
         };
         /** StepOut */
         StepOut: {
@@ -1367,6 +1411,39 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["LoginIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sign_in_with_google_api_v1_auth_google_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GoogleTokenIn"];
             };
         };
         responses: {

@@ -14,7 +14,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from satsaathi_core.models import User, UserSession
+from satsaathi_core.models import AuthIdentity, User, UserSession
 from satsaathi_core.passwords import (
     hash_password,
     hash_session_token,
@@ -39,6 +39,14 @@ def _timing_hash() -> str:
 
 class EmailTaken(Exception):
     """Raised rather than returned, so a caller cannot ignore it."""
+
+
+class UnverifiedProviderEmail(Exception):
+    """The provider would not vouch for the address, so it cannot be linked.
+
+    Without this, anyone able to create an account at the provider using
+    someone else's address could sign in as them here.
+    """
 
 
 def normalise_email(email: str) -> str:
@@ -94,6 +102,13 @@ async def authenticate(
         # and slowly for a known one is the same disclosure by other means,
         # and it has to be a real hash: verifying against a malformed one
         # fails immediately and equalises nothing.
+        verify_password(_timing_hash(), password)
+        return None
+
+    if user.password_hash is None:
+        # An account that only ever signs in through a provider has nothing to
+        # compare against. Spend the time anyway so it is indistinguishable
+        # from a wrong password, and refuse.
         verify_password(_timing_hash(), password)
         return None
 
@@ -165,3 +180,99 @@ async def end_all_sessions(session: AsyncSession, user_id: uuid.UUID) -> int:
         record.revoked_at = now
         count += 1
     return count
+
+
+async def find_identity(
+    session: AsyncSession, *, provider: str, subject: str
+) -> AuthIdentity | None:
+    """Look a person up by the provider's own identifier, never by email.
+
+    An address at a provider can be changed or reassigned; the subject cannot.
+    Matching on the subject is what makes a returning user the same user.
+    """
+    result = await session.scalars(
+        select(AuthIdentity).where(
+            AuthIdentity.provider == provider, AuthIdentity.subject == subject
+        )
+    )
+    return result.first()
+
+
+async def sign_in_with_provider(
+    session: AsyncSession,
+    *,
+    provider: str,
+    subject: str,
+    email: str,
+    email_verified: bool,
+    full_name: str | None = None,
+    preferred_locale: str = "en",
+) -> tuple[User, bool]:
+    """Sign in or register through an outside provider.
+
+    Returns the user and whether the account was created just now.
+
+    Three cases, and the middle one is the dangerous one:
+
+    1. The identity is already linked — sign that user in. Nothing about the
+       provider's current email matters here; the link was made once.
+
+    2. No identity, but a local account already uses this address. Linking
+       them is only safe when the provider says it verified the address. If
+       it did not, anyone who registered that address at the provider could
+       take over the local account, so this refuses outright rather than
+       creating a second account on the same address, which would be its own
+       kind of confusion.
+
+    3. Nobody here at all — create an account with no password. It signs in
+       through the provider and nowhere else until a password is set.
+    """
+    email = normalise_email(email)
+
+    identity = await find_identity(session, provider=provider, subject=subject)
+    if identity is not None:
+        identity.last_used_at = datetime.now(UTC)
+        identity.email = email
+        user = await session.get(User, identity.user_id)
+        if user is None:  # pragma: no cover - the cascade makes this unreachable
+            raise ValueError("identity points at a missing user")
+        user.last_seen_at = datetime.now(UTC)
+        return user, False
+
+    existing = await get_by_email(session, email)
+    if existing is not None:
+        if not email_verified:
+            raise UnverifiedProviderEmail(email)
+        session.add(
+            AuthIdentity(
+                user_id=existing.id,
+                provider=provider,
+                subject=subject,
+                email=email,
+                last_used_at=datetime.now(UTC),
+            )
+        )
+        existing.last_seen_at = datetime.now(UTC)
+        await session.flush()
+        return existing, False
+
+    user = User(
+        email=email,
+        password_hash=None,
+        full_name=(full_name or email.split("@")[0]).strip(),
+        preferred_locale=preferred_locale,
+        last_seen_at=datetime.now(UTC),
+    )
+    session.add(user)
+    await session.flush()
+    session.add(
+        AuthIdentity(
+            user_id=user.id,
+            provider=provider,
+            subject=subject,
+            email=email,
+            last_used_at=datetime.now(UTC),
+        )
+    )
+    await session.flush()
+    return user, True

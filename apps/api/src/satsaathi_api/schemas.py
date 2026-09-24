@@ -43,6 +43,13 @@ class LoginIn(BaseModel):
     password: str = Field(min_length=1, max_length=256)
 
 
+class GoogleTokenIn(BaseModel):
+    """A Google ID token, to be verified here rather than trusted."""
+
+    id_token: str = Field(min_length=1, max_length=8192)
+    preferred_locale: Literal["en", "hi", "ta", "bn"] = "en"
+
+
 class UserOut(BaseModel):
     id: uuid.UUID
     email: str
@@ -59,6 +66,9 @@ class SessionOut(BaseModel):
     token: str
     expires_at: datetime
     user: UserOut
+    #: True when this sign-in created the account, so the interface can
+    #: welcome a new person rather than greeting them back.
+    created: bool = False
 
 
 class ModelOut(BaseModel):

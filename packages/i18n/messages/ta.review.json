@@ -1404,5 +1404,45 @@
     "reviewed": false,
     "source": "Upload a scene and ask a question. Every step is shown as it runs.",
     "translation": "ஒரு காட்சியைப் பதிவேற்றி கேள்வி கேளுங்கள். ஒவ்வொரு படியும் இயங்கும்போது காட்டப்படும்."
+  },
+  "auth.google.continue": {
+    "reviewed": false,
+    "source": "Continue with Google",
+    "translation": "Google மூலம் தொடரவும்"
+  },
+  "auth.google.or": {
+    "reviewed": false,
+    "source": "or",
+    "translation": "அல்லது"
+  },
+  "auth.error.googleDisabled": {
+    "reviewed": false,
+    "source": "Google sign-in is not set up on this server. Use your password.",
+    "translation": "இந்தச் சேவையகத்தில் Google உள்நுழைவு அமைக்கப்படவில்லை. உங்கள் கடவுச்சொல்லைப் பயன்படுத்துங்கள்."
+  },
+  "auth.error.googleRejected": {
+    "reviewed": false,
+    "source": "Google could not confirm that sign-in. Try again.",
+    "translation": "அந்த உள்நுழைவை Google உறுதிப்படுத்த முடியவில்லை. மீண்டும் முயலுங்கள்."
+  },
+  "auth.error.googleUnverifiedEmail": {
+    "reviewed": false,
+    "source": "An account already uses this email, and Google has not verified the address. Sign in with your password instead.",
+    "translation": "இந்த மின்னஞ்சலில் ஏற்கெனவே கணக்கு உள்ளது, மேலும் Google இந்த முகவரியைச் சரிபார்க்கவில்லை. மாறாக உங்கள் கடவுச்சொல்லால் உள்நுழையுங்கள்."
+  },
+  "auth.error.googleCancelled": {
+    "reviewed": false,
+    "source": "Sign-in was cancelled.",
+    "translation": "உள்நுழைவு ரத்து செய்யப்பட்டது."
+  },
+  "auth.error.googleState": {
+    "reviewed": false,
+    "source": "That sign-in link expired or did not start here. Try again.",
+    "translation": "அந்த உள்நுழைவு இணைப்பு காலாவதியானது அல்லது இங்கிருந்து தொடங்கவில்லை. மீண்டும் முயலுங்கள்."
+  },
+  "auth.error.googleFailed": {
+    "reviewed": false,
+    "source": "Google sign-in did not complete. Try again.",
+    "translation": "Google உள்நுழைவு நிறைவடையவில்லை. மீண்டும் முயலுங்கள்."
   }
 }

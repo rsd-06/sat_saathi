@@ -116,8 +116,10 @@ class User(Base):
         UUID(as_uuid=True), primary_key=True, default=new_id
     )
     email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
-    #: Argon2id. The plaintext is never stored, logged or returned.
-    password_hash: Mapped[str] = mapped_column(String(512))
+    #: Argon2id, or None for an account that only ever signs in through a
+    #: provider. Absent is not the same as empty: `authenticate` must refuse
+    #: a password sign-in outright rather than compare against nothing.
+    password_hash: Mapped[str | None] = mapped_column(String(512), nullable=True)
     full_name: Mapped[str] = mapped_column(String(200))
     department: Mapped[str | None] = mapped_column(String(200), nullable=True)
     district: Mapped[str | None] = mapped_column(String(200), nullable=True)
@@ -134,6 +136,46 @@ class User(Base):
     sessions: Mapped[list[UserSession]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
     )
+    identities: Mapped[list[AuthIdentity]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
+
+
+class AuthIdentity(Base):
+    """An account at an outside provider, linked to a local user.
+
+    Separate from `users` so one person can hold several — Google today, a
+    department single sign-on later — without the user row growing a column
+    per provider.
+
+    The provider's subject is the identity, not the email. An email address
+    can be reassigned or changed at the provider; the subject never is, so
+    matching on it is what keeps a returning user the same user.
+    """
+
+    __tablename__ = "auth_identities"
+    __table_args__ = (UniqueConstraint("provider", "subject", name="uq_identity"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    provider: Mapped[str] = mapped_column(String(32))
+    #: The provider's stable identifier for this person ("sub" in OIDC).
+    subject: Mapped[str] = mapped_column(String(255))
+    #: What the provider said the address was at link time, kept for support
+    #: questions. Never used to find a user — the subject does that.
+    email: Mapped[str | None] = mapped_column(String(320), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow
+    )
+    last_used_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    user: Mapped[User] = relationship(back_populates="identities")
 
 
 class UserSession(Base):
