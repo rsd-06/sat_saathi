@@ -7,7 +7,13 @@ dependencies = [
     "redis==6.4.0",
     "satsaathi-core",
     "satsaathi-jobs",
+    # Imports without torch; the GPU worker adds the `gpu` extra below.
+    "satsaathi-inference",
 ]
+
+[project.optional-dependencies]
+# Only the GPU worker installs this. It must run with --pool=solo.
+gpu = ["satsaathi-inference[gpu]"]
 
 [dependency-groups]
 dev = ["pytest>=8,<9"]
@@ -15,6 +21,7 @@ dev = ["pytest>=8,<9"]
 [tool.uv.sources]
 satsaathi-core = { workspace = true }
 satsaathi-jobs = { workspace = true }
+satsaathi-inference = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
