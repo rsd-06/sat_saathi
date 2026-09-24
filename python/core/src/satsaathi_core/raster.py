@@ -50,7 +50,10 @@ class RasterMetadata:
     band_count: int
     dtype: str
     crs: str | None
-    pixel_size: tuple[float, float]
+    #: Ground size of one pixel, or None when the file has no coordinate
+    #: system. Without one, rasterio reports the identity transform, and
+    #: passing that on as 1.0 would read as one-metre pixels.
+    pixel_size: tuple[float, float] | None
     bands: list[BandInfo]
     sensor_type: SensorType
     acquired_at: datetime | date | None
@@ -142,7 +145,9 @@ def inspect(path: str | Path) -> RasterMetadata:
             warnings.append("raster.not_georeferenced")
 
         transform = src.transform
-        pixel_size = (abs(transform.a), abs(transform.e))
+        pixel_size = (
+            (abs(transform.a), abs(transform.e)) if crs is not None else None
+        )
 
         return RasterMetadata(
             driver=src.driver,

@@ -55,17 +55,51 @@ function unwrap<T>(result: {
   return result.data;
 }
 
-export async function uploadAsset(file: File): Promise<AssetOut> {
-  // openapi-fetch does not build multipart bodies, so this one is hand-rolled.
+export async function uploadAsset(
+  file: File,
+  onProgress?: (percent: number) => void,
+): Promise<AssetOut> {
   const form = new FormData();
   form.append("file", file);
-  const response = await fetch(`${API_BASE}/api/v1/assets`, {
-    method: "POST",
-    body: form,
+
+  // XMLHttpRequest rather than fetch, for one reason: fetch cannot report
+  // upload progress. A large GeoTIFF over a field connection would otherwise
+  // sit on a spinner with no way to tell moving from stalled.
+  return new Promise<AssetOut>((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open("POST", `${API_BASE}/api/v1/assets`);
+    request.responseType = "text";
+
+    request.upload.addEventListener("progress", (event) => {
+      if (event.lengthComputable && onProgress) {
+        onProgress((event.loaded / event.total) * 100);
+      }
+    });
+
+    request.addEventListener("load", () => {
+      let payload: unknown = null;
+      try {
+        payload = JSON.parse(request.responseText);
+      } catch {
+        /* A non-JSON body is handled as an unknown error below. */
+      }
+      if (request.status >= 200 && request.status < 300) {
+        resolve(payload as AssetOut);
+      } else {
+        reject(new ApiError(toErrorBody(payload), request.status));
+      }
+    });
+
+    // A dropped connection and a cancelled request are both "it did not
+    // arrive", and neither should surface as an untranslated browser string.
+    const fail = () =>
+      reject(new ApiError({ key: "error.apiUnreachable.title", params: {} }, 0));
+    request.addEventListener("error", fail);
+    request.addEventListener("abort", fail);
+    request.addEventListener("timeout", fail);
+
+    request.send(form);
   });
-  const payload = await response.json().catch(() => null);
-  if (!response.ok) throw new ApiError(toErrorBody(payload), response.status);
-  return payload as AssetOut;
 }
 
 export async function setAssetBands(

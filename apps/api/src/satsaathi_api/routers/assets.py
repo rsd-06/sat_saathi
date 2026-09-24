@@ -123,7 +123,7 @@ async def create_asset(
         ],
         band_map=None,
         crs=meta.crs,
-        pixel_size=meta.pixel_size[0],
+        pixel_size=meta.pixel_size[0] if meta.pixel_size else None,
         width=meta.width,
         height=meta.height,
         acquired_at=acquired,

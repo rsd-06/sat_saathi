@@ -6,6 +6,7 @@ import { Scene } from "@/components/scene";
 import { Sheet } from "@/components/sheet";
 import { SiteHeader } from "@/components/site-header";
 import { Link } from "@/i18n/navigation";
+import { currentUser } from "@/lib/session";
 
 export default async function LandingPage({
   params,
@@ -15,6 +16,9 @@ export default async function LandingPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
+  // Someone already signed in is not a prospect. Send them to the work
+  // rather than inviting them to start an account they have.
+  const user = await currentUser();
 
   const steps = ["ask", "compute", "explain", "act"] as const;
   const inputs = ["single", "fusion", "change"] as const;
@@ -37,17 +41,26 @@ export default async function LandingPage({
               </p>
               <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <Link
-                  href="/sign-up"
+                  href={user ? "/workspace" : "/sign-up"}
                   className="bg-accent hover:bg-accent-hover rounded-xs px-5 py-2.5 text-sm font-medium text-white transition-colors"
                 >
-                  {t("landing.hero.cta")}
+                  {user ? t("landing.hero.ctaSignedIn") : t("landing.hero.cta")}
                 </Link>
-                <a
-                  href="#how"
-                  className="text-ink-muted hover:text-ink text-sm underline decoration-current/30 underline-offset-4 transition-colors"
-                >
-                  {t("landing.hero.secondary")}
-                </a>
+                {user ? (
+                  <Link
+                    href="/history"
+                    className="text-ink-muted hover:text-ink text-sm underline decoration-current/30 underline-offset-4 transition-colors"
+                  >
+                    {t("landing.hero.secondarySignedIn")}
+                  </Link>
+                ) : (
+                  <a
+                    href="#how"
+                    className="text-ink-muted hover:text-ink text-sm underline decoration-current/30 underline-offset-4 transition-colors"
+                  >
+                    {t("landing.hero.secondary")}
+                  </a>
+                )}
               </div>
             </div>
 
@@ -142,7 +155,7 @@ export default async function LandingPage({
                 {t("landing.trust.body")}
               </p>
               <Link
-                href="/workspace"
+                href={user ? "/workspace" : "/sign-up"}
                 className="text-accent hover:text-accent-hover mt-6 inline-block text-sm font-medium underline decoration-current/30 underline-offset-4 transition-colors"
               >
                 {t("landing.trust.cta")}

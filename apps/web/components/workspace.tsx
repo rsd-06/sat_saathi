@@ -35,6 +35,8 @@ export function Workspace() {
   const [error, setError] = useState<ErrorBody | null>(null);
   const [question, setQuestion] = useState("");
   const [queryLang, setQueryLang] = useState<Locale>(uiLocale);
+  //: Percent while bytes are in flight; null once the server is reading.
+  const [progress, setProgress] = useState<number | null>(null);
   const unsubscribe = useRef<(() => void) | null>(null);
 
   useEffect(() => {
@@ -49,11 +51,21 @@ export function Workspace() {
     setJob(null);
     setError(null);
     setPhase("uploading");
+    setProgress(0);
     try {
-      setAsset(await uploadAsset(loaded.file));
+      const uploaded = await uploadAsset(loaded.file, (percent) => {
+        // Once every byte is sent the server still has to read headers, so
+        // the bar hands over to the indeterminate state rather than sitting
+        // at 100% looking stuck.
+        setProgress(percent >= 100 ? null : percent);
+      });
+      setProgress(null);
+      setAsset(uploaded);
       setPhase("ready");
     } catch (cause) {
+      setProgress(null);
       setAsset(null);
+      setImage(null);
       setPhase("empty");
       setError(
         cause instanceof ApiError
@@ -70,6 +82,7 @@ export function Workspace() {
     setAsset(null);
     setJob(null);
     setError(null);
+    setProgress(null);
     setPhase("empty");
   }
 
@@ -136,6 +149,7 @@ export function Workspace() {
               loaded={image}
               asset={asset}
               busy={phase === "uploading"}
+              progress={progress}
               onLoad={handleUpload}
               onClear={clearImage}
             />

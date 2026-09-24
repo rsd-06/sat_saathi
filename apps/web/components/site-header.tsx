@@ -5,6 +5,7 @@ import { currentUser } from "@/lib/session";
 import { AccountMenu } from "./account-menu";
 import { ConnectivityBadge } from "./connectivity-badge";
 import { LanguageSwitcher } from "./language-switcher";
+import { NavLink } from "./nav-link";
 
 const NAV = [
   { href: "/dashboard", key: "nav.dashboard" },
@@ -29,23 +30,23 @@ export async function SiteHeader() {
   return (
     <header className="border-rule bg-paper/85 sticky top-0 z-40 border-b backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-[88rem] items-center gap-6 px-4 sm:px-6">
+        {/* The mark goes home, signed in or not. Somewhere to start over from
+            is worth more than one saved click to the dashboard, which is the
+            next item along anyway. */}
         <Link
-          href={user ? "/dashboard" : "/"}
-          className="font-serif text-ink shrink-0 text-lg tracking-tight"
+          href="/"
+          aria-label={t("nav.home")}
+          className="font-serif text-ink hover:text-accent shrink-0 text-lg tracking-tight transition-colors"
         >
           {t("app.name")}
         </Link>
 
         {user && (
-          <nav className="hidden items-center gap-5 text-sm md:flex">
+          <nav aria-label={t("nav.dashboard")} className="hidden items-center gap-5 text-sm md:flex">
             {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="text-ink-muted hover:text-ink transition-colors"
-              >
+              <NavLink key={item.href} href={item.href}>
                 {t(item.key)}
-              </Link>
+              </NavLink>
             ))}
           </nav>
         )}
@@ -65,6 +66,21 @@ export async function SiteHeader() {
           )}
         </div>
       </div>
+
+      {/* The nav wraps to its own row on narrow screens rather than vanishing,
+          because a phone user still has to reach the review queue. */}
+      {user && (
+        <nav
+          aria-label={t("nav.dashboard")}
+          className="border-rule scrollbar-none flex gap-4 overflow-x-auto border-t px-4 py-2 text-sm md:hidden"
+        >
+          {NAV.map((item) => (
+            <NavLink key={item.href} href={item.href} className="whitespace-nowrap">
+              {t(item.key)}
+            </NavLink>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }

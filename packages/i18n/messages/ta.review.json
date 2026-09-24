@@ -1169,5 +1169,70 @@
     "reviewed": false,
     "source": "Something in the form was not accepted. Check the highlighted fields.",
     "translation": "படிவத்தில் ஏதோ ஒன்று ஏற்கப்படவில்லை. குறிக்கப்பட்ட புலங்களைச் சரிபார்க்கவும்."
+  },
+  "upload.accepts": {
+    "reviewed": false,
+    "source": "GeoTIFF, PNG or JPEG, up to {max} MB. Read on the server.",
+    "translation": "GeoTIFF, PNG அல்லது JPEG, {max} MB வரை. சேவையகத்தில் படிக்கப்படுகிறது."
+  },
+  "upload.error.unsupported": {
+    "reviewed": false,
+    "source": "That file type is not accepted. Use a GeoTIFF, PNG or JPEG.",
+    "translation": "அந்த வகைக் கோப்பு ஏற்கப்படாது. GeoTIFF, PNG அல்லது JPEG பயன்படுத்துங்கள்."
+  },
+  "workspace.inputs.drop": {
+    "reviewed": false,
+    "source": "Drop an image here, or",
+    "translation": "இங்கே ஒரு படத்தை விடுங்கள், அல்லது"
+  },
+  "upload.error.tooLarge": {
+    "reviewed": false,
+    "source": "That file is {size} MB. The limit is {max} MB.",
+    "translation": "அந்தக் கோப்பு {size} MB. வரம்பு {max} MB."
+  },
+  "upload.error.empty": {
+    "reviewed": false,
+    "source": "That file is empty.",
+    "translation": "அந்தக் கோப்பு காலியாக உள்ளது."
+  },
+  "upload.progress": {
+    "reviewed": false,
+    "source": "Uploading… {percent}%",
+    "translation": "பதிவேற்றுகிறது… {percent}%"
+  },
+  "nav.home": {
+    "reviewed": false,
+    "source": "Home",
+    "translation": "முகப்பு"
+  },
+  "landing.hero.ctaSignedIn": {
+    "reviewed": false,
+    "source": "Open the workspace",
+    "translation": "பணியிடத்தைத் திறக்கவும்"
+  },
+  "landing.hero.secondarySignedIn": {
+    "reviewed": false,
+    "source": "See your analyses",
+    "translation": "உங்கள் பகுப்பாய்வுகளைப் பாருங்கள்"
+  },
+  "dashboard.stats.measured": {
+    "reviewed": false,
+    "source": "Measured",
+    "translation": "அளவிடப்பட்டவை"
+  },
+  "dashboard.stats.held": {
+    "reviewed": false,
+    "source": "Held for review",
+    "translation": "மறுஆய்வுக்கு நிறுத்தப்பட்டவை"
+  },
+  "dashboard.empty.title": {
+    "reviewed": false,
+    "source": "Nothing analysed yet",
+    "translation": "இன்னும் எதுவும் பகுப்பாய்வு செய்யப்படவில்லை"
+  },
+  "dashboard.empty.body": {
+    "reviewed": false,
+    "source": "Upload a scene and ask a question. Every step is shown as it runs.",
+    "translation": "ஒரு காட்சியைப் பதிவேற்றி கேள்வி கேளுங்கள். ஒவ்வொரு படியும் இயங்கும்போது காட்டப்படும்."
   }
 }

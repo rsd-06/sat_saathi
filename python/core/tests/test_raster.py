@@ -82,3 +82,27 @@ def test_bands_carry_no_role_until_one_is_assigned(optical: Path):
     # Band roles decide which indices are computable, so they are never
     # inferred from position — a preset or the officer assigns them.
     assert all(b.role is None for b in inspect(optical).bands)
+
+
+def test_a_file_with_no_crs_reports_no_pixel_size(tmp_path):
+    """Regression: an ungeoreferenced image claimed one-metre pixels.
+
+    rasterio hands back the identity transform when there is no coordinate
+    system, and passing its 1.0 straight through reads as a real ground
+    measurement. There is no ground size to report, so None is the answer.
+    """
+    import numpy as np
+    import rasterio
+
+    from satsaathi_core.raster import inspect
+
+    path = tmp_path / "plain.tif"
+    with rasterio.open(
+        path, "w", driver="GTiff", height=4, width=4, count=3, dtype="uint8"
+    ) as dst:
+        dst.write(np.zeros((3, 4, 4), dtype="uint8"))
+
+    meta = inspect(path)
+
+    assert meta.is_georeferenced is False
+    assert meta.pixel_size is None

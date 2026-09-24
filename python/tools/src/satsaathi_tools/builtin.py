@@ -76,7 +76,7 @@ class ImageryInspect(BaseTool):
                 "height": meta.height,
                 "bands": meta.band_count,
                 "crs": meta.crs or "none",
-                "pixel_size": meta.pixel_size[0],
+                "pixel_size": meta.pixel_size[0] if meta.pixel_size else None,
                 "sensor_type": meta.sensor_type,
                 "georeferenced": meta.is_georeferenced,
             },

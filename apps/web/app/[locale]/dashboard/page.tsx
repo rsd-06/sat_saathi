@@ -1,8 +1,9 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { DashboardBody } from "@/components/dashboard-body";
+import { PageShell } from "@/components/page-shell";
 import { Link } from "@/i18n/navigation";
-import { SiteHeader } from "@/components/site-header";
+import { currentUser } from "@/lib/session";
 
 export default async function DashboardPage({
   params,
@@ -12,29 +13,35 @@ export default async function DashboardPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations();
+  const user = await currentUser();
 
   return (
-    <>
-      <SiteHeader />
-      <main className="mx-auto max-w-[88rem] px-4 py-10 sm:px-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="font-serif text-ink text-3xl tracking-tight">
-              {t("dashboard.greeting")}
-            </h1>
-            <p className="text-ink-muted mt-2 text-sm">
-              {t("dashboard.subtitle")}
-            </p>
-          </div>
-          <Link
-            href="/workspace"
-            className="bg-accent hover:bg-accent-hover rounded-xs px-5 py-2.5 text-sm font-medium text-white transition-colors"
-          >
-            {t("dashboard.newAnalysis")}
-          </Link>
-        </div>
-        <DashboardBody />
-      </main>
-    </>
+    <PageShell
+      title={t("dashboard.greeting")}
+      subtitle={t("dashboard.subtitle")}
+      marginalia={
+        user
+          ? [
+              { label: t("auth.field.name"), value: user.full_name },
+              ...(user.department
+                ? [{ label: t("auth.field.department"), value: user.department }]
+                : []),
+              ...(user.district
+                ? [{ label: t("auth.field.district"), value: user.district }]
+                : []),
+            ]
+          : undefined
+      }
+      actions={
+        <Link
+          href="/workspace"
+          className="bg-accent hover:bg-accent-hover rounded-xs px-5 py-2.5 text-sm font-medium text-white transition-colors"
+        >
+          {t("dashboard.newAnalysis")}
+        </Link>
+      }
+    >
+      <DashboardBody />
+    </PageShell>
   );
 }

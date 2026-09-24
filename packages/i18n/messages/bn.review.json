@@ -1169,5 +1169,70 @@
     "reviewed": false,
     "source": "Something in the form was not accepted. Check the highlighted fields.",
     "translation": "ফর্মের কিছু গ্রহণ করা হয়নি। চিহ্নিত ঘরগুলি দেখুন।"
+  },
+  "upload.accepts": {
+    "reviewed": false,
+    "source": "GeoTIFF, PNG or JPEG, up to {max} MB. Read on the server.",
+    "translation": "GeoTIFF, PNG বা JPEG, {max} MB পর্যন্ত। সার্ভারে পড়া হয়।"
+  },
+  "upload.error.unsupported": {
+    "reviewed": false,
+    "source": "That file type is not accepted. Use a GeoTIFF, PNG or JPEG.",
+    "translation": "এই ধরনের ফাইল নেওয়া হয় না। GeoTIFF, PNG বা JPEG ব্যবহার করুন।"
+  },
+  "workspace.inputs.drop": {
+    "reviewed": false,
+    "source": "Drop an image here, or",
+    "translation": "এখানে একটি ছবি ফেলুন, বা"
+  },
+  "upload.error.tooLarge": {
+    "reviewed": false,
+    "source": "That file is {size} MB. The limit is {max} MB.",
+    "translation": "ফাইলটি {size} MB। সীমা {max} MB।"
+  },
+  "upload.error.empty": {
+    "reviewed": false,
+    "source": "That file is empty.",
+    "translation": "ফাইলটি ফাঁকা।"
+  },
+  "upload.progress": {
+    "reviewed": false,
+    "source": "Uploading… {percent}%",
+    "translation": "আপলোড হচ্ছে… {percent}%"
+  },
+  "nav.home": {
+    "reviewed": false,
+    "source": "Home",
+    "translation": "হোম"
+  },
+  "landing.hero.ctaSignedIn": {
+    "reviewed": false,
+    "source": "Open the workspace",
+    "translation": "ওয়ার্কস্পেস খুলুন"
+  },
+  "landing.hero.secondarySignedIn": {
+    "reviewed": false,
+    "source": "See your analyses",
+    "translation": "আপনার বিশ্লেষণ দেখুন"
+  },
+  "dashboard.stats.measured": {
+    "reviewed": false,
+    "source": "Measured",
+    "translation": "পরিমাপ করা"
+  },
+  "dashboard.stats.held": {
+    "reviewed": false,
+    "source": "Held for review",
+    "translation": "পর্যালোচনার জন্য রাখা"
+  },
+  "dashboard.empty.title": {
+    "reviewed": false,
+    "source": "Nothing analysed yet",
+    "translation": "এখনও কিছু বিশ্লেষণ করা হয়নি"
+  },
+  "dashboard.empty.body": {
+    "reviewed": false,
+    "source": "Upload a scene and ask a question. Every step is shown as it runs.",
+    "translation": "একটি দৃশ্য আপলোড করে প্রশ্ন করুন। প্রতিটি ধাপ চলার সময়েই দেখা যায়।"
   }
 }

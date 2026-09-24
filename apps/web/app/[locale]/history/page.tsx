@@ -1,7 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { HistoryList } from "@/components/history-list";
-import { SiteHeader } from "@/components/site-header";
+import { PageShell } from "@/components/page-shell";
+import { Link } from "@/i18n/navigation";
 
 export default async function HistoryPage({
   params,
@@ -13,16 +14,18 @@ export default async function HistoryPage({
   const t = await getTranslations();
 
   return (
-    <>
-      <SiteHeader />
-      <main className="mx-auto max-w-[88rem] px-4 py-10 sm:px-6">
-        <h1 className="font-serif text-ink text-3xl tracking-tight">
-          {t("history.title")}
-        </h1>
-        <div className="mt-6">
-          <HistoryList />
-        </div>
-      </main>
-    </>
+    <PageShell
+      title={t("history.title")}
+      actions={
+        <Link
+          href="/workspace"
+          className="bg-accent hover:bg-accent-hover rounded-xs px-5 py-2.5 text-sm font-medium text-white transition-colors"
+        >
+          {t("dashboard.newAnalysis")}
+        </Link>
+      }
+    >
+      <HistoryList />
+    </PageShell>
   );
 }

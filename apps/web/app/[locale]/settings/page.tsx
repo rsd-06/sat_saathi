@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import { PageShell } from "@/components/page-shell";
 import { SettingsPanel } from "@/components/settings-panel";
-import { SiteHeader } from "@/components/site-header";
 
 export default async function SettingsPage({
   params,
@@ -13,16 +13,8 @@ export default async function SettingsPage({
   const t = await getTranslations();
 
   return (
-    <>
-      <SiteHeader />
-      <main className="mx-auto max-w-[40rem] px-4 py-10 sm:px-6">
-        <h1 className="font-serif text-ink text-3xl tracking-tight">
-          {t("settings.title")}
-        </h1>
-        <div className="mt-8">
-          <SettingsPanel />
-        </div>
-      </main>
-    </>
+    <PageShell title={t("settings.title")} width="narrow">
+      <SettingsPanel />
+    </PageShell>
   );
 }

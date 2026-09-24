@@ -70,6 +70,10 @@ def _overlap_check(a: RasterMetadata, b: RasterMetadata, minimum: float) -> Chec
 def _resolution_check(
     a: RasterMetadata, b: RasterMetadata, tolerance: float
 ) -> Check:
+    # A file with no coordinate system has no ground resolution to compare,
+    # so this warns rather than inventing a ratio from pixel counts.
+    if a.pixel_size is None or b.pixel_size is None:
+        return Check("checks.resolution", "warn", {})
     ax, bx = a.pixel_size[0], b.pixel_size[0]
     if ax == 0 or bx == 0:
         return Check("checks.resolution", "warn", {"a": ax, "b": bx})
