@@ -12,8 +12,9 @@ from rasterio.transform import from_origin
 
 from satsaathi_tools import pipeline
 from satsaathi_tools.builtin import build_default_registry
-from satsaathi_tools.protocol import BaseTool, NoParams, ToolContext, ToolResult
+from satsaathi_tools.protocol import BaseTool, ToolContext, ToolResult
 from satsaathi_tools.registry import PlannedStep, plan
+from satsaathi_tools.vlm import VlmParams
 
 SCHEMA = json.loads(
     (Path(pipeline.__file__).parent / "trace_schema.json").read_text("utf-8")
@@ -128,7 +129,7 @@ def test_a_failing_step_is_recorded_and_the_rest_are_skipped(registry, ctx, scen
     class Exploding(BaseTool):
         name = "vlm.vqa"  # replaces the registered one below
         version = "0.1.0"
-        params_schema = NoParams
+        params_schema = VlmParams
         is_stub = True
 
         def run(self, inputs, params, ctx):
@@ -153,7 +154,7 @@ def test_errors_are_message_keys_not_sentences(registry, ctx, scene):
     class Exploding(BaseTool):
         name = "vlm.vqa"
         version = "0.1.0"
-        params_schema = NoParams
+        params_schema = VlmParams
 
         def run(self, inputs, params, ctx):
             raise RuntimeError("boom")
@@ -170,7 +171,7 @@ def test_a_low_confidence_run_is_held_for_review(registry, ctx, scene):
     class LowConfidence(BaseTool):
         name = "verify.crosscheck"
         version = "0.1.0"
-        params_schema = NoParams
+        params_schema = VlmParams
         is_stub = False
 
         def run(self, inputs, params, ctx):

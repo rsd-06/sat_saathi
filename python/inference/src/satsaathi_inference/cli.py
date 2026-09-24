@@ -70,7 +70,9 @@ def doctor_rows(catalog: ModelCatalog) -> list[tuple[str, str, str]]:
         if torch.cuda.is_available():
             name = torch.cuda.get_device_name(0)
             rows.append(("cuda visible", PASS, f"{name}, CUDA {torch.version.cuda}"))
-            bf16 = torch.cuda.is_bf16_supported()
+            # Native only: Turing reports emulated bf16, which the 4-bit kernels
+            # do not run well; such a GPU computes in fp16.
+            bf16 = torch.cuda.is_bf16_supported(including_emulation=False)
             rows.append(
                 ("bf16 support", PASS if bf16 else WARN,
                  "bf16" if bf16 else "no bf16 on this GPU; compute falls back to fp16")

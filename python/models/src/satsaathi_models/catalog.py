@@ -84,7 +84,13 @@ CATALOG: tuple[ModelSpec, ...] = (
         kind="lora_adapter",
         base=BASE_NAME,
         meta_file="satquery_index_meta.json",
-        eval_metrics={"vqa": "vqa_acc"},
+        # Keys of satquery_ndvi_train.py's eval.json.
+        eval_metrics={
+            "vqa": "landcover_acc",
+            "caption": "landcover_acc",
+            "region": "region_acc",
+            "grounding": "ground_acc@0.5",
+        },
         vram_mb=2800,
         note="LoRA that reads a rendered NDVI map next to its computed statistics.",
     ),
@@ -95,7 +101,13 @@ CATALOG: tuple[ModelSpec, ...] = (
         kind="lora_adapter",
         base=BASE_NAME,
         meta_file="satquery_index_meta.json",
-        eval_metrics={"vqa": "vqa_acc"},
+        # Keys of satquery_ndwi_train.py's eval.json.
+        eval_metrics={
+            "vqa": "presence_acc",
+            "caption": "presence_acc",
+            "region": "region_acc",
+            "grounding": "ground_acc@0.5",
+        },
         vram_mb=2800,
         note="LoRA that reads a rendered NDWI map next to its computed statistics.",
     ),

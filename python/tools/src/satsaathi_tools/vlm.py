@@ -20,7 +20,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
@@ -31,21 +31,29 @@ from satsaathi_core.change import detect_change, sar_bright_targets, sar_water_m
 from . import confidence as conf
 from .model_backed import ModelBackedTool
 from .protocol import Artifact, NoParams, ToolContext, ToolResult
+from .tasks import wants_boxes
 
-#: Words that make a question a request for a location. English plus the
-#: three Indian languages the interface ships; a match is token-anchored.
-_WHERE = re.compile(
-    r"\b(where|locate|location|find|mark|show|point|box|bounding|detect|count|how many)\b"
-    r"|कहाँ|कहां|कहा|दिखा|எங்கே|எங்கு|কোথায়|দেখা",
-    re.IGNORECASE,
-)
 #: A SAR box counts as corroborated at this overlap with independent evidence.
 CORROBORATION_IOU = 0.3
 ANSWER_EXCERPT = 280
 
 
-def wants_boxes(question: str, intent: str | None = None) -> bool:
-    return intent == "grounding" or bool(_WHERE.search(question or ""))
+class VlmParams(BaseModel):
+    """What a vision-language step may be told. Only the task, chosen by the planner."""
+
+    model_config = {"extra": "forbid"}
+
+    task: Literal["vqa", "caption", "grounding", "change", "fusion"] | None = None
+
+
+def _task(params: BaseModel | None, question: str, default: str) -> str:
+    """The planner's recorded task, or — for a direct call — the query's wording."""
+    chosen = getattr(params, "task", None)
+    if chosen in ("vqa", "caption", "grounding"):
+        return chosen
+    if chosen in ("change", "fusion"):
+        return "grounding" if wants_boxes(question) else "vqa"
+    return "grounding" if wants_boxes(question) else default
 
 
 def _settings_value(ctx: ToolContext, name: str, default: Any) -> Any:
@@ -148,7 +156,7 @@ class _VisionLanguage(ModelBackedTool):
     """
 
     required_modalities = ["raster"]
-    params_schema = NoParams
+    params_schema = VlmParams
     base_version = "0.2.0"
     caption = "fixture caption"
     boxes: list[dict] = []
@@ -246,10 +254,12 @@ class _VisionLanguage(ModelBackedTool):
 
     # -- the common single-image path ------------------------------------
 
-    def _single_image(self, model: Any, inputs: dict, ctx: ToolContext) -> ToolResult:
+    def _single_image(
+        self, model: Any, inputs: dict, ctx: ToolContext, params: BaseModel | None = None
+    ) -> ToolResult:
         question = str(inputs.get("question", ""))
-        grounding = wants_boxes(question, inputs.get("intent"))
-        task = "grounding" if grounding else self.default_task
+        task = _task(params, question, self.default_task)
+        grounding = task == "grounding"
         asset = _asset(inputs, self.sensor)
         loader = imaging.load_sar if self.sensor == "sar" else imaging.load_optical
         prepared = loader(asset["path"], asset.get("band_map"))
@@ -283,7 +293,7 @@ class _VisionLanguage(ModelBackedTool):
         return _place_boxes(answer.boxes, prepared, "model"), {}
 
     def predict(self, model, inputs, params, ctx: ToolContext) -> ToolResult:
-        return self._single_image(model, inputs, ctx)
+        return self._single_image(model, inputs, ctx, params)
 
 
 # ---------------------------------------------------------------------------
@@ -386,8 +396,7 @@ class _VlmIndex(_VisionLanguage):
 
     def predict(self, model, inputs, params, ctx: ToolContext) -> ToolResult:
         question = str(inputs.get("question", ""))
-        grounding = wants_boxes(question, inputs.get("intent"))
-        task = "grounding" if grounding else "vqa"
+        task = _task(params, question, "vqa")
         asset = _asset(inputs, "optical")
         band_map = asset.get("band_map") or {}
         roles = imaging.read_band_arrays(
@@ -614,8 +623,8 @@ class VlmFusion(_VisionLanguage):
 
     def predict(self, model, inputs, params, ctx: ToolContext) -> ToolResult:
         question = str(inputs.get("question", ""))
-        grounding = wants_boxes(question, inputs.get("intent"))
-        task = "grounding" if grounding else "vqa"
+        task = _task(params, question, "vqa")
+        grounding = task == "grounding"
         opt_asset, sar_asset = _asset(inputs, "optical"), _asset(inputs, "sar")
         opt = imaging.load_optical(opt_asset["path"], opt_asset.get("band_map"))
         sar = imaging.load_sar(sar_asset["path"], sar_asset.get("band_map"))

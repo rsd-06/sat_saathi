@@ -281,7 +281,11 @@ def test_a_sar_ship_question_end_to_end(tmp_path):
         script='[{"bbox_2d": [0, 0, 100, 100], "label": "ship"}]',
     )
     path = sar_chip(tmp_path / "chip.png")
-    steps = plan("land_cover", "single", sensor="sar")
+    from satsaathi_tools.tasks import classify_task
+
+    steps = plan("land_cover", "single", sensor="sar",
+                 task=classify_task("Where is the ship?", "single"))
+    assert steps[5].params == {"task": "grounding"}
 
     trace = pipeline.run(
         job_id="job-1",

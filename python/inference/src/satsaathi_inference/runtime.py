@@ -162,7 +162,9 @@ class VLMRuntime:
         if not torch.cuda.is_available():
             raise ModelUnavailableError("CUDA is not available to this process")
 
-        compute = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
+        # Native bf16 only; emulated bf16 (e.g. Turing) is slow under 4-bit.
+        native_bf16 = torch.cuda.is_bf16_supported(including_emulation=False)
+        compute = torch.bfloat16 if native_bf16 else torch.float16
         # Identical to training: NF4, double quantisation, vision tower and
         # LM head left unquantised.
         bnb = BitsAndBytesConfig(

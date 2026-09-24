@@ -107,6 +107,7 @@ def plan(
     available_indices: list[str] | None = None,
     sensor: str | None = None,
     vlm_indices: list[str] | None = None,
+    task: str | None = None,
 ) -> list[PlannedStep]:
     """Map (intent, mode, sensor) to an ordered plan over the eight fixed steps.
 
@@ -121,6 +122,9 @@ def plan(
     `vlm_indices` are indices whose reading adapter is installed *and* whose
     training inputs the bands can reproduce; a water or vegetation question
     over such bands is answered by that adapter.
+
+    `task` (see `tasks.classify_task`) is recorded in the vision-language
+    step's parameters, so the trace states what was asked of the model.
     """
     supported = set(available_indices or [])
     readable = set(vlm_indices or [])
@@ -150,21 +154,25 @@ def plan(
     else:
         steps.append(PlannedStep("compute", "indices.unavailable", {}))
 
+    if task is None:
+        task = {"caption": "caption", "grounding": "grounding"}.get(intent)
     if mode == "change":
-        vlm = "vlm.change"
+        vlm, task = "vlm.change", "change"
     elif mode == "fusion":
-        vlm = "vlm.fusion"
+        vlm, task = "vlm.fusion", "fusion"
     elif is_sar:
         vlm = "vlm.sar"
-    elif intent == "caption":
-        vlm = "vlm.caption"
-    elif intent == "grounding":
-        vlm = "vlm.grounding"
     elif wanted in _INDEX_VLM and wanted in readable and wanted in supported:
+        # The index adapter reads the computed map; for water and vegetation
+        # it also grounds better than the general optical adapter.
         vlm = _INDEX_VLM[wanted]
+    elif task == "caption":
+        vlm = "vlm.caption"
+    elif task == "grounding":
+        vlm = "vlm.grounding"
     else:
         vlm = "vlm.vqa"
-    steps.append(PlannedStep("vision_language", vlm, {}))
+    steps.append(PlannedStep("vision_language", vlm, {"task": task or "vqa"}))
 
     steps.append(PlannedStep("verify", "verify.crosscheck", {}))
     steps.append(PlannedStep("answer", "answer.template", {}))

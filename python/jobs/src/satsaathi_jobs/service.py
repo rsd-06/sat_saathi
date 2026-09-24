@@ -41,6 +41,7 @@ from satsaathi_tools.registry import (
     plan,
     queue_for,
 )
+from satsaathi_tools.tasks import classify_task
 
 STEP_ORDER = {key: i for i, key in enumerate(STEP_KEYS)}
 
@@ -89,6 +90,7 @@ async def plan_job(
         available_indices=available,
         sensor=inputs.get("sensor_type"),
         vlm_indices=_readable_indices(registry, inputs.get("band_map") or {}),
+        task=classify_task(job.query_text, mode),
     )
     job.intent = intent
     job.plan = [
