@@ -12,7 +12,7 @@ from rasterio.transform import from_origin
 
 from satsaathi_tools import pipeline
 from satsaathi_tools.builtin import build_default_registry
-from satsaathi_tools.protocol import BaseTool, ToolContext, ToolResult
+from satsaathi_tools.protocol import BaseTool, NoParams, ToolContext, ToolResult
 from satsaathi_tools.registry import PlannedStep, plan
 from satsaathi_tools.vlm import VlmParams
 
@@ -171,7 +171,7 @@ def test_a_low_confidence_run_is_held_for_review(registry, ctx, scene):
     class LowConfidence(BaseTool):
         name = "verify.crosscheck"
         version = "0.1.0"
-        params_schema = VlmParams
+        params_schema = NoParams
         is_stub = False
 
         def run(self, inputs, params, ctx):
