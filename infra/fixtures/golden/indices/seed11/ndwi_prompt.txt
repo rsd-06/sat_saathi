@@ -1,0 +1,3 @@
+Image 1: true colour. Image 2: NDWI map. NDWI statistics (computed from the bands): mean -0.181, median -0.218, 10th-90th percentile -0.455 to 0.032. Cover: dry land or vegetation (< -0.3): 33.9%; moist soil or other non-water (-0.3-0): 52.8%; shallow, turbid water or wet surfaces (0-0.2): 7.0%; open water (> 0.2): 6.3%. Highest in the bottom-left, lowest in the top-right.
+Question: Is there water in this scene?
+(MNDWI water fraction: 10.9%.)

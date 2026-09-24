@@ -29,6 +29,9 @@ select = ["E", "F", "I", "UP"]
 [tool.ruff.lint.per-file-ignores]
 # Alembic writes these; reformatting generated DDL only invites merge pain.
 "python/core/migrations/versions/*.py" = ["E501"]
+# Copied verbatim from the training script; reformatting it would break the
+# promise that inference sees exactly what training saw.
+"python/core/src/satsaathi_core/index_contract.py" = ["E501", "E731"]
 
 [tool.ruff.lint.isort]
 known-first-party = [

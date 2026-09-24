@@ -1,0 +1,39 @@
+{
+  "ndvi_question": "Where is the densest vegetation? Mark it.",
+  "ndwi_question": "Is there water in this scene?",
+  "ndvi_stats": {
+    "index": "NDVI",
+    "mean": 0.286,
+    "median": 0.341,
+    "p10": 0.023,
+    "p90": 0.571,
+    "classes": {
+      "water or non-vegetated (NDVI < 0)": 9.1,
+      "bare soil or built-up (0-0.2)": 17.5,
+      "sparse vegetation (0.2-0.4)": 34.5,
+      "moderate vegetation (0.4-0.6)": 32.5,
+      "dense vegetation (> 0.6)": 6.4
+    },
+    "highest_region": "top-right",
+    "lowest_region": "bottom-left"
+  },
+  "ndvi_stats_text": "NDVI statistics (computed from the bands): mean 0.286, median 0.341, 10th-90th percentile 0.023 to 0.571. Cover: water or non-vegetated (NDVI < 0): 9.1%; bare soil or built-up (0-0.2): 17.5%; sparse vegetation (0.2-0.4): 34.5%; moderate vegetation (0.4-0.6): 32.5%; dense vegetation (> 0.6): 6.4%. Highest in the top-right, lowest in the bottom-left.",
+  "ndvi_dense_boxes": [],
+  "ndwi_stats": {
+    "index": "NDWI",
+    "mean": -0.182,
+    "median": -0.213,
+    "p10": -0.465,
+    "p90": 0.032,
+    "classes": {
+      "dry land or vegetation (< -0.3)": 33.7,
+      "moist soil or other non-water (-0.3-0)": 53.2,
+      "shallow, turbid water or wet surfaces (0-0.2)": 6.9,
+      "open water (> 0.2)": 6.3
+    },
+    "highest_region": "bottom-left",
+    "lowest_region": "top-right"
+  },
+  "ndwi_stats_text": "NDWI statistics (computed from the bands): mean -0.182, median -0.213, 10th-90th percentile -0.465 to 0.032. Cover: dry land or vegetation (< -0.3): 33.7%; moist soil or other non-water (-0.3-0): 53.2%; shallow, turbid water or wet surfaces (0-0.2): 6.9%; open water (> 0.2): 6.3%. Highest in the bottom-left, lowest in the top-right.",
+  "mndwi_water_pct": 10.7
+}

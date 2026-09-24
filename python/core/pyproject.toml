@@ -15,6 +15,10 @@ dependencies = [
     "asyncpg>=0.30,<1",
     "psycopg[binary]>=3.2,<4",
     "argon2-cffi>=23.1,<26",
+    # Image preparation for the vision-language models, and the classical
+    # change / water maps. Neither pulls a deep-learning runtime.
+    "pillow>=11,<13",
+    "scipy>=1.14,<2",
 ]
 
 [project.optional-dependencies]

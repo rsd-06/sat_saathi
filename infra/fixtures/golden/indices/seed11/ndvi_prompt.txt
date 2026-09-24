@@ -1,0 +1,2 @@
+Image 1: true colour. Image 2: NDVI map. NDVI statistics (computed from the bands): mean 0.286, median 0.34, 10th-90th percentile 0.021 to 0.57. Cover: water or non-vegetated (NDVI < 0): 8.9%; bare soil or built-up (0-0.2): 17.6%; sparse vegetation (0.2-0.4): 34.8%; moderate vegetation (0.4-0.6): 32.5%; dense vegetation (> 0.6): 6.1%. Highest in the top-right, lowest in the bottom-left.
+Question: Where is the densest vegetation? Mark it.
