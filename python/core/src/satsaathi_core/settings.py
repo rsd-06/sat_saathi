@@ -26,7 +26,26 @@ class Settings(BaseSettings):
     s3_bucket: str | None = None
 
     #: Answers scoring below this are held for a specialist instead of shown.
+    #: Applies to measured-only answers; model answers use the pair below.
     confidence_threshold: float = Field(default=0.75, ge=0.0, le=1.0)
+    #: Model answers: confidence = held-out prior x token-probability signal
+    #: (x agreement, for fusion). At or above `high` is shown as confident;
+    #: below `low` is held for review; between is shown as medium.
+    confidence_high: float = Field(default=0.6, ge=0.0, le=1.0)
+    confidence_low: float = Field(default=0.35, ge=0.0, le=1.0)
+    #: Re-sample twice at temperature 0.7 for a consistency signal. Triples
+    #: GPU time per answer, so off unless asked for.
+    vlm_resample: bool = Field(default=False, validation_alias="SATSAATHI_VLM_RESAMPLE")
+    vlm_max_new_tokens: int = Field(default=256, gt=0, le=2048)
+
+    #: GPU worker: load the model at worker start instead of on first use.
+    preload_models: bool = Field(default=False, validation_alias="SATSAATHI_PRELOAD")
+    #: Free the GPU and RAM after this many idle minutes; 0 keeps it resident.
+    model_idle_unload_min: float = Field(
+        default=20, ge=0, validation_alias="SATSAATHI_MODEL_IDLE_UNLOAD_MIN"
+    )
+    #: Enables operator-only endpoints such as model self-tests.
+    debug: bool = Field(default=False, validation_alias="SATSAATHI_DEBUG")
     max_upload_mb: int = Field(default=512, gt=0)
     #: Rasters larger than this are not index-computed inline.
     max_index_pixels: int = Field(default=4096 * 4096, gt=0)

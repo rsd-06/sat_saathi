@@ -14,10 +14,22 @@ members = [
     "python/core",
     "python/tools",
     "python/models",
+    "python/inference",
     "python/jobs",
     "apps/api",
     "apps/worker",
 ]
+
+# PyPI's Windows torch is CPU-only. The GPU worker on Windows takes the CUDA
+# build (cu126 still supports Turing, e.g. the GTX 1650 Ti dev box); Linux
+# keeps PyPI's wheel, which already bundles CUDA.
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu126", marker = "sys_platform == 'win32'" }]
 
 [tool.ruff]
 target-version = "py312"
@@ -38,6 +50,7 @@ known-first-party = [
     "satsaathi_core",
     "satsaathi_tools",
     "satsaathi_models",
+    "satsaathi_inference",
     "satsaathi_jobs",
     "satsaathi_api",
     "satsaathi_worker",
@@ -48,6 +61,7 @@ include = [
     "python/core/src",
     "python/tools/src",
     "python/models/src",
+    "python/inference/src",
     "python/jobs/src",
     "apps/api/src",
     "apps/worker/src",
