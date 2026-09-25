@@ -11,7 +11,11 @@ const str = (v: unknown) => (v === undefined || v === null ? "" : String(v));
 
 /** Parses the trace's flat box list: "label[x1,y1,x2,y2]:status;…" (0-1000). */
 export function parseBoxes(raw: unknown) {
-  const out: { label: string; box: [number, number, number, number]; status: string }[] = [];
+  const out: {
+    label: string;
+    box: [number, number, number, number];
+    status: string;
+  }[] = [];
   for (const m of str(raw).matchAll(/([^;[\]]+)\[([-\d.,\s]+)\](?::(\w+))?/g)) {
     const [x1, y1, x2, y2] = (m[2] ?? "").split(",").map(Number);
     if ([x1, y1, x2, y2].every((n) => Number.isFinite(n))) {
@@ -56,9 +60,17 @@ export function PipelineStages({ steps }: { steps: StepOut[] }) {
       key: "orchestrator",
       step: understand,
       lines: [
-        [t("intent"), str(understand?.output_summary?.intent).replace(/_/g, " ")],
+        [
+          t("intent"),
+          str(understand?.output_summary?.intent).replace(/_/g, " "),
+        ],
         [t("task"), task],
-        [t("routedTo"), adapter ? `${adapter}${vlm?.tool_name ? ` (${vlm.tool_name})` : ""}` : ""],
+        [
+          t("routedTo"),
+          adapter
+            ? `${adapter}${vlm?.tool_name ? ` (${vlm.tool_name})` : ""}`
+            : "",
+        ],
         [t("why"), sensor ? t("because", { sensor, task: task || "vqa" }) : ""],
       ],
     },
@@ -67,8 +79,20 @@ export function PipelineStages({ steps }: { steps: StepOut[] }) {
       step: imagery,
       lines: [
         [t("sensor"), sensor],
-        [t("size"), img.width ? `${str(img.width)} × ${str(img.height)} px · ${str(img.bands)} ${t("bands")}` : ""],
-        [t("crs"), img.georeferenced ? str(img.crs) : img.crs ? t("notGeoreferenced") : ""],
+        [
+          t("size"),
+          img.width
+            ? `${str(img.width)} × ${str(img.height)} px · ${str(img.bands)} ${t("bands")}`
+            : "",
+        ],
+        [
+          t("crs"),
+          img.georeferenced
+            ? str(img.crs)
+            : img.crs
+              ? t("notGeoreferenced")
+              : "",
+        ],
       ],
     },
     {
@@ -89,15 +113,23 @@ export function PipelineStages({ steps }: { steps: StepOut[] }) {
             : `${format.number(confidence, { style: "percent" })}${band ? ` · ${t(`band.${band}`)}` : ""}`,
         ],
         [t("boxes"), v.boxes ? `${str(v.boxes)} (${str(v.box_status)})` : ""],
-        [t("prior"), v.prior_metric ? `${str(v.prior_metric)} = ${str(v.prior)}` : ""],
-        [t("verdict"), ver.verdict ? t(`verdict.${str(ver.verdict)}`) : ""],
+        [
+          t("prior"),
+          v.prior_metric ? `${str(v.prior_metric)} = ${str(v.prior)}` : "",
+        ],
+        [
+          t("verdictLabel"),
+          ver.verdict ? t(`verdict.${str(ver.verdict)}`) : "",
+        ],
       ],
     },
   ];
 
   return (
     <section>
-      <h2 className="font-serif text-ink text-lg tracking-tight">{t("title")}</h2>
+      <h2 className="font-serif text-ink text-lg tracking-tight">
+        {t("title")}
+      </h2>
       {fixture && vlm?.status === "succeeded" && (
         <p className="marginal text-relief mt-1">{t("fixture")}</p>
       )}
@@ -106,25 +138,34 @@ export function PipelineStages({ steps }: { steps: StepOut[] }) {
           const status = s.step?.status ?? "pending";
           const lines = s.lines.filter(([, value]) => value);
           return (
-            <li key={s.key} className="border-rule-strong bg-paper-raised border px-3 py-2">
+            <li
+              key={s.key}
+              className="border-rule-strong bg-paper-raised border px-3 py-2"
+            >
               <div className="flex items-center gap-2">
                 <span className="marginal tabular text-ink-faint">{i + 1}</span>
                 <StatusDot status={status} />
-                <span className="text-ink text-sm font-medium">{t(`${s.key}.title`)}</span>
+                <span className="text-ink text-sm font-medium">
+                  {t(`${s.key}.title`)}
+                </span>
               </div>
               {status === "pending" || status === "running" ? (
                 <p className="marginal mt-1">{t(`${s.key}.body`)}</p>
               ) : (
                 <>
                   {s.text && (
-                    <p className="text-ink mt-1.5 text-sm leading-relaxed">{s.text}</p>
+                    <p className="text-ink mt-1.5 text-sm leading-relaxed">
+                      {s.text}
+                    </p>
                   )}
                   {lines.length > 0 && (
                     <dl className="mt-1.5 space-y-0.5">
                       {lines.map(([label, value]) => (
                         <div key={label} className="marginal">
                           <span className="text-ink-faint">{label} · </span>
-                          <span className="text-ink-muted break-words">{value}</span>
+                          <span className="text-ink-muted break-words">
+                            {value}
+                          </span>
                         </div>
                       ))}
                     </dl>

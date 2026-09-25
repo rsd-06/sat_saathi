@@ -51,7 +51,10 @@ export function BandMapping({
     <div className="space-y-5">
       <section>
         <h3 className="text-ink text-sm font-medium">
-          {t("workspace.bands.title")}
+          {t("workspace.bands.title")}{" "}
+          <span className="text-ink-faint font-normal">
+            ({t("workspace.bands.optional")})
+          </span>
         </h3>
         {/* Automatic by default: the sensor is read from the file headers and
             the run routes itself; the trace records why. Manual is an override. */}

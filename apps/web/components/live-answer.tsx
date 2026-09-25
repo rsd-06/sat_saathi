@@ -58,9 +58,17 @@ export function LiveAnswer({
   const band =
     vlmBand === "high" || vlmBand === "medium" || vlmBand === "low"
       ? vlmBand
-      : confidence >= 0.85 ? "high" : confidence >= THRESHOLD ? "medium" : "low";
+      : confidence >= 0.85
+        ? "high"
+        : confidence >= THRESHOLD
+          ? "medium"
+          : "low";
   const { stats, summary } = measurements(job);
   const text = (job.answer as { text?: string } | null)?.text;
+  const vlm = job.steps.find((s) => s.step_key === "vision_language");
+  const fixture = Boolean(
+    vlm && (vlm.is_stub || vlm.output_summary?.source === "fixture"),
+  );
 
   return (
     <section className="border-rule-strong bg-paper-raised border">
@@ -77,6 +85,18 @@ export function LiveAnswer({
           </span>
         </span>
       </div>
+
+      {/* A fixture answer is not about this image; never let it pass as one. */}
+      {fixture && (
+        <div className="border-relief bg-relief-wash/60 m-3 border-2 px-3 py-2.5">
+          <p className="text-ink text-sm font-medium">
+            {t("answer.fixture.title")}
+          </p>
+          <p className="text-ink-muted mt-1.5 text-sm leading-relaxed">
+            {t("answer.fixture.body")}
+          </p>
+        </div>
+      )}
 
       {held && (
         <div className="border-relief bg-relief-wash/40 m-3 border-l-2 px-3 py-2.5">
@@ -103,7 +123,9 @@ export function LiveAnswer({
           <dl className="divide-rule border-rule mt-4 grid divide-y border-y sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             {stats.map((s) => (
               <div key={s.label} className="py-3 sm:px-3 sm:first:pl-0">
-                <dd className="font-serif text-ink tabular text-xl">{s.value}</dd>
+                <dd className="font-serif text-ink tabular text-xl">
+                  {s.value}
+                </dd>
                 <dt className="marginal mt-0.5">
                   {t(`answer.stat.${s.label}`)}
                 </dt>

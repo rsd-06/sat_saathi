@@ -361,7 +361,7 @@
   "pipeline.confidence": "நம்பிக்கை",
   "pipeline.boxes": "பெட்டிகள்",
   "pipeline.prior": "சோதனைத் துல்லியம்",
-  "pipeline.verdict": "தீர்ப்பு",
+  "pipeline.verdictLabel": "தீர்ப்பு",
   "pipeline.band.high": "உயர்",
   "pipeline.band.medium": "நடுத்தர",
   "pipeline.band.low": "குறைவு",
@@ -371,5 +371,8 @@
   "workspace.bands.manualSet": "கைமுறை அமைப்பு பயன்பாட்டில்",
   "workspace.bands.autoDetected": "கோப்பிலிருந்து கண்டறியப்பட்டது: {sensor}. இதைக் கொண்டு ஓட்டம் மாடலைத் தேர்ந்து காரணத்தைப் பதிவு செய்கிறது.",
   "workspace.bands.autoLater": "ஓட்டம் தொடங்கும்போது சென்சார் கோப்பிலிருந்து படிக்கப்படும்; உள்ளீட்டு சரிபார்ப்பைப் பார்க்கவும்.",
-  "workspace.bands.override": "கைமுறையாக மாற்று (விருப்பம்)"
+  "workspace.bands.override": "கைமுறையாக மாற்று (விருப்பம்)",
+  "workspace.bands.optional": "விருப்பம்",
+  "answer.fixture.title": "மாதிரி பதில், இந்தப் படத்திலிருந்து அல்ல",
+  "answer.fixture.body": "இந்த சேவையகத்தில் பார்வை மாடல் இயங்கவில்லை, எனவே இது நிலையான மாதிரி வெளியீடு. படத்திலிருந்து பதில் பெற GPU பணியாளரைத் தொடங்கவும்."
 }

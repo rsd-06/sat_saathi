@@ -28,8 +28,8 @@ export type {
   ToolOut,
 };
 
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+/** Same-origin proxy (app/api/backend) that attaches the session token. */
+export const API_BASE = "/api/backend";
 
 const client = createApiClient(API_BASE);
 
@@ -93,7 +93,9 @@ export async function uploadAsset(
     // A dropped connection and a cancelled request are both "it did not
     // arrive", and neither should surface as an untranslated browser string.
     const fail = () =>
-      reject(new ApiError({ key: "error.apiUnreachable.title", params: {} }, 0));
+      reject(
+        new ApiError({ key: "error.apiUnreachable.title", params: {} }, 0),
+      );
     request.addEventListener("error", fail);
     request.addEventListener("abort", fail);
     request.addEventListener("timeout", fail);

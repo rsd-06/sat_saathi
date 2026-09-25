@@ -361,7 +361,7 @@
   "pipeline.confidence": "আস্থা",
   "pipeline.boxes": "বাক্স",
   "pipeline.prior": "পরীক্ষিত নির্ভুলতা",
-  "pipeline.verdict": "সিদ্ধান্ত",
+  "pipeline.verdictLabel": "সিদ্ধান্ত",
   "pipeline.band.high": "উচ্চ",
   "pipeline.band.medium": "মাঝারি",
   "pipeline.band.low": "নিম্ন",
@@ -371,5 +371,8 @@
   "workspace.bands.manualSet": "ম্যানুয়াল সেটিং চালু",
   "workspace.bands.autoDetected": "ফাইল থেকে শনাক্ত: {sensor}। রান এটি থেকে মডেল বেছে নেয় এবং কারণ লিখে রাখে।",
   "workspace.bands.autoLater": "রান শুরু হলে ফাইল থেকে সেন্সর পড়া হয়; ইনপুট যাচাই দেখুন।",
-  "workspace.bands.override": "ম্যানুয়ালি বদলান (ঐচ্ছিক)"
+  "workspace.bands.override": "ম্যানুয়ালি বদলান (ঐচ্ছিক)",
+  "workspace.bands.optional": "ঐচ্ছিক",
+  "answer.fixture.title": "নমুনা উত্তর, এই ছবি থেকে নয়",
+  "answer.fixture.body": "এই সার্ভারে কোনো ভিশন মডেল চলছে না, তাই এই লেখাটি নির্দিষ্ট নমুনা আউটপুট। ছবি থেকে উত্তর পেতে GPU ওয়ার্কার চালু করুন।"
 }

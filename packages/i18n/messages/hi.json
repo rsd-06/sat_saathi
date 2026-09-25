@@ -361,7 +361,7 @@
   "pipeline.confidence": "विश्वास",
   "pipeline.boxes": "बॉक्स",
   "pipeline.prior": "परीक्षण सटीकता",
-  "pipeline.verdict": "निर्णय",
+  "pipeline.verdictLabel": "निर्णय",
   "pipeline.band.high": "उच्च",
   "pipeline.band.medium": "मध्यम",
   "pipeline.band.low": "निम्न",
@@ -371,5 +371,8 @@
   "workspace.bands.manualSet": "मैन्युअल सेटिंग लागू",
   "workspace.bands.autoDetected": "फ़ाइल से पहचाना गया: {sensor}। रन इसी से मॉडल चुनता है और कारण दर्ज करता है।",
   "workspace.bands.autoLater": "रन शुरू होने पर सेंसर फ़ाइल से पढ़ा जाता है; इनपुट सत्यापन देखें।",
-  "workspace.bands.override": "मैन्युअल रूप से बदलें (वैकल्पिक)"
+  "workspace.bands.override": "मैन्युअल रूप से बदलें (वैकल्पिक)",
+  "workspace.bands.optional": "वैकल्पिक",
+  "answer.fixture.title": "नमूना उत्तर, इस छवि से नहीं",
+  "answer.fixture.body": "इस सर्वर पर कोई विज़न मॉडल नहीं चल रहा है, इसलिए यह पाठ निश्चित नमूना आउटपुट है। छवि से उत्तर पाने के लिए GPU वर्कर शुरू करें।"
 }
