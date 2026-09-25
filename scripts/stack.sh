@@ -11,7 +11,7 @@ set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DATA="${SATSAATHI_DATA:-D:/Projects/sat_saathi/.data}"
 export UV_LINK_MODE=copy PYTHONUNBUFFERED=1
-export DATABASE_URL="${DATABASE_URL:-postgresql+asyncpg://satsaathi:satsaathi_dev_password@localhost:5432/satsaathi_demo}"
+export DATABASE_URL="${DATABASE_URL:-postgresql+asyncpg://satsaathi:satsaathi_dev_password@localhost:5432/satsaathi}"
 export REDIS_URL="${REDIS_URL:-redis://localhost:6379/0}"
 export STORAGE_DIR="$DATA/storage" MODELS_DIR="$DATA/models"
 export TILER_URL="http://localhost:8001" JOB_DISPATCH=celery
