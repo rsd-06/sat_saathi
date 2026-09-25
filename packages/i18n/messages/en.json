@@ -237,7 +237,7 @@
   "run.limits.title": "What this input cannot answer",
   "run.demo.notice": "Demo mode. Measurements are computed from your image in the browser; the vision-language and phrasing steps return fixture output.",
   "answer.intent": "Read as",
-  "run.server.notice": "Measurements are computed on the server from the file you uploaded. The vision-language and phrasing steps still return fixture output.",
+  "run.server.notice": "Measurements and answers are computed on the server from the file you uploaded. Every step is recorded below.",
   "workspace.bands.applyMapping": "Apply mapping",
   "workspace.analyses.needsBands": "{index} needs {bands}.",
   "answer.stat.aboveThreshold": "Above threshold",
@@ -374,5 +374,6 @@
   "workspace.bands.override": "Override manually (optional)",
   "workspace.bands.optional": "optional",
   "answer.fixture.title": "Placeholder answer, not from this image",
-  "answer.fixture.body": "No vision model is running on this server, so this text is fixed sample output. Start the GPU worker to get answers from the image."
+  "answer.fixture.body": "No vision model is running on this server, so this text is fixed sample output. Start the GPU worker to get answers from the image.",
+  "pipeline.marked": "{count} {label} marked on the image"
 }

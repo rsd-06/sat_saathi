@@ -49,6 +49,7 @@ export function PipelineStages({ steps }: { steps: StepOut[] }) {
   const sensor = str(img.sensor_type);
   const confidence = typeof v.confidence === "number" ? v.confidence : null;
   const band = str(v.confidence_band) || str(ver.confidence_band);
+  const marked = parseBoxes(v.boxes_2d);
 
   const stages: {
     key: string;
@@ -104,7 +105,10 @@ export function PipelineStages({ steps }: { steps: StepOut[] }) {
     {
       key: "vqa",
       step: vlm,
-      text: str(v.answer),
+      // A grounding answer is JSON; the boxes are drawn, so say it in words.
+      text: marked.length
+        ? t("marked", { count: marked.length, label: marked[0]!.label })
+        : str(v.answer),
       lines: [
         [
           t("confidence"),
