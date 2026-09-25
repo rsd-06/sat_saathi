@@ -8,6 +8,8 @@
   stub because it only joins text; it does not write. A language-model step should
   turn the model's output, the question and any measurements into a full answer in
   the asker's language.
+- [x] Stopgap (2026-09-25): the final answer is the model's text verbatim, with no
+  added punctuation. Adding a full stop had turned a Hindi "।" into "।.".
 - [ ] **Expand short answers.** Yes/no and counting questions come back as one
   word ("Yes.", "2."). Until the composer exists, pair the VQA answer with the
   caption so the officer gets a sentence.
