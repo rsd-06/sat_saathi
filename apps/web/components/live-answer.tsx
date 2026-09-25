@@ -51,8 +51,14 @@ export function LiveAnswer({
 
   const held = job.status === "needs_review";
   const confidence = job.confidence ?? 0;
+  // A model answer carries its own band (thresholds 0.6 / 0.35 in settings);
+  // the fixed cut-offs remain for fixture runs, which have none.
+  const vlmBand = job.steps.find((s) => s.step_key === "vision_language")
+    ?.output_summary?.confidence_band;
   const band =
-    confidence >= 0.85 ? "high" : confidence >= THRESHOLD ? "medium" : "low";
+    vlmBand === "high" || vlmBand === "medium" || vlmBand === "low"
+      ? vlmBand
+      : confidence >= 0.85 ? "high" : confidence >= THRESHOLD ? "medium" : "low";
   const { stats, summary } = measurements(job);
   const text = (job.answer as { text?: string } | null)?.text;
 

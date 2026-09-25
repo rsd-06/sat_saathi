@@ -403,7 +403,17 @@ class AnswerTemplate(BaseTool):
         vision = inputs.get("vision") or {}
         pieces: list[str] = []
         if vision.get("source") in ("model", "classical") and vision.get("answer"):
-            pieces.append(str(vision.get("text") or vision["answer"]).strip())
+            said = str(vision.get("text") or vision["answer"]).strip()
+            boxes = [b for b in str(vision.get("boxes_2d") or "").split(";") if b.strip()]
+            if boxes and (said.startswith("`") or said.startswith("[")):
+                # A grounding answer is JSON; the officer reads it as a sentence.
+                labels = [b.split("[")[0].strip() or "object" for b in boxes]
+                noun = labels[0] if len(set(labels)) == 1 else "object"
+                said = (
+                    f"Found {len(boxes)} {noun}{'s' if len(boxes) > 1 else ''}, "
+                    f"marked on the image ({vision.get('box_status', 'model')})"
+                )
+            pieces.append(said)
             if "unverified" in str(vision.get("box_status", "")):
                 pieces.append(
                     "The SAR locations are unverified: no independent detection "

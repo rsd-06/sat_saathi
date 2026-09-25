@@ -7,6 +7,7 @@ import { ImageUpload, type LoadedImage } from "./image-upload";
 import { LiveAnswer } from "./live-answer";
 import { Scene } from "./scene";
 import { Trace } from "./trace";
+import { PipelineStages, parseBoxes } from "./pipeline-stages";
 import { BandMapping } from "./band-mapping";
 import {
   ApiError,
@@ -133,6 +134,9 @@ export function Workspace() {
 
   const canRun = Boolean(asset) && question.trim().length > 0 && phase !== "running";
   const answered = job?.status === "succeeded" || job?.status === "needs_review";
+  const boxes = parseBoxes(
+    job?.steps.find((s) => s.step_key === "vision_language")?.output_summary?.boxes_2d,
+  );
 
   return (
     <div className="mx-auto grid max-w-[110rem] gap-6 px-4 py-6 sm:px-6 xl:grid-cols-[19rem_minmax(0,1fr)_25rem]">
@@ -196,12 +200,39 @@ export function Workspace() {
           <div className="bg-paper-sunk relative flex aspect-[16/10] min-h-[20rem] items-center justify-center">
             {image?.url ? (
               /* A local object URL; next/image cannot optimise a blob source. */
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={image.url}
-                alt={image.file.name}
-                className="max-h-full max-w-full object-contain"
-              />
+              <div className="relative inline-block max-h-full max-w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={image.url}
+                  alt={image.file.name}
+                  className="block max-h-[70dvh] max-w-full object-contain"
+                />
+                {boxes.length > 0 && (
+                  <svg
+                    viewBox="0 0 1000 1000"
+                    preserveAspectRatio="none"
+                    className="pointer-events-none absolute inset-0 h-full w-full"
+                  >
+                    {boxes.map((b, i) => (
+                      <g key={i}>
+                        <rect
+                          x={b.box[0]}
+                          y={b.box[1]}
+                          width={b.box[2] - b.box[0]}
+                          height={b.box[3] - b.box[1]}
+                          fill="none"
+                          stroke={b.status === "corroborated" || b.status === "measured" ? "#16a34a" : "#f59e0b"}
+                          strokeWidth={4}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                        <text x={b.box[0] + 6} y={Math.max(b.box[1] - 8, 28)} fontSize={28} fill="#fff" stroke="#000" strokeWidth={0.6}>
+                          {b.label}
+                        </text>
+                      </g>
+                    ))}
+                  </svg>
+                )}
+              </div>
             ) : image ? (
               /* GeoTIFF: no browser preview, so show what was read instead of
                  an empty frame. Real tiles arrive once the tiler is wired. */
@@ -314,6 +345,8 @@ export function Workspace() {
             })}
           </div>
         </section>
+
+        {job && <PipelineStages steps={job.steps} />}
 
         {job && <Trace steps={job.steps} jobId={job.id} />}
 

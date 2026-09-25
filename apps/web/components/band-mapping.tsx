@@ -27,12 +27,16 @@ export function BandMapping({
 }) {
   const t = useTranslations();
   const [busy, setBusy] = useState(false);
+  const [override, setOverride] = useState(false);
   const [manual, setManual] = useState(false);
   const [draft, setDraft] = useState<Record<string, number>>(
     (asset.band_map as Record<string, number>) ?? {},
   );
 
-  async function apply(body: { preset?: string; band_map?: Record<string, number> }) {
+  async function apply(body: {
+    preset?: string;
+    band_map?: Record<string, number>;
+  }) {
     setBusy(true);
     try {
       onChange(await setAssetBands(asset.id, body));
@@ -49,70 +53,101 @@ export function BandMapping({
         <h3 className="text-ink text-sm font-medium">
           {t("workspace.bands.title")}
         </h3>
-        <p className="marginal mt-1">{t("workspace.bands.presetHint")}</p>
-
-        <select
-          value={asset.sensor_preset ?? ""}
-          disabled={busy}
-          onChange={(e) => {
-            if (!e.target.value) return;
-            void apply({ preset: e.target.value });
-          }}
-          className="border-rule-strong bg-paper-raised text-ink mt-2 w-full rounded-xs border px-2 py-1.5 text-sm"
-        >
-          <option value="">{t("workspace.bands.preset")}…</option>
-          {PRESETS.map((key) => (
-            <option key={key} value={key}>
-              {t(`workspace.bands.presetName.${key}`)}
-            </option>
-          ))}
-        </select>
+        {/* Automatic by default: the sensor is read from the file headers and
+            the run routes itself; the trace records why. Manual is an override. */}
+        <p className="text-ink mt-1 text-sm">
+          {asset.sensor_preset || asset.band_map
+            ? t("workspace.bands.manualSet")
+            : t("workspace.bands.auto")}
+        </p>
+        <p className="marginal mt-0.5">
+          {asset.sensor_type
+            ? t("workspace.bands.autoDetected", { sensor: asset.sensor_type })
+            : t("workspace.bands.autoLater")}
+        </p>
 
         <button
           type="button"
-          onClick={() => setManual((v) => !v)}
+          onClick={() => setOverride((v) => !v)}
           className="text-accent hover:text-accent-hover marginal mt-2 underline underline-offset-2"
         >
-          {t("workspace.bands.manual")}
+          {t("workspace.bands.override")}
         </button>
 
-        {manual && (
-          <div className="border-rule mt-2 space-y-1.5 border-t pt-2">
-            {ROLES.map((role) => (
-              <label key={role} className="marginal flex items-center gap-2">
-                <span className="w-14">{t(`workspace.bands.role.${role}`)}</span>
-                <select
-                  value={draft[role] ?? ""}
-                  onChange={(e) =>
-                    setDraft((prev) => {
-                      const next = { ...prev };
-                      if (!e.target.value) delete next[role];
-                      else next[role] = Number(e.target.value);
-                      return next;
-                    })
-                  }
-                  className="border-rule-strong bg-paper-raised text-ink flex-1 rounded-xs border px-1.5 py-0.5"
-                >
-                  <option value="">—</option>
-                  {Array.from({ length: asset.band_count }, (_, i) => i + 1).map(
-                    (n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ),
-                  )}
-                </select>
-              </label>
-            ))}
+        {override && (
+          <>
+            <p className="marginal mt-2">{t("workspace.bands.presetHint")}</p>
+
+            <select
+              value={asset.sensor_preset ?? ""}
+              disabled={busy}
+              onChange={(e) => {
+                if (!e.target.value) return;
+                void apply({ preset: e.target.value });
+              }}
+              className="border-rule-strong bg-paper-raised text-ink mt-2 w-full rounded-xs border px-2 py-1.5 text-sm"
+            >
+              <option value="">{t("workspace.bands.preset")}…</option>
+              {PRESETS.map((key) => (
+                <option key={key} value={key}>
+                  {t(`workspace.bands.presetName.${key}`)}
+                </option>
+              ))}
+            </select>
+
             <button
               type="button"
-              disabled={busy || Object.keys(draft).length === 0}
-              onClick={() => void apply({ band_map: draft })}
-              className="bg-accent hover:bg-accent-hover mt-1 w-full rounded-xs px-3 py-1.5 text-xs font-medium text-white transition-colors disabled:opacity-40"
+              onClick={() => setManual((v) => !v)}
+              className="text-accent hover:text-accent-hover marginal mt-2 underline underline-offset-2"
             >
-              {t("workspace.bands.applyMapping")}
+              {t("workspace.bands.manual")}
             </button>
-          </div>
+
+            {manual && (
+              <div className="border-rule mt-2 space-y-1.5 border-t pt-2">
+                {ROLES.map((role) => (
+                  <label
+                    key={role}
+                    className="marginal flex items-center gap-2"
+                  >
+                    <span className="w-14">
+                      {t(`workspace.bands.role.${role}`)}
+                    </span>
+                    <select
+                      value={draft[role] ?? ""}
+                      onChange={(e) =>
+                        setDraft((prev) => {
+                          const next = { ...prev };
+                          if (!e.target.value) delete next[role];
+                          else next[role] = Number(e.target.value);
+                          return next;
+                        })
+                      }
+                      className="border-rule-strong bg-paper-raised text-ink flex-1 rounded-xs border px-1.5 py-0.5"
+                    >
+                      <option value="">—</option>
+                      {Array.from(
+                        { length: asset.band_count },
+                        (_, i) => i + 1,
+                      ).map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+                <button
+                  type="button"
+                  disabled={busy || Object.keys(draft).length === 0}
+                  onClick={() => void apply({ band_map: draft })}
+                  className="bg-accent hover:bg-accent-hover mt-1 w-full rounded-xs px-3 py-1.5 text-xs font-medium text-white transition-colors disabled:opacity-40"
+                >
+                  {t("workspace.bands.applyMapping")}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </section>
 

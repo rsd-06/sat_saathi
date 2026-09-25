@@ -36,6 +36,9 @@ from .tasks import wants_boxes
 #: A SAR box counts as corroborated at this overlap with independent evidence.
 CORROBORATION_IOU = 0.3
 ANSWER_EXCERPT = 280
+#: Asked of every single scene besides the officer's question, so each run
+#: shows a caption next to its answer. The problem statement's captioning query.
+SCENE_CAPTION_PROMPT = "Describe the land-cover and major objects visible in this image."
 
 
 class VlmParams(BaseModel):
@@ -184,6 +187,23 @@ class _VisionLanguage(ModelBackedTool):
         )
         return _Answer(gen.text, gen, box_maths.parse_boxes(gen.text))
 
+    def _scene_caption(
+        self, model: Any, adapter: str | None, images: list[Any], ctx: ToolContext
+    ) -> dict[str, Any]:
+        """A second, fixed question on the same scene: what is in it."""
+        if not _settings_value(ctx, "vlm_scene_caption", True):
+            return {}
+        gen = model.generate(
+            adapter, images, SCENE_CAPTION_PROMPT,
+            max_new_tokens=int(_settings_value(ctx, "vlm_max_new_tokens", 256)),
+            want_logprobs=False,
+        )
+        return {
+            "caption": gen.text.strip()[:ANSWER_EXCERPT],
+            "caption_adapter": adapter or "base",
+            "caption_latency_ms": gen.latency_ms,
+        }
+
     def _consistency(
         self, model: Any, adapter: str | None, images: list[Any], prompt: str,
         first: _Answer, grounding: bool, ctx: ToolContext,
@@ -278,6 +298,11 @@ class _VisionLanguage(ModelBackedTool):
             settings=ctx.settings,
         )
         placed, extra = self._statuses(answer, prepared, asset, grounding)
+        if task == "caption":
+            extra = {**extra, "caption": answer.text.strip()[:ANSWER_EXCERPT],
+                     "caption_adapter": self.adapter}
+        else:
+            extra = {**extra, **self._scene_caption(model, self.adapter, [prepared.image], ctx)}
         return self._result(
             answer=answer,
             adapter=self.adapter,
@@ -421,6 +446,12 @@ class _VlmIndex(_VisionLanguage):
         prepared = imaging.PreparedImage(tc, _original_size(asset["path"]))
         prepared.crs, prepared.transform = _georef(asset["path"])
         placed = _place_boxes(answer.boxes, prepared, "model")
+        # The index adapter was trained on a map plus statistics, not to
+        # describe a scene; the optical adapter captions the true colour.
+        scene = (
+            self._scene_caption(model, "vqa-optical", [tc], ctx)
+            if model.catalog.is_available("vqa-optical") else {}
+        )
         return self._result(
             answer=answer,
             adapter=self.model_name,
@@ -432,6 +463,7 @@ class _VlmIndex(_VisionLanguage):
                 "index_mean": stats["mean"],
                 "numbers_quoted_ok": not stray,
                 **({"numbers_unquoted": ",".join(stray)} if stray else {}),
+                **scene,
             },
             evidence={"stats": stats, "prompt": prompt},
             artifacts=_geojson_artifact(ctx, f"{self.model_name}-boxes", placed, prepared.crs),

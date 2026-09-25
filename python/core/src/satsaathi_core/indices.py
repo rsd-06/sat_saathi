@@ -20,7 +20,6 @@ from typing import Literal
 
 import numpy as np
 import rasterio
-from pyproj import CRS, Geod
 from rasterio.warp import transform_bounds
 
 IndexName = Literal["ndvi", "ndwi", "lswi"]
@@ -80,6 +79,12 @@ def normalised_difference(a: np.ndarray, b: np.ndarray) -> np.ndarray:
 def _pixel_area_m2(src: rasterio.DatasetReader) -> float | None:
     """Ground area of one pixel, via an equal-area CRS when needed."""
     if src.crs is None:
+        return None
+    try:
+        # Imported here: a host that refuses pyproj's native module (Windows
+        # Smart App Control has) still runs everything but ground area.
+        from pyproj import CRS, Geod
+    except ImportError:
         return None
 
     crs = CRS.from_user_input(src.crs)

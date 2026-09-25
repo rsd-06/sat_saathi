@@ -5,6 +5,7 @@ import { useFormatter, useTranslations } from "next-intl";
 
 import { LiveAnswer } from "./live-answer";
 import { Trace } from "./trace";
+import { PipelineStages } from "./pipeline-stages";
 import { getJob, subscribeToJob, type JobOut } from "@/lib/api";
 
 /** A shareable read-only view. Reconnects to the live stream if still running. */
@@ -66,6 +67,8 @@ export function JobView({ jobId }: { jobId: string }) {
       </header>
 
       {answered && <LiveAnswer job={job} onAskAgain={() => undefined} />}
+
+      <PipelineStages steps={job.steps} />
 
       <Trace steps={job.steps} jobId={job.id} />
     </div>
