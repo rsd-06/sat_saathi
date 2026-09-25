@@ -162,6 +162,8 @@ export default async function LandingPage({
               </Link>
             </Register>
 
+            <div>
+            <p className="marginal mb-1.5">Example trace · illustrative timings</p>
             <ol className="border-rule-strong bg-paper-raised divide-rule divide-y border">
               {(
                 [
@@ -188,6 +190,7 @@ export default async function LandingPage({
                 </li>
               ))}
             </ol>
+            </div>
           </div>
         </section>
       </main>

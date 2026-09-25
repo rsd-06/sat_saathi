@@ -103,3 +103,24 @@ async def health() -> HealthResponse:
         "ok" if all(c.status != "error" for c in checks.values()) else "degraded"
     )
     return HealthResponse(mode=settings.mode, status=overall, checks=checks)
+
+
+class PublicConfig(BaseModel):
+    """Server settings the interface must not guess at."""
+
+    mode: str
+    #: Answers below this confidence are held for review, as a percentage.
+    review_threshold_pct: int
+    max_upload_mb: int
+    google_sign_in: bool
+
+
+@router.get("/config", response_model=PublicConfig)
+async def public_config() -> PublicConfig:
+    settings = get_settings()
+    return PublicConfig(
+        mode=settings.mode,
+        review_threshold_pct=round(settings.confidence_threshold * 100),
+        max_upload_mb=settings.max_upload_mb,
+        google_sign_in=settings.google_sign_in_enabled,
+    )

@@ -4,7 +4,6 @@ import { useFormatter, useTranslations } from "next-intl";
 
 import { geojsonUrl, traceUrl, type JobOut } from "@/lib/api";
 
-const THRESHOLD = 0.75;
 
 /** Figures the pipeline actually measured, pulled from the compute step. */
 function measurements(job: JobOut) {
@@ -42,10 +41,14 @@ function measurements(job: JobOut) {
 export function LiveAnswer({
   job,
   onAskAgain,
+  thresholdPct = 75,
 }: {
   job: JobOut;
   onAskAgain: () => void;
+  /** The server's review threshold, in percent. */
+  thresholdPct?: number;
 }) {
+  const THRESHOLD = thresholdPct / 100;
   const t = useTranslations();
   const format = useFormatter();
 
@@ -78,7 +81,7 @@ export function LiveAnswer({
             {t("answer.review.title")}
           </p>
           <p className="text-ink-muted mt-1.5 text-sm leading-relaxed">
-            {t("answer.review.body", { threshold: THRESHOLD * 100 })}
+            {t("answer.review.body", { threshold: thresholdPct })}
           </p>
         </div>
       )}

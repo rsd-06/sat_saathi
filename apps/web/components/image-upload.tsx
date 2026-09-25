@@ -16,15 +16,12 @@ export type LoadedImage = {
 const PREVIEWABLE = ["image/png", "image/jpeg", "image/webp", "image/avif"];
 const ACCEPT = [...PREVIEWABLE, ".tif", ".tiff"].join(",");
 
-/** Mirrors the API's max_upload_mb. Checked here so a too-large file is
- *  refused instantly instead of after the whole thing has gone up the wire. */
-const MAX_MB = 512;
-
 export function ImageUpload({
   loaded,
   asset,
   busy,
   progress,
+  maxMb,
   onLoad,
   onClear,
 }: {
@@ -33,6 +30,9 @@ export function ImageUpload({
   busy: boolean;
   /** 0–100 while bytes are in flight, null once the server is reading. */
   progress?: number | null;
+  /** The server's limit, checked here so an oversized file is refused before
+   *  it has gone up the wire rather than after. */
+  maxMb: number;
   onLoad: (image: LoadedImage) => void;
   onClear: () => void;
 }) {
@@ -69,9 +69,9 @@ export function ImageUpload({
       return;
     }
     const megabytes = file.size / (1024 * 1024);
-    if (megabytes > MAX_MB) {
+    if (megabytes > maxMb) {
       setError(
-        t("upload.error.tooLarge", { size: megabytes.toFixed(0), max: MAX_MB }),
+        t("upload.error.tooLarge", { size: megabytes.toFixed(0), max: maxMb }),
       );
       return;
     }
@@ -234,7 +234,7 @@ export function ImageUpload({
           </span>
         </p>
         <p id="upload-accepts" className="marginal mt-1">
-          {t("upload.accepts", { max: MAX_MB })}
+          {t("upload.accepts", { max: maxMb })}
         </p>
       </div>
       {error && (

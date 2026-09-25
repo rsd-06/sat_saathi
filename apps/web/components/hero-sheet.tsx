@@ -21,6 +21,7 @@ export function HeroSheet() {
 
   return (
     <div className="sheet-marks border-rule-strong bg-paper-raised relative border">
+      <span className="marginal bg-paper-raised border-rule-strong absolute -top-2.5 right-3 z-10 border px-1.5">Example sheet · illustrative</span>
       {/* Top margin: what the sheet is of. */}
       <div className="border-rule divide-rule open-frame grid grid-cols-2 divide-x border-b sm:grid-cols-4">
         {[

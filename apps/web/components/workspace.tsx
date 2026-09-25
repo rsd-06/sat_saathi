@@ -9,6 +9,17 @@ import { Scene } from "./scene";
 import { Trace } from "./trace";
 import { BandMapping } from "./band-mapping";
 import {
+  ALL_FEATURES,
+  AnalysisView,
+  ModeBar,
+  StackInputs,
+  loadFrame,
+  resolveMode,
+  type ChangeChoice,
+  type Frame,
+  type Mode,
+} from "./analysis";
+import {
   ApiError,
   createInputSet,
   createJob,
@@ -24,7 +35,13 @@ const EXAMPLES = ["single1", "single2", "change1"] as const;
 
 type Phase = "empty" | "uploading" | "ready" | "running" | "done" | "failed";
 
-export function Workspace() {
+export function Workspace({
+  maxUploadMb,
+  reviewThresholdPct,
+}: {
+  maxUploadMb: number;
+  reviewThresholdPct: number;
+}) {
   const t = useTranslations();
   const uiLocale = useLocale() as Locale;
 
@@ -38,6 +55,20 @@ export function Workspace() {
   //: Percent while bytes are in flight; null once the server is reading.
   const [progress, setProgress] = useState<number | null>(null);
   const unsubscribe = useRef<(() => void) | null>(null);
+  const [frames, setFrames] = useState<Frame[]>([]);
+  const [mode, setMode] = useState<Mode>("auto");
+  const [changeChoice, setChangeChoice] = useState<ChangeChoice>("auto");
+  const [features, setFeatures] = useState(ALL_FEATURES);
+  const [pair, setPair] = useState<[string, string] | null>(null);
+  const resolved = resolveMode(mode, frames, changeChoice);
+
+  async function addFrames(files: File[], primary = false) {
+    const loaded = (
+      await Promise.all(files.map((f) => loadFrame(f).catch(() => null)))
+    ).filter((f): f is Frame => f !== null);
+    if (primary) loaded.forEach((f) => (f.primary = true));
+    setFrames((fs) => (primary ? [...loaded, ...fs.filter((f) => !f.primary)] : [...fs, ...loaded]));
+  }
 
   useEffect(() => {
     return () => {
@@ -48,6 +79,8 @@ export function Workspace() {
 
   const handleUpload = useCallback(async (loaded: LoadedImage) => {
     setImage(loaded);
+    // The Q&A image also joins the stack, so it can be compared too.
+    if (loaded.url) void addFrames([loaded.file], true);
     setJob(null);
     setError(null);
     setPhase("uploading");
@@ -76,6 +109,7 @@ export function Workspace() {
   }, []);
 
   function clearImage() {
+    setFrames((fs) => fs.filter((f) => !f.primary));
     unsubscribe.current?.();
     if (image?.url) URL.revokeObjectURL(image.url);
     setImage(null);
@@ -150,11 +184,21 @@ export function Workspace() {
               asset={asset}
               busy={phase === "uploading"}
               progress={progress}
+              maxMb={maxUploadMb}
               onLoad={handleUpload}
               onClear={clearImage}
             />
           </div>
         </section>
+
+        <StackInputs
+          frames={frames}
+          onAdd={(files) => void addFrames(files)}
+          onUpdate={(id, patch) =>
+            setFrames((fs) => fs.map((f) => (f.id === id ? { ...f, ...patch } : f)))
+          }
+          onRemove={(id) => setFrames((fs) => fs.filter((f) => f.id !== id))}
+        />
 
         {asset && (
           <BandMapping
@@ -168,6 +212,25 @@ export function Workspace() {
       </aside>
 
       <div className="min-w-0">
+        <ModeBar
+          mode={mode}
+          onMode={setMode}
+          changeChoice={changeChoice}
+          onChangeChoice={setChangeChoice}
+          features={features}
+          onFeatures={setFeatures}
+          frames={frames}
+        />
+        {resolved.mode !== "single" ? (
+          <AnalysisView
+            frames={frames}
+            mode={resolved.mode}
+            changeKind={resolved.changeKind}
+            features={features}
+            pair={pair}
+            onPair={setPair}
+          />
+        ) : (
         <div className="border-rule-strong bg-paper-raised border">
           <div className="border-rule divide-rule flex flex-wrap items-center divide-x border-b">
             <span className="marginal px-2.5 py-1.5">
@@ -229,6 +292,7 @@ export function Workspace() {
             {t("run.server.notice")}
           </p>
         </div>
+        )}
       </div>
 
       <aside
@@ -317,7 +381,11 @@ export function Workspace() {
 
         {job && <Trace steps={job.steps} jobId={job.id} />}
 
-        {job && answered && <LiveAnswer job={job} onAskAgain={() => setQuestion("")} />}
+        {job && answered && <LiveAnswer
+            job={job}
+            thresholdPct={reviewThresholdPct}
+            onAskAgain={() => setQuestion("")}
+          />}
       </aside>
     </div>
   );
