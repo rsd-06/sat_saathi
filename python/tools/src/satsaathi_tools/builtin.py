@@ -428,9 +428,11 @@ class AnswerTemplate(BaseTool):
             pieces.append(f"covering {measured['area_ha']} ha")
         if measured.get("water_pct") is not None:
             pieces.append(f"SAR backscatter marks {measured['water_pct']}% of the scene as water")
-        text = " ".join(p if p.endswith(".") else p + "." for p in pieces) if pieces else (
-            "No measurement was available."
-        )
+        # The model's words go out as it wrote them: a full stop is added only
+        # where a sentence has no ending of its own ("।" ends Hindi and Bangla).
+        text = " ".join(
+            p if p.rstrip().endswith((".", "।", "?", "!")) else p + "." for p in pieces
+        ) if pieces else "No measurement was available."
 
         return ToolResult(
             output_summary={"chars": len(text), "target_lang": params.target_lang},
