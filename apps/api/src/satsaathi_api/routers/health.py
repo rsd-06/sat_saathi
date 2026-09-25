@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import Literal
 
+import asyncpg
 import httpx
 import redis.asyncio as redis_asyncio
 from fastapi import APIRouter
