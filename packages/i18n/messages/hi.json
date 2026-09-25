@@ -83,6 +83,7 @@
   "dashboard.stats.analyses": "विश्लेषण चलाए गए",
   "dashboard.stats.area": "कुल क्षेत्र",
   "dashboard.stats.review": "समीक्षा में रोके गए",
+  "job.status.queued": "कतार में",
   "job.status.running": "चल रहा है",
   "job.status.succeeded": "उत्तर मिला",
   "job.status.failed": "विफल",

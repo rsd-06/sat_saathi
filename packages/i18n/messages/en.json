@@ -83,6 +83,7 @@
   "dashboard.stats.analyses": "Analyses run",
   "dashboard.stats.area": "Area covered",
   "dashboard.stats.review": "Held for review",
+  "job.status.queued": "Queued",
   "job.status.running": "Running",
   "job.status.succeeded": "Answered",
   "job.status.failed": "Failed",

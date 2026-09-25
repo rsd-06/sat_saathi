@@ -83,6 +83,7 @@
   "dashboard.stats.analyses": "இயக்கிய பகுப்பாய்வுகள்",
   "dashboard.stats.area": "மொத்தப் பரப்பு",
   "dashboard.stats.review": "மறுபார்வையில் உள்ளவை",
+  "job.status.queued": "வரிசையில்",
   "job.status.running": "இயங்குகிறது",
   "job.status.succeeded": "பதில் கிடைத்தது",
   "job.status.failed": "தோல்வி",
