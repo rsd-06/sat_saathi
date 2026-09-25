@@ -127,6 +127,7 @@ async def create_job(
     query_text: str,
     query_lang: str,
     ui_lang: str,
+    user_id: uuid.UUID | None = None,
 ) -> Job:
     """Create the job and its eight pending steps in one transaction.
 
@@ -134,6 +135,7 @@ async def create_job(
     sequence immediately, greyed out, rather than growing it a row at a time.
     """
     job = Job(
+        user_id=user_id,
         input_set_id=input_set_id,
         query_text=query_text,
         query_lang=query_lang,

@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { LanguageSwitcher } from "./language-switcher";
 import { ModelStatus } from "./model-status";
+import { ProfileForm } from "./profile-form";
 import { StatusDot } from "./status-dot";
 import { API_BASE, getHealth } from "@/lib/api";
 
@@ -31,25 +32,27 @@ export function SettingsPanel() {
   >;
 
   return (
-    <div className="space-y-8">
+    <div className="settings-large space-y-12">
+      <ProfileForm />
+
       <section>
-        <h2 className="text-ink text-sm font-medium">
+        <h2 className="text-ink text-base font-medium">
           {t("settings.language")}
         </h2>
-        <p className="marginal mt-1">{locale}</p>
+        <p className="marginal text-base mt-1">{locale}</p>
         <div className="mt-2">
           <LanguageSwitcher />
         </div>
       </section>
 
       <section>
-        <h2 className="text-ink text-sm font-medium">{t("settings.api")}</h2>
-        <p className="marginal mt-1">{API_BASE}</p>
+        <h2 className="text-ink text-base font-medium">{t("settings.api")}</h2>
+        <p className="marginal text-base mt-1">{API_BASE || "/api/v1"}</p>
 
         <div className="border-rule divide-rule mt-3 divide-y border-y">
           <div className="flex items-center justify-between py-2">
-            <span className="marginal">{t("settings.mode")}</span>
-            <span className="marginal flex items-center gap-1.5">
+            <span className="marginal text-base">{t("settings.mode")}</span>
+            <span className="marginal text-base flex items-center gap-1.5">
               <StatusDot
                 status={reachable ? "succeeded" : reachable === false ? "failed" : "pending"}
               />
@@ -64,10 +67,16 @@ export function SettingsPanel() {
           {/* Each dependency reports itself; nothing here is assumed healthy. */}
           {Object.entries(checks).map(([name, check]) => (
             <div key={name} className="flex items-center justify-between py-2">
-              <span className="marginal">{name}</span>
-              <span className="marginal flex items-center gap-1.5">
+              <span className="marginal text-base">{name}</span>
+              <span className="marginal text-base flex items-center gap-1.5">
                 <StatusDot
-                  status={check.status === "ok" ? "succeeded" : "failed"}
+                  status={
+                    check.status === "ok"
+                      ? "succeeded"
+                      : check.status === "skipped"
+                        ? "pending"
+                        : "failed"
+                  }
                 />
                 {check.status}
               </span>
@@ -76,7 +85,7 @@ export function SettingsPanel() {
         </div>
 
         {health && (
-          <p className="marginal mt-2">
+          <p className="marginal text-base mt-2">
             {t("settings.mode")} · {String(health.mode)}
           </p>
         )}

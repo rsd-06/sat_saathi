@@ -6,7 +6,7 @@ import asyncio
 import json
 import uuid
 
-from fastapi import APIRouter, BackgroundTasks, Query, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, Query, Response, status
 from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
@@ -19,8 +19,10 @@ from satsaathi_jobs.runner import event_bus
 from ..deps import Session, SettingsDep, StorageDep, api_error
 from ..dispatch import dispatch_job
 from ..schemas import ErrorBody, JobIn, JobOut, JobPage, JobSummary, StepOut
+from .auth import CurrentUser, current_user
 
-router = APIRouter(prefix="/jobs", tags=["jobs"])
+# Everything here is somebody's own work, so all of it needs an account.
+router = APIRouter(prefix="/jobs", tags=["jobs"], dependencies=[Depends(current_user)])
 
 
 def _to_out(job: Job) -> JobOut:
@@ -45,13 +47,14 @@ def _to_out(job: Job) -> JobOut:
 @router.post("", response_model=JobOut, status_code=status.HTTP_201_CREATED)
 async def create_job(
     session: Session,
+    user: CurrentUser,
     settings: SettingsDep,
     storage: StorageDep,
     body: JobIn,
     background: BackgroundTasks,
 ) -> JobOut:
     input_set = await session.get(InputSet, body.input_set_id)
-    if input_set is None:
+    if input_set is None or input_set.user_id != user.id:
         raise api_error(
             status.HTTP_404_NOT_FOUND,
             "inputSet.not_found",
@@ -72,12 +75,11 @@ async def create_job(
         query_text=body.query_text,
         query_lang=body.query_lang,
         ui_lang=body.ui_lang,
+        user_id=user.id,
     )
     # Plan before dispatching. The interface can then show the whole route
     # immediately, and the dispatcher knows which hardware the job needs.
-    _planned, queue = await jobs_service.plan_job(
-        session, job, storage=storage, settings=settings
-    )
+    _planned, queue = await jobs_service.plan_job(session, job, storage=storage, settings=settings)
     job_id = job.id
     await session.commit()
 
@@ -90,21 +92,21 @@ async def create_job(
 @router.get("", response_model=JobPage)
 async def list_jobs(
     session: Session,
+    user: CurrentUser,
     limit: int = Query(default=20, le=100, ge=1),
     offset: int = Query(default=0, ge=0),
     job_status: str | None = Query(default=None, alias="status"),
 ) -> JobPage:
     stmt = select(Job, InputSet.mode).join(InputSet, Job.input_set_id == InputSet.id)
-    count_stmt = select(func.count()).select_from(Job)
+    stmt = stmt.where(Job.user_id == user.id)
+    count_stmt = select(func.count()).select_from(Job).where(Job.user_id == user.id)
     if job_status:
         stmt = stmt.where(Job.status == JobStatus(job_status))
         count_stmt = count_stmt.where(Job.status == JobStatus(job_status))
 
     total = (await session.scalars(count_stmt)).one()
     rows = (
-        await session.execute(
-            stmt.order_by(Job.created_at.desc()).limit(limit).offset(offset)
-        )
+        await session.execute(stmt.order_by(Job.created_at.desc()).limit(limit).offset(offset))
     ).all()
 
     return JobPage(
@@ -127,9 +129,11 @@ async def list_jobs(
 
 
 @router.get("/{job_id}", response_model=JobOut)
-async def get_job(session: Session, job_id: uuid.UUID) -> JobOut:
+async def get_job(session: Session, user: CurrentUser, job_id: uuid.UUID) -> JobOut:
     job = await jobs_service.load_job(session, job_id)
-    if job is None:
+    # Someone else's job is reported exactly like a missing one, so ids
+    # cannot be probed to learn what other accounts have run.
+    if job is None or job.user_id != user.id:
         raise api_error(status.HTTP_404_NOT_FOUND, "job.not_found", id=str(job_id))
     return _to_out(job)
 
@@ -154,7 +158,7 @@ async def _current(job_id: uuid.UUID) -> dict | None:
 
 @router.get("/{job_id}/events")
 async def job_events(
-    session: Session, settings: SettingsDep, job_id: uuid.UUID
+    session: Session, user: CurrentUser, settings: SettingsDep, job_id: uuid.UUID
 ) -> StreamingResponse:
     """Server-sent events carrying a full trace snapshot per message.
 
@@ -170,7 +174,9 @@ async def job_events(
     quiet, which doubles as the keep-alive that proxies want to see.
     """
     job = await jobs_service.load_job(session, job_id)
-    if job is None:
+    # Someone else's job is reported exactly like a missing one, so ids
+    # cannot be probed to learn what other accounts have run.
+    if job is None or job.user_id != user.id:
         raise api_error(status.HTTP_404_NOT_FOUND, "job.not_found", id=str(job_id))
 
     initial = _to_out(job).model_dump(mode="json")
@@ -186,9 +192,7 @@ async def job_events(
         try:
             while True:
                 try:
-                    snapshot = await asyncio.wait_for(
-                        frames.__anext__(), timeout=POLL_SECONDS
-                    )
+                    snapshot = await asyncio.wait_for(frames.__anext__(), timeout=POLL_SECONDS)
                 except TimeoutError:
                     settled = await _current(job_id)
                     if settled and settled["status"] in TERMINAL:
@@ -228,9 +232,11 @@ async def job_events(
 
 
 @router.get("/{job_id}/trace")
-async def job_trace(session: Session, job_id: uuid.UUID) -> Response:
+async def job_trace(session: Session, user: CurrentUser, job_id: uuid.UUID) -> Response:
     job = await jobs_service.load_job(session, job_id)
-    if job is None:
+    # Someone else's job is reported exactly like a missing one, so ids
+    # cannot be probed to learn what other accounts have run.
+    if job is None or job.user_id != user.id:
         raise api_error(status.HTTP_404_NOT_FOUND, "job.not_found", id=str(job_id))
 
     result = await session.scalars(
@@ -258,27 +264,25 @@ async def job_trace(session: Session, job_id: uuid.UUID) -> Response:
             "assets": [{"role": a.role.value} for a in (input_set.assets if input_set else [])],
         },
         "plan": job.plan or [],
-        "steps": [
-            {**s, "artifacts": []} for s in jobs_service.step_records(job)
-        ],
+        "steps": [{**s, "artifacts": []} for s in jobs_service.step_records(job)],
     }
     return JSONResponse(
         document,
-        headers={
-            "Content-Disposition": f'attachment; filename="trace-{job.id}.json"'
-        },
+        headers={"Content-Disposition": f'attachment; filename="trace-{job.id}.json"'},
     )
 
 
 @router.get("/{job_id}/result.geojson")
-async def job_geojson(session: Session, storage: StorageDep, job_id: uuid.UUID) -> Response:
+async def job_geojson(session: Session, user: CurrentUser, storage: StorageDep, job_id: uuid.UUID) -> Response:
     """Vector outputs as a FeatureCollection.
 
     Only geometry that was actually produced appears here; an input with no
     coordinate system yields an empty collection rather than invented shapes.
     """
     job = await jobs_service.load_job(session, job_id)
-    if job is None:
+    # Someone else's job is reported exactly like a missing one, so ids
+    # cannot be probed to learn what other accounts have run.
+    if job is None or job.user_id != user.id:
         raise api_error(status.HTTP_404_NOT_FOUND, "job.not_found", id=str(job_id))
 
     from geoalchemy2.shape import to_shape
@@ -332,7 +336,5 @@ async def job_geojson(session: Session, storage: StorageDep, job_id: uuid.UUID) 
 
     return JSONResponse(
         {"type": "FeatureCollection", "features": features},
-        headers={
-            "Content-Disposition": f'attachment; filename="result-{job.id}.geojson"'
-        },
+        headers={"Content-Disposition": f'attachment; filename="result-{job.id}.geojson"'},
     )

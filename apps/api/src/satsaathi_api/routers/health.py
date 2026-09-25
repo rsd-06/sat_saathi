@@ -3,19 +3,22 @@ from __future__ import annotations
 import asyncio
 from typing import Literal
 
-import asyncpg
 import httpx
 import redis.asyncio as redis_asyncio
 from fastapi import APIRouter
 from pydantic import BaseModel
+from sqlalchemy import text
 
+from satsaathi_core.db import get_engine
 from satsaathi_core.settings import Settings, get_settings
 
 router = APIRouter()
 
 
 class CheckResult(BaseModel):
-    status: Literal["ok", "error"]
+    #: "skipped" is for a dependency this deployment does not use. It is not a
+    #: failure, and does not make the service degraded.
+    status: Literal["ok", "error", "skipped"]
     detail: str | None = None
 
 
@@ -26,19 +29,36 @@ class HealthResponse(BaseModel):
 
 
 async def check_database(settings: Settings) -> CheckResult:
+    """Ask the pool, not a fresh connection.
+
+    A new connection to a hosted database is TCP, then TLS, then SCRAM — one
+    to five seconds from here. The health check runs on every page that shows
+    the connectivity badge, and opening a connection each time made it the
+    slowest thing on the page while also spending the free tier's connection
+    limit. The pool answers the question that matters: can the app reach its
+    database right now.
+    """
     try:
-        conn = await asyncpg.connect(dsn=settings.database_url_asyncpg_dsn, timeout=2)
-        try:
-            await conn.fetchval("SELECT 1")
-        finally:
-            await conn.close()
+        async with get_engine().connect() as conn:
+            await asyncio.wait_for(conn.execute(text("SELECT 1")), timeout=5)
         return CheckResult(status="ok")
     except Exception as exc:
         return CheckResult(status="error", detail=str(exc))
 
 
 async def check_redis(settings: Settings) -> CheckResult:
-    client = redis_asyncio.from_url(settings.redis_url, socket_connect_timeout=2)
+    """Redis is optional: without it, jobs run inline and events stay in-process.
+
+    The client used to be built before the try, so an unset URL raised out of
+    the health endpoint and took the connectivity badge and the settings page
+    down with it.
+    """
+    if not settings.redis_url:
+        return CheckResult(status="skipped", detail="not configured")
+    try:
+        client = redis_asyncio.from_url(settings.redis_url, socket_connect_timeout=2)
+    except Exception as exc:
+        return CheckResult(status="error", detail=str(exc))
     try:
         await client.ping()
         return CheckResult(status="ok")
@@ -60,6 +80,8 @@ async def check_storage(settings: Settings) -> CheckResult:
 
 
 async def check_tiler(settings: Settings) -> CheckResult:
+    if not settings.tiler_url:
+        return CheckResult(status="skipped", detail="not configured")
     try:
         async with httpx.AsyncClient(timeout=2) as client:
             response = await client.get(settings.tiler_url)
@@ -78,7 +100,7 @@ async def health() -> HealthResponse:
     results = await asyncio.gather(*(checker(settings) for checker in checkers))
     checks: dict[str, CheckResult] = dict(zip(names, results))
     overall: Literal["ok", "degraded"] = (
-        "ok" if all(c.status == "ok" for c in checks.values()) else "degraded"
+        "ok" if all(c.status != "error" for c in checks.values()) else "degraded"
     )
     return HealthResponse(mode=settings.mode, status=overall, checks=checks)
 
@@ -205,3 +227,24 @@ async def ready():
         status="not_ready" if failing else "ready", failing=failing, checks=checks
     )
     return JSONResponse(body.model_dump(), status_code=503 if failing else 200)
+
+
+class PublicConfig(BaseModel):
+    """Server settings the interface must not guess at."""
+
+    mode: str
+    #: Answers below this confidence are held for review, as a percentage.
+    review_threshold_pct: int
+    max_upload_mb: int
+    google_sign_in: bool
+
+
+@router.get("/config", response_model=PublicConfig)
+async def public_config() -> PublicConfig:
+    settings = get_settings()
+    return PublicConfig(
+        mode=settings.mode,
+        review_threshold_pct=round(settings.confidence_threshold * 100),
+        max_upload_mb=settings.max_upload_mb,
+        google_sign_in=settings.google_sign_in_enabled,
+    )

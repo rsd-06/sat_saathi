@@ -1444,5 +1444,15 @@
     "reviewed": false,
     "source": "Google sign-in did not complete. Try again.",
     "translation": "Google உள்நுழைவு நிறைவடையவில்லை. மீண்டும் முயலுங்கள்."
+  },
+  "auth.error.sessionExpired": {
+    "reviewed": false,
+    "source": "Your session ended. Sign in again to continue.",
+    "translation": "உங்கள் அமர்வு முடிந்தது. தொடர மீண்டும் உள்நுழையுங்கள்."
+  },
+  "service.databaseUnavailable": {
+    "reviewed": false,
+    "source": "The service cannot reach its database right now. Try again in a moment.",
+    "translation": "சேவை இப்போது அதன் தரவுத்தளத்தை அணுக முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயலுங்கள்."
   }
 }

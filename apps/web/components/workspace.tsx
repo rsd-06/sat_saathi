@@ -10,10 +10,23 @@ import { Trace } from "./trace";
 import { PipelineStages, parseBoxes } from "./pipeline-stages";
 import { BandMapping } from "./band-mapping";
 import {
+  ALL_FEATURES,
+  AnalysisView,
+  ModeBar,
+  StackInputs,
+  loadFrame,
+  resolveMode,
+  type ChangeChoice,
+  type Frame,
+  type Mode,
+  type Report,
+} from "./analysis";
+import {
   ApiError,
   createInputSet,
   createJob,
   subscribeToJob,
+  saveAnalysis,
   uploadAsset,
   type AssetOut,
   type ErrorBody,
@@ -25,7 +38,13 @@ const EXAMPLES = ["single1", "single2", "change1"] as const;
 
 type Phase = "empty" | "uploading" | "ready" | "running" | "done" | "failed";
 
-export function Workspace() {
+export function Workspace({
+  maxUploadMb,
+  reviewThresholdPct,
+}: {
+  maxUploadMb: number;
+  reviewThresholdPct: number;
+}) {
   const t = useTranslations();
   const uiLocale = useLocale() as Locale;
 
@@ -39,6 +58,42 @@ export function Workspace() {
   //: Percent while bytes are in flight; null once the server is reading.
   const [progress, setProgress] = useState<number | null>(null);
   const unsubscribe = useRef<(() => void) | null>(null);
+  const [frames, setFrames] = useState<Frame[]>([]);
+  const [mode, setMode] = useState<Mode>("auto");
+  const [changeChoice, setChangeChoice] = useState<ChangeChoice>("auto");
+  const [features, setFeatures] = useState(ALL_FEATURES);
+  const [pair, setPair] = useState<[string, string] | null>(null);
+  const resolved = resolveMode(mode, frames, changeChoice);
+  // Each distinct result is saved to history once, after it has been on screen
+  // for a moment, so flicking between toggles does not fill history with noise.
+  const saved = useRef(new Set<string>());
+  const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [saveState, setSaveState] = useState<"idle" | "saved" | "failed">("idle");
+  const onResult = useCallback((report: Report) => {
+    const key = JSON.stringify([report.kind, report.variant, report.frames]);
+    if (pending.current) clearTimeout(pending.current);
+    if (saved.current.has(key)) {
+      setSaveState("saved");
+      return;
+    }
+    setSaveState("idle");
+    pending.current = setTimeout(() => {
+      saveAnalysis(report)
+        .then(() => {
+          saved.current.add(key);
+          setSaveState("saved");
+        })
+        .catch(() => setSaveState("failed"));
+    }, 1500);
+  }, []);
+
+  async function addFrames(files: File[], primary = false) {
+    const loaded = (
+      await Promise.all(files.map((f) => loadFrame(f).catch(() => null)))
+    ).filter((f): f is Frame => f !== null);
+    if (primary) loaded.forEach((f) => (f.primary = true));
+    setFrames((fs) => (primary ? [...loaded, ...fs.filter((f) => !f.primary)] : [...fs, ...loaded]));
+  }
 
   useEffect(() => {
     return () => {
@@ -49,6 +104,8 @@ export function Workspace() {
 
   const handleUpload = useCallback(async (loaded: LoadedImage) => {
     setImage(loaded);
+    // The Q&A image also joins the stack, so it can be compared too.
+    if (loaded.url) void addFrames([loaded.file], true);
     setJob(null);
     setError(null);
     setPhase("uploading");
@@ -77,6 +134,7 @@ export function Workspace() {
   }, []);
 
   function clearImage() {
+    setFrames((fs) => fs.filter((f) => !f.primary));
     unsubscribe.current?.();
     if (image?.url) URL.revokeObjectURL(image.url);
     setImage(null);
@@ -154,11 +212,21 @@ export function Workspace() {
               asset={asset}
               busy={phase === "uploading"}
               progress={progress}
+              maxMb={maxUploadMb}
               onLoad={handleUpload}
               onClear={clearImage}
             />
           </div>
         </section>
+
+        <StackInputs
+          frames={frames}
+          onAdd={(files) => void addFrames(files)}
+          onUpdate={(id, patch) =>
+            setFrames((fs) => fs.map((f) => (f.id === id ? { ...f, ...patch } : f)))
+          }
+          onRemove={(id) => setFrames((fs) => fs.filter((f) => f.id !== id))}
+        />
 
         {asset && (
           <BandMapping
@@ -172,6 +240,31 @@ export function Workspace() {
       </aside>
 
       <div className="min-w-0">
+        <ModeBar
+          mode={mode}
+          onMode={setMode}
+          changeChoice={changeChoice}
+          onChangeChoice={setChangeChoice}
+          features={features}
+          onFeatures={setFeatures}
+          frames={frames}
+        />
+        {resolved.mode !== "single" && saveState !== "idle" && (
+          <p className="marginal mb-2 text-right" role="status">
+            {saveState === "saved" ? "✓ Saved to your history" : "Could not save to history. The API is unreachable."}
+          </p>
+        )}
+        {resolved.mode !== "single" ? (
+          <AnalysisView
+            frames={frames}
+            mode={resolved.mode}
+            changeKind={resolved.changeKind}
+            features={features}
+            pair={pair}
+            onPair={setPair}
+            onResult={onResult}
+          />
+        ) : (
         <div className="border-rule-strong bg-paper-raised border">
           <div className="border-rule divide-rule flex flex-wrap items-center divide-x border-b">
             <span className="marginal px-2.5 py-1.5">
@@ -237,8 +330,8 @@ export function Workspace() {
               /* GeoTIFF: no browser preview, so show what was read instead of
                  an empty frame. Real tiles arrive once the tiler is wired. */
               <div className="px-6 text-center">
-                <div className="mx-auto w-40 opacity-30">
-                  <Scene variant="flood" />
+                <div className="border-rule mx-auto aspect-[16/10] w-64 overflow-hidden border opacity-80">
+                  <Scene variant="flood" showLabel={false} sizes="16rem" />
                 </div>
                 <p className="text-ink-muted mt-4 text-sm">
                   {t("upload.error.geotiffPreview")}
@@ -246,8 +339,8 @@ export function Workspace() {
               </div>
             ) : (
               <div className="px-6 text-center">
-                <div className="mx-auto w-48 opacity-25">
-                  <Scene variant="flood" />
+                <div className="border-rule mx-auto aspect-[16/10] w-64 overflow-hidden border opacity-80">
+                  <Scene variant="flood" showLabel={false} sizes="16rem" />
                 </div>
                 <p className="text-ink-muted mt-4 text-sm">
                   {t("workspace.map.empty.body")}
@@ -260,6 +353,7 @@ export function Workspace() {
             {t("run.server.notice")}
           </p>
         </div>
+        )}
       </div>
 
       <aside
@@ -350,7 +444,11 @@ export function Workspace() {
 
         {job && <Trace steps={job.steps} jobId={job.id} />}
 
-        {job && answered && <LiveAnswer job={job} onAskAgain={() => setQuestion("")} />}
+        {job && answered && <LiveAnswer
+            job={job}
+            thresholdPct={reviewThresholdPct}
+            onAskAgain={() => setQuestion("")}
+          />}
       </aside>
     </div>
   );

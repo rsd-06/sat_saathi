@@ -375,5 +375,7 @@
   "workspace.bands.optional": "optional",
   "answer.fixture.title": "Placeholder answer, not from this image",
   "answer.fixture.body": "No vision model is running on this server, so this text is fixed sample output. Start the GPU worker to get answers from the image.",
-  "pipeline.marked": "{count} {label} marked on the image"
+  "pipeline.marked": "{count} {label} marked on the image",
+  "auth.error.sessionExpired": "Your session ended. Sign in again to continue.",
+  "service.databaseUnavailable": "The service cannot reach its database right now. Try again in a moment."
 }

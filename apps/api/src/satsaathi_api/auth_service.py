@@ -8,6 +8,7 @@ without SameSite rules deciding whether sign-in works.
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from datetime import UTC, datetime, timedelta
 
@@ -76,7 +77,9 @@ async def register(
 
     user = User(
         email=email,
-        password_hash=hash_password(password),
+        # Argon2 is slow on purpose. Off the event loop, so one sign-up does
+        # not stall every other request the API is serving meanwhile.
+        password_hash=await asyncio.to_thread(hash_password, password),
         full_name=full_name.strip(),
         department=(department or None),
         district=(district or None),
@@ -102,21 +105,21 @@ async def authenticate(
         # and slowly for a known one is the same disclosure by other means,
         # and it has to be a real hash: verifying against a malformed one
         # fails immediately and equalises nothing.
-        verify_password(_timing_hash(), password)
+        await asyncio.to_thread(verify_password, _timing_hash(), password)
         return None
 
     if user.password_hash is None:
         # An account that only ever signs in through a provider has nothing to
         # compare against. Spend the time anyway so it is indistinguishable
         # from a wrong password, and refuse.
-        verify_password(_timing_hash(), password)
+        await asyncio.to_thread(verify_password, _timing_hash(), password)
         return None
 
-    if not verify_password(user.password_hash, password):
+    if not await asyncio.to_thread(verify_password, user.password_hash, password):
         return None
 
     if needs_rehash(user.password_hash):
-        user.password_hash = hash_password(password)
+        user.password_hash = await asyncio.to_thread(hash_password, password)
 
     user.last_seen_at = datetime.now(UTC)
     return user
@@ -137,24 +140,46 @@ async def start_session(session: AsyncSession, user: User) -> str:
 
 
 async def resolve_session(session: AsyncSession, token: str) -> User | None:
-    """The signed-in user for a token, or None if it is not usable."""
+    """The signed-in user for a token, or None if it is not usable.
+
+    One query, not two. Every authenticated request passes through here, and
+    against a hosted database each round trip is something a person waits
+    for. Revocation and expiry are checked in the same statement, so a dead
+    session costs no more than a live one to refuse.
+    """
     if not token:
         return None
 
     result = await session.scalars(
-        select(UserSession).where(UserSession.token_hash == hash_session_token(token))
+        select(User)
+        .join(UserSession, UserSession.user_id == User.id)
+        .where(
+            UserSession.token_hash == hash_session_token(token),
+            UserSession.revoked_at.is_(None),
+            UserSession.expires_at > datetime.now(UTC),
+        )
     )
-    record = result.first()
-    if record is None or record.revoked_at is not None:
-        return None
+    return result.first()
 
-    expires_at = record.expires_at
-    if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=UTC)
-    if expires_at <= datetime.now(UTC):
-        return None
 
-    return await session.get(User, record.user_id)
+#: How stale `last_seen_at` may get before a read refreshes it.
+LAST_SEEN_RESOLUTION = timedelta(minutes=10)
+
+
+def needs_last_seen_update(user: User) -> bool:
+    """Whether touching `last_seen_at` is worth a write right now.
+
+    "Seen in the last ten minutes" answers every question anyone asks of this
+    field. Writing it on every request would turn each page load into a
+    transaction with a commit, which against a hosted database is the
+    difference between a snappy page and a sluggish one.
+    """
+    seen = user.last_seen_at
+    if seen is None:
+        return True
+    if seen.tzinfo is None:
+        seen = seen.replace(tzinfo=UTC)
+    return datetime.now(UTC) - seen > LAST_SEEN_RESOLUTION
 
 
 async def end_session(session: AsyncSession, token: str) -> None:

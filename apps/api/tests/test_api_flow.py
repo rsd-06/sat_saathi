@@ -39,6 +39,16 @@ def client(tmp_path_factory):
     from satsaathi_api.main import app
 
     with TestClient(app) as test_client:
+        # Every data endpoint needs an account now; sign one in for the module.
+        registered = test_client.post(
+            "/api/v1/auth/register",
+            json={
+                "email": f"flow-{uuid.uuid4().hex[:10]}@example.gov.in",
+                "password": "a-long-enough-passphrase",
+                "full_name": "Flow Test",
+            },
+        )
+        test_client.headers["Authorization"] = f"Bearer {registered.json()['token']}"
         yield test_client
 
 
@@ -319,3 +329,21 @@ class TestToolsAndVoice:
 
         assert "sentinel-2-l2a" in presets
         assert presets["sentinel-1-grd"] == {"vv": 1, "vh": 2}
+
+
+def test_one_account_cannot_see_anothers_work(client):
+    asset = upload(client)
+    theirs = client.post(
+        "/api/v1/auth/register",
+        json={
+            "email": f"other-{uuid.uuid4().hex[:10]}@example.gov.in",
+            "password": "a-long-enough-passphrase",
+            "full_name": "Someone Else",
+        },
+    ).json()["token"]
+    other = {"Authorization": f"Bearer {theirs}"}
+
+    # Reported exactly like a missing asset, so ids cannot be probed.
+    assert client.get(f"/api/v1/assets/{asset['id']}", headers=other).status_code == 404
+    assert client.get("/api/v1/jobs", headers=other).json()["total"] == 0
+    assert client.get("/api/v1/jobs", headers={"Authorization": ""}).status_code == 401

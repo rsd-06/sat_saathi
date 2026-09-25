@@ -123,6 +123,9 @@ class User(Base):
     full_name: Mapped[str] = mapped_column(String(200))
     department: Mapped[str | None] = mapped_column(String(200), nullable=True)
     district: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    state: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    #: The officer's post, e.g. "District Collector", shown with their name.
+    designation: Mapped[str | None] = mapped_column(String(200), nullable=True)
     #: The locale to open the app in, so a Tamil speaker is not shown English
     #: once before their preference loads.
     preferred_locale: Mapped[str] = mapped_column(String(8), default="en")
@@ -213,6 +216,14 @@ class Asset(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=new_id
     )
+    #: The account this belongs to. Nullable only for rows made before
+    #: accounts existed; nothing new is created without one.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
     storage_key: Mapped[str] = mapped_column(String(512))
     cog_key: Mapped[str | None] = mapped_column(String(512), nullable=True)
     filename: Mapped[str] = mapped_column(String(512))
@@ -241,6 +252,14 @@ class InputSet(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    #: The account this belongs to. Nullable only for rows made before
+    #: accounts existed; nothing new is created without one.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
     )
     mode: Mapped[InputMode] = mapped_column(Enum(InputMode, name="input_mode"))
     checks: Mapped[list | None] = mapped_column(JsonType, nullable=True)
@@ -275,6 +294,14 @@ class Job(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    #: The account this belongs to. Nullable only for rows made before
+    #: accounts existed; nothing new is created without one.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
     )
     input_set_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("input_sets.id")
@@ -381,4 +408,33 @@ class ReviewItem(Base):
     )
     resolved_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
+    )
+
+
+class Analysis(Base):
+    """A change-detection or cross-modal run, kept so history is real.
+
+    These run in the browser today, as pixel heuristics, so the server keeps
+    what was shown rather than recomputing it: the summary, the numbers and
+    which images (by name and date) went in. `method` records how it was made
+    so a later model-backed run is never confused with one of these.
+    """
+
+    __tablename__ = "analyses"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
+    kind: Mapped[str] = mapped_column(String(20))
+    variant: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    method: Mapped[str] = mapped_column(String(40), default="browser-heuristic")
+    title: Mapped[str] = mapped_column(String(300))
+    summary: Mapped[str] = mapped_column(Text)
+    stats: Mapped[dict] = mapped_column(JsonType, default=dict)
+    frames: Mapped[list] = mapped_column(JsonType, default=list)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, index=True
     )

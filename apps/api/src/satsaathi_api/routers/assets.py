@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import APIRouter, File, UploadFile, status
+from fastapi import APIRouter, Depends, File, UploadFile, status
 from sqlalchemy import select
 
 from satsaathi_core import indices as index_maths
@@ -16,8 +16,10 @@ from satsaathi_tools.presets import SENSOR_PRESETS, preset_band_map
 
 from ..deps import Session, SettingsDep, StorageDep, api_error
 from ..schemas import AssetOut, BandMappingIn, BandOut, PresignOut
+from .auth import CurrentUser, current_user
 
-router = APIRouter(prefix="/assets", tags=["assets"])
+# Everything here is somebody's own work, so all of it needs an account.
+router = APIRouter(prefix="/assets", tags=["assets"], dependencies=[Depends(current_user)])
 
 #: Browsers cannot render a GeoTIFF, so PNG/JPEG are accepted for demos and
 #: benchmark datasets. They carry no CRS, which the metadata reflects honestly.
@@ -27,9 +29,7 @@ ALLOWED_SUFFIXES = {".tif", ".tiff", ".png", ".jpg", ".jpeg", ".webp"}
 def _to_out(asset: Asset, tile_url: str | None = None) -> AssetOut:
     band_map = asset.band_map or {}
     unavailable = index_maths.available_indices(band_map)
-    available = [
-        str(name) for name in index_maths.INDEX_BANDS if name not in unavailable
-    ]
+    available = [str(name) for name in index_maths.INDEX_BANDS if name not in unavailable]
     return AssetOut(
         id=asset.id,
         filename=asset.filename,
@@ -55,9 +55,9 @@ def _to_out(asset: Asset, tile_url: str | None = None) -> AssetOut:
     )
 
 
-async def _load(session: Session, asset_id: uuid.UUID) -> Asset:
+async def _load(session: Session, asset_id: uuid.UUID, user) -> Asset:
     asset = await session.get(Asset, asset_id)
-    if asset is None:
+    if asset is None or asset.user_id != user.id:
         raise api_error(status.HTTP_404_NOT_FOUND, "asset.not_found", id=str(asset_id))
     return asset
 
@@ -65,6 +65,7 @@ async def _load(session: Session, asset_id: uuid.UUID) -> Asset:
 @router.post("", response_model=AssetOut, status_code=status.HTTP_201_CREATED)
 async def create_asset(
     session: Session,
+    user: CurrentUser,
     storage: StorageDep,
     settings: SettingsDep,
     file: UploadFile = File(...),
@@ -107,6 +108,7 @@ async def create_asset(
         acquired = datetime.combine(acquired, datetime.min.time())
 
     asset = Asset(
+        user_id=user.id,
         id=asset_id,
         storage_key=key,
         filename=name,
@@ -144,20 +146,20 @@ async def create_asset(
 
 
 @router.get("/{asset_id}", response_model=AssetOut)
-async def get_asset(session: Session, asset_id: uuid.UUID) -> AssetOut:
-    return _to_out(await _load(session, asset_id))
+async def get_asset(session: Session, user: CurrentUser, asset_id: uuid.UUID) -> AssetOut:
+    return _to_out(await _load(session, asset_id, user))
 
 
 @router.patch("/{asset_id}/bands", response_model=AssetOut)
 async def set_bands(
-    session: Session, asset_id: uuid.UUID, body: BandMappingIn
+    session: Session, user: CurrentUser, asset_id: uuid.UUID, body: BandMappingIn
 ) -> AssetOut:
     """Apply a sensor preset or an explicit mapping.
 
     Roles decide which indices are computable, so they are never inferred from
     band order — this endpoint is the only way one gets set.
     """
-    asset = await _load(session, asset_id)
+    asset = await _load(session, asset_id, user)
 
     if body.preset:
         if body.preset not in SENSOR_PRESETS:
@@ -195,9 +197,12 @@ async def set_bands(
 
 
 @router.get("", response_model=list[AssetOut])
-async def list_assets(session: Session, limit: int = 20) -> list[AssetOut]:
+async def list_assets(session: Session, user: CurrentUser, limit: int = 20) -> list[AssetOut]:
     rows = await session.scalars(
-        select(Asset).order_by(Asset.created_at.desc()).limit(min(limit, 100))
+        select(Asset)
+        .where(Asset.user_id == user.id)
+        .order_by(Asset.created_at.desc())
+        .limit(min(limit, 100))
     )
     return [_to_out(a) for a in rows]
 
@@ -211,7 +216,5 @@ async def presign(settings: SettingsDep) -> PresignOut:
     """
     key = f"assets/{uuid.uuid4()}/upload"
     if settings.storage_backend == "local":
-        return PresignOut(
-            upload_url="/api/v1/assets", method="POST", storage_key=key
-        )
+        return PresignOut(upload_url="/api/v1/assets", method="POST", storage_key=key)
     raise api_error(status.HTTP_501_NOT_IMPLEMENTED, "upload.presign.unavailable")

@@ -375,5 +375,7 @@
   "workspace.bands.optional": "वैकल्पिक",
   "answer.fixture.title": "नमूना उत्तर, इस छवि से नहीं",
   "answer.fixture.body": "इस सर्वर पर कोई विज़न मॉडल नहीं चल रहा है, इसलिए यह पाठ निश्चित नमूना आउटपुट है। छवि से उत्तर पाने के लिए GPU वर्कर शुरू करें।",
-  "pipeline.marked": "छवि पर {count} {label} चिह्नित"
+  "pipeline.marked": "छवि पर {count} {label} चिह्नित",
+  "auth.error.sessionExpired": "आपका सत्र समाप्त हो गया। जारी रखने के लिए फिर से साइन इन करें।",
+  "service.databaseUnavailable": "सेवा अभी अपने डेटाबेस तक नहीं पहुँच पा रही है। थोड़ी देर में फिर कोशिश करें।"
 }

@@ -55,7 +55,7 @@ export async function SiteHeader() {
           <ConnectivityBadge />
           <LanguageSwitcher />
           {user ? (
-            <AccountMenu name={user.full_name} email={user.email} locale={locale} />
+            <AccountMenu user={user} locale={locale} />
           ) : (
             <Link
               href="/sign-in"

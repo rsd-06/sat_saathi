@@ -5,15 +5,17 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy import select
 
 from satsaathi_core.models import Job, JobStatus, ReviewItem, ReviewStatus
 
 from ..deps import Session, api_error
 from ..schemas import ReviewDecisionIn, ReviewOut
+from .auth import CurrentUser, current_user
 
-router = APIRouter(prefix="/review", tags=["review"])
+# Everything here is somebody's own work, so all of it needs an account.
+router = APIRouter(prefix="/review", tags=["review"], dependencies=[Depends(current_user)])
 
 _DECISION_STATUS = {
     "approve": ReviewStatus.approved,
@@ -24,9 +26,11 @@ _DECISION_STATUS = {
 
 @router.get("", response_model=list[ReviewOut])
 async def list_review(
-    session: Session, pending_only: bool = True
+    session: Session, user: CurrentUser, pending_only: bool = True
 ) -> list[ReviewOut]:
-    stmt = select(ReviewItem, Job).join(Job, ReviewItem.job_id == Job.id)
+    stmt = (
+        select(ReviewItem, Job).join(Job, ReviewItem.job_id == Job.id).where(Job.user_id == user.id)
+    )
     if pending_only:
         stmt = stmt.where(ReviewItem.status == ReviewStatus.pending)
 
@@ -50,7 +54,7 @@ async def list_review(
 
 @router.post("/{job_id}", response_model=ReviewOut)
 async def decide(
-    session: Session, job_id: uuid.UUID, body: ReviewDecisionIn
+    session: Session, user: CurrentUser, job_id: uuid.UUID, body: ReviewDecisionIn
 ) -> ReviewOut:
     """Release, amend or reject a held answer.
 
@@ -59,13 +63,13 @@ async def decide(
     version recorded alongside it.
     """
     result = await session.scalars(
-        select(ReviewItem).where(ReviewItem.job_id == job_id)
+        select(ReviewItem)
+        .join(Job, ReviewItem.job_id == Job.id)
+        .where(ReviewItem.job_id == job_id, Job.user_id == user.id)
     )
     item = result.first()
     if item is None:
-        raise api_error(
-            status.HTTP_404_NOT_FOUND, "review.not_found", job_id=str(job_id)
-        )
+        raise api_error(status.HTTP_404_NOT_FOUND, "review.not_found", job_id=str(job_id))
     if item.status != ReviewStatus.pending:
         raise api_error(
             status.HTTP_409_CONFLICT,

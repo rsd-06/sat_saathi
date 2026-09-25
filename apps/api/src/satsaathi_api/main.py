@@ -1,5 +1,10 @@
+import asyncio
+import contextlib
+import logging
 from contextlib import asynccontextmanager
 
+import asyncpg
+import sqlalchemy.exc
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,6 +13,7 @@ from fastapi.responses import JSONResponse
 from satsaathi_core.db import dispose_engine
 from satsaathi_core.settings import get_settings
 
+from .routers.analyses import router as analyses_router
 from .routers.assets import router as assets_router
 from .routers.auth import router as auth_router
 from .routers.health import router as health_router
@@ -17,10 +23,43 @@ from .routers.models import router as models_router
 from .routers.review import router as review_router
 from .routers.tools import router as tools_router
 
+logger = logging.getLogger("satsaathi_api")
+
+
+async def _warm_pool(connections: int) -> None:
+    """Open connections up front, so no request pays to establish one.
+
+    Reaching a hosted database is TCP, then TLS, then SCRAM — measured at
+    around five seconds to Supabase from here, against 146ms for a query once
+    the connection exists. A job that does a handful of round trips therefore
+    spends almost all of its time connecting rather than working: 23 seconds
+    of wall clock for 391ms of actual steps, the first time through.
+
+    Opening them in the background rather than during startup, because a
+    process that refuses to accept requests for half a minute while it warms
+    up is worse than one that is briefly slow.
+    """
+    from sqlalchemy import text
+
+    from satsaathi_core.db import get_engine
+
+    engine = get_engine()
+    try:
+        # Held together so the pool keeps all of them, rather than handing the
+        # same connection back for each turn of the loop.
+        async with contextlib.AsyncExitStack() as stack:
+            for _ in range(connections):
+                conn = await stack.enter_async_context(engine.connect())
+                await conn.execute(text("SELECT 1"))
+    except Exception as exc:  # noqa: BLE001
+        # A database that is down is the health check's story to tell, not a
+        # reason to fail startup.
+        logger.warning("could not warm the connection pool: %s", exc)
+
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    """Hand the database its connections back on the way out.
+    """Warm the pool on the way in, hand it back on the way out.
 
     The engine is cached per process and its connections belong to the event
     loop that opened them. Leaving the pool open at shutdown strands sockets
@@ -28,8 +67,18 @@ async def lifespan(_app: FastAPI):
     `'NoneType' object has no attribute 'send'` — the same failure the Celery
     worker hit for the same reason.
     """
-    yield
-    await dispose_engine()
+    settings = get_settings()
+    warming = (
+        asyncio.create_task(_warm_pool(3)) if settings.database_is_remote else None
+    )
+    try:
+        yield
+    finally:
+        if warming is not None:
+            warming.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await warming
+        await dispose_engine()
 
 
 app = FastAPI(title="SatSaathi API", version="0.1.0", lifespan=lifespan)
@@ -67,6 +116,32 @@ async def message_key_errors(request: Request, exc: HTTPException) -> JSONRespon
     )
 
 
+# Only failures to *reach* the database are caught here: the resolver and
+# socket (OSError, including getaddrinfo), timeouts, and the driver's own
+# connection errors. A genuine bug in a query must still surface as a 500,
+# not be disguised as an outage.
+@app.exception_handler(asyncpg.exceptions.CannotConnectNowError)
+@app.exception_handler(asyncpg.exceptions.TooManyConnectionsError)
+@app.exception_handler(asyncpg.exceptions.ConnectionDoesNotExistError)
+@app.exception_handler(sqlalchemy.exc.OperationalError)
+@app.exception_handler(sqlalchemy.exc.InterfaceError)
+@app.exception_handler(OSError)
+@app.exception_handler(TimeoutError)
+async def database_unreachable(request: Request, exc: Exception) -> JSONResponse:
+    """The database could not be reached: say so, as a key, with a 503.
+
+    Left to itself this surfaced as a bare 500 after a long wait, which the
+    sign-in form could only call "something went wrong". A 503 with a key
+    lets the interface say the service is unreachable, and tells a caller
+    that trying again later is reasonable.
+    """
+    logger.warning("database unreachable on %s: %s", request.url.path, exc)
+    return JSONResponse(
+        {"error": {"key": "service.databaseUnavailable", "params": {}}},
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+    )
+
+
 @app.exception_handler(RequestValidationError)
 async def validation_errors(
     request: Request, exc: RequestValidationError
@@ -96,6 +171,7 @@ for router in (
     health_router,
     auth_router,
     assets_router,
+    analyses_router,
     input_sets_router,
     jobs_router,
     models_router,

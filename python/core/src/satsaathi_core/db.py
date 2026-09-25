@@ -25,10 +25,17 @@ from .settings import get_settings
 def get_engine() -> AsyncEngine:
     settings = get_settings()
     return create_async_engine(
-        settings.database_url,
+        settings.effective_database_url,
+        connect_args=settings.asyncpg_connect_args(),
         pool_pre_ping=True,
+        # A hosted free tier caps connections well below what a local Postgres
+        # allows. Five per process plus a small burst keeps the API and a
+        # worker inside it together.
         pool_size=5,
-        max_overflow=10,
+        max_overflow=5,
+        # Hosted poolers drop idle connections. Recycling first means a quiet
+        # evening does not end in a burst of connection-reset errors.
+        pool_recycle=300,
         future=True,
     )
 

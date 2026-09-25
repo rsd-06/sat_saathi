@@ -375,5 +375,7 @@
   "workspace.bands.optional": "ঐচ্ছিক",
   "answer.fixture.title": "নমুনা উত্তর, এই ছবি থেকে নয়",
   "answer.fixture.body": "এই সার্ভারে কোনো ভিশন মডেল চলছে না, তাই এই লেখাটি নির্দিষ্ট নমুনা আউটপুট। ছবি থেকে উত্তর পেতে GPU ওয়ার্কার চালু করুন।",
-  "pipeline.marked": "ছবিতে {count}টি {label} চিহ্নিত"
+  "pipeline.marked": "ছবিতে {count}টি {label} চিহ্নিত",
+  "auth.error.sessionExpired": "আপনার সেশন শেষ হয়েছে। চালিয়ে যেতে আবার সাইন ইন করুন।",
+  "service.databaseUnavailable": "পরিষেবাটি এখন তার ডেটাবেসে পৌঁছাতে পারছে না। একটু পরে আবার চেষ্টা করুন।"
 }

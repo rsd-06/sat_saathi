@@ -292,3 +292,17 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Settings is read closely and edited: larger type than the dense workspace. */
+.settings-large h2 {
+  font-size: 1.375rem;
+  line-height: 1.3;
+}
+.settings-large .text-sm {
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+.settings-large .marginal {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}

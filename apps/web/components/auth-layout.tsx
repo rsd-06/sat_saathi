@@ -40,6 +40,7 @@ export async function AuthLayout({
 
         <div className="relative mx-auto max-w-[62rem] px-4 py-10 sm:px-6 lg:py-14">
           <div className="sheet-marks border-rule-strong bg-paper-raised relative border">
+          <span className="marginal bg-paper-raised border-rule-strong absolute -top-2.5 right-3 z-10 border px-1.5">Example sheet · illustrative</span>
             {/* Title block, along the top edge, as a sheet carries it. */}
             <div className="border-rule divide-rule open-frame grid grid-cols-2 divide-x border-b sm:grid-cols-4">
               {[
