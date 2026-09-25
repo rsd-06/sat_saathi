@@ -129,7 +129,7 @@ export default async function LandingPage({
                     <div className="aspect-[16/9]">
                       <Scene
                         variant={
-                          input === "fusion" ? "sar" : input === "change" ? "change" : "flood"
+                          input === "fusion" ? "pair" : input === "change" ? "change" : "flood"
                         }
                         showFlood={input !== "single"}
                       />
@@ -174,7 +174,8 @@ export default async function LandingPage({
                 ] as const
               ).map(([step, status, tool, ms], i) => (
                 <li key={step}>
-                  <Register rule={false} delay={i * 130} className="flex items-baseline gap-3 px-3 py-2.5">
+                  <Register rule={false} delay={i * 130}>
+                    <div className="flex items-baseline gap-3 px-3 py-2.5">
                     <span
                       aria-hidden
                       className={`size-1.5 shrink-0 translate-y-[-2px] rounded-full ${
@@ -186,6 +187,7 @@ export default async function LandingPage({
                     <span className="marginal tabular w-14 shrink-0 text-right">
                       {ms ? `${ms} ms` : "—"}
                     </span>
+                    </div>
                   </Register>
                 </li>
               ))}

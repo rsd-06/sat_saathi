@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import Script from "next/script";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
@@ -39,18 +38,6 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <head>
-        {/* Arms the scroll reveals before first paint. The stylesheet only
-            hides a section once this flag is set, so a page whose JavaScript
-            never arrives shows all of its content instead of none of it.
-            Reduced motion never arms, so that reader gets the page whole.
-            next/script, because a raw <script> re-rendered on a client
-            navigation (a language switch) is never run and React warns. */}
-        <Script id="arm-motion" strategy="beforeInteractive">
-          {"try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)" +
-            "document.documentElement.dataset.motion='on'}catch(e){}"}
-        </Script>
-      </head>
       <body className="min-h-dvh antialiased">
         <NextIntlClientProvider>
           <SmoothScroll />

@@ -1,34 +1,29 @@
-"use client";
-
 import Image from "next/image";
-import { useRef, useState } from "react";
 
 /**
- * The opening sheet: a real flood, before and after, under one slider.
+ * The opening sheet: one real scene, read the way the product reads one.
  *
- * Sentinel-1 radar over Dhubri, Assam, a month apart in 2020. Radar sees
- * through the monsoon cloud that hides the ground from optical satellites,
- * so the flood is visible as it happened. Dragging the divider is the whole
- * product in one gesture: compare dates, see what changed.
+ * Sentinel-2 true colour over the Sundarbans, where the Ganges–Brahmaputra
+ * meets the Bay of Bengal. Mangrove, farmland, river channels and a sediment
+ * plume sit side by side, the everyday questions a district officer asks, so
+ * the annotations name what an answer would be about.
  */
+const CALLOUTS = [
+  { x: 20, y: 30, label: "Mangrove forest", note: "Dense, dark canopy" },
+  { x: 62, y: 20, label: "Farmland & aquaculture", note: "Field parcels and ponds" },
+  { x: 47, y: 43, label: "River channel", note: "Distributary to the Bay" },
+  { x: 40, y: 80, label: "Sediment plume", note: "Silt carried offshore" },
+] as const;
+
 export function HeroSheet() {
-  const [split, setSplit] = useState(52);
-  const frame = useRef<HTMLDivElement>(null);
-
-  function move(clientX: number) {
-    const box = frame.current?.getBoundingClientRect();
-    if (!box) return;
-    setSplit(Math.min(98, Math.max(2, ((clientX - box.left) / box.width) * 100)));
-  }
-
   return (
     <figure className="border-rule-strong bg-paper-raised relative border shadow-[0_30px_60px_-30px_rgb(0_0_0/0.35)]">
       <div className="border-rule divide-rule grid grid-cols-2 divide-x border-b sm:grid-cols-4">
         {[
-          ["Centre", "25.868°N 90.143°E"],
-          ["Platform", "Sentinel-1 GRD"],
-          ["Polarisation", "VV · VH"],
-          ["Dates", "7 Jun → 13 Jul 2020"],
+          ["Scene", "Sundarbans delta"],
+          ["Platform", "Sentinel-2 MSI"],
+          ["Bands", "B04 · B03 · B02"],
+          ["Rendering", "True colour"],
         ].map(([label, value]) => (
           <div key={label} className="px-3 py-2">
             <div className="text-ink-faint marginal">{label}</div>
@@ -37,70 +32,47 @@ export function HeroSheet() {
         ))}
       </div>
 
-      <div
-        ref={frame}
-        className="relative aspect-[1600/727] cursor-ew-resize touch-none overflow-hidden select-none"
-        onPointerDown={(e) => {
-          e.currentTarget.setPointerCapture(e.pointerId);
-          move(e.clientX);
-        }}
-        onPointerMove={(e) => {
-          if (e.buttons) move(e.clientX);
-        }}
-      >
+      <div className="group relative aspect-[16/9] overflow-hidden">
         <Image
-          src="/imagery/dhubri-2020-07-13-new.jpg"
-          alt="Sentinel-1 radar, 13 July 2020: the Brahmaputra in flood across Dhubri district"
+          src="/imagery/hero-sundarbans.webp"
+          alt="Sentinel-2 true-colour image of the Sundarbans: mangrove forest, farmland, river channels and a sediment plume in the Bay of Bengal"
           fill
           priority
-          sizes="(min-width: 1024px) 50vw, 100vw"
-          className="object-cover"
+          sizes="(min-width: 1024px) 55vw, 100vw"
+          className="object-cover transition-transform duration-[2400ms] ease-out group-hover:scale-[1.04]"
         />
-        <div className="absolute inset-0" style={{ clipPath: `inset(0 ${100 - split}% 0 0)` }}>
-          <Image
-            src="/imagery/dhubri-2020-06-07-new.jpg"
-            alt="Sentinel-1 radar, 7 June 2020: the same river before the flood"
-            fill
-            priority
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-cover"
-          />
-        </div>
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent"
+        />
 
-        <span className="bg-ink/75 absolute top-3 left-3 px-2 py-1 text-[0.6875rem] font-medium tracking-wide text-white uppercase">
-          Before · 7 Jun
-        </span>
-        <span className="bg-water absolute top-3 right-3 px-2 py-1 text-[0.6875rem] font-medium tracking-wide text-white uppercase">
-          Flood · 13 Jul
-        </span>
+        <ul className="pointer-events-none absolute inset-0 hidden sm:block">
+          {CALLOUTS.map((c) => (
+            <li
+              key={c.label}
+              className="absolute flex -translate-y-1/2 items-center gap-2"
+              style={{ left: `${c.x}%`, top: `${c.y}%` }}
+            >
+              <span className="relative grid size-3 place-items-center">
+                <span className="absolute size-3 animate-ping rounded-full bg-white/60" />
+                <span className="size-2 rounded-full bg-white ring-2 ring-black/30" />
+              </span>
+              <span className="rounded-xs bg-black/60 px-2 py-1 leading-tight text-white backdrop-blur-sm">
+                <span className="block text-xs font-medium">{c.label}</span>
+                <span className="block text-[0.625rem] text-white/75">{c.note}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
 
-        <div className="absolute inset-y-0 w-0.5 bg-white shadow-[0_0_0_1px_rgb(0_0_0/0.25)]" style={{ left: `${split}%` }}>
-          <input
-            type="range"
-            min={2}
-            max={98}
-            value={Math.round(split)}
-            onChange={(e) => setSplit(Number(e.target.value))}
-            aria-label="Compare before and after"
-            className="sr-only"
-          />
-          <span
-            aria-hidden
-            className="text-ink absolute top-1/2 left-1/2 grid size-9 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-sm shadow-md"
-          >
-            ⇆
-          </span>
-        </div>
+        <p className="absolute right-3 bottom-3 left-3 text-sm text-white drop-shadow sm:text-base">
+          “How much of this delta is mangrove, and is it shrinking?”
+        </p>
       </div>
 
       <figcaption className="border-rule marginal flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t px-3 py-2">
-        <span>
-          <span className="text-ink">Blue is open water.</span> Drag to compare the Brahmaputra
-          before and during the 2020 Assam floods.
-        </span>
-        <span className="text-ink-faint">
-          Contains modified Copernicus Sentinel data (2020), processed by Pierre Markuse · CC BY 2.0
-        </span>
+        <span>The Ganges–Brahmaputra delta at the Bay of Bengal, India and Bangladesh.</span>
+        <span className="text-ink-faint">Contains modified Copernicus Sentinel data · ESA · CC BY-SA 3.0 IGO</span>
       </figcaption>
     </figure>
   );

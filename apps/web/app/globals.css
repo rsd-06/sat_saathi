@@ -159,31 +159,33 @@ body {
   transition: transform 620ms var(--ease-draw);
 }
 
-/* Hidden only once a script has confirmed it is running and will reveal it.
-   Without the flag — JavaScript off, a bundle that failed to load, a crawler —
-   the content is simply on the page. Content must never depend on an effect
-   firing to be readable. */
-[data-motion="on"] .register-body {
-  opacity: 0;
-  /* A short lift, not a slide: the content resolves onto the paper. */
-  transform: translateY(6px);
-  transition:
-    opacity 520ms var(--ease-draw) 180ms,
-    transform 520ms var(--ease-draw) 180ms;
-}
+/* Hidden only where scripting runs and motion is welcome. With JavaScript
+   off, a crawler, or reduced motion, the content is simply on the page.
+   A media query rather than a flag set by an inline script: the layout
+   re-renders on a language switch, and React refuses to run a script then. */
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .register-body {
+    opacity: 0;
+    /* A short lift, not a slide: the content resolves onto the paper. */
+    transform: translateY(6px);
+    transition:
+      opacity 520ms var(--ease-draw) 180ms,
+      transform 520ms var(--ease-draw) 180ms;
+  }
 
-[data-motion="on"] .register[data-drawn="true"] .register-body {
-  opacity: 1;
-  transform: none;
-}
+  .register[data-drawn="true"] .register-body {
+    opacity: 1;
+    transform: none;
+  }
 
-/* Same rule for the rule itself. */
-[data-motion="on"] .register-rule {
-  transform: scaleX(0);
-}
+  /* Same rule for the rule itself. */
+  .register-rule {
+    transform: scaleX(0);
+  }
 
-[data-motion="on"] .register[data-drawn="true"] .register-rule {
-  transform: scaleX(1);
+  .register[data-drawn="true"] .register-rule {
+    transform: scaleX(1);
+  }
 }
 
 /* ---------------------------------------------------------------------------

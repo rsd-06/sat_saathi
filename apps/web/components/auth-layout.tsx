@@ -29,8 +29,22 @@ export async function AuthLayout({
 
   const specimen =
     sheet === "sar"
-      ? { platform: "Sentinel-1 GRD", bands: "VV", pass: "Descending" }
-      : { platform: "Sentinel-2 L2A", bands: "B03 · B08", pass: "Descending" };
+      ? {
+          platform: "Sentinel-1 GRD",
+          bands: "VV · VH",
+          place: "Dhubri, Assam",
+          centre: "25.868°N 90.143°E",
+          date: "13 Jul 2020",
+          credit: "Copernicus Sentinel-1 (2020), processed by Pierre Markuse · CC BY 2.0",
+        }
+      : {
+          platform: "Sentinel-2 L1C",
+          bands: "B04 · B03 · B02",
+          place: "Sundarbans delta",
+          centre: "Bay of Bengal coast",
+          date: "True colour",
+          credit: "Copernicus Sentinel-2 · ESA · CC BY-SA 3.0 IGO",
+        };
 
   return (
     <>
@@ -40,14 +54,13 @@ export async function AuthLayout({
 
         <div className="relative mx-auto max-w-[62rem] px-4 py-10 sm:px-6 lg:py-14">
           <div className="sheet-marks border-rule-strong bg-paper-raised relative border">
-          <span className="marginal bg-paper-raised border-rule-strong absolute -top-2.5 right-3 z-10 border px-1.5">Example sheet · illustrative</span>
             {/* Title block, along the top edge, as a sheet carries it. */}
             <div className="border-rule divide-rule open-frame grid grid-cols-2 divide-x border-b sm:grid-cols-4">
               {[
-                ["Sheet", "78 B/11"],
+                ["Scene", specimen.place],
                 ["Platform", specimen.platform],
                 ["Bands", specimen.bands],
-                ["Datum", "WGS 84"],
+                ["Acquired", specimen.date],
               ].map(([label, value]) => (
                 <div key={label} className="px-3 py-2">
                   <div className="text-ink-faint marginal">{label}</div>
@@ -68,9 +81,9 @@ export async function AuthLayout({
 
                 <dl className="divide-rule flex-1 divide-y">
                   {[
-                    ["Centre", "23.4102°N 88.5107°E"],
-                    ["Projection", "UTM 45N"],
-                    ["Pass", specimen.pass],
+                    ["Centre", specimen.centre],
+                    ["Datum", "WGS 84"],
+                    ["Source", "Copernicus open data"],
                   ].map(([label, value]) => (
                     <div
                       key={label}
@@ -83,18 +96,7 @@ export async function AuthLayout({
                 </dl>
 
                 <div className="border-rule border-t px-3 py-2.5">
-                  <div className="marginal">{t("landing.hero.figureCaption")}</div>
-                  <div className="mt-2 flex items-center gap-2">
-                    <span
-                      aria-hidden
-                      className="h-1.5 flex-1"
-                      style={{
-                        background:
-                          "linear-gradient(to right, var(--color-relief), var(--color-water))",
-                      }}
-                    />
-                    <span className="marginal tabular shrink-0">−1 … +1</span>
-                  </div>
+                  <div className="marginal">{specimen.credit}</div>
                 </div>
               </div>
 
