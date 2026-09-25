@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  type ReactNode,
+} from "react";
 
 /**
  * Multi-temporal change and cross-modal validation, computed in the browser.
@@ -66,6 +73,32 @@ const MODE_LABEL: Record<Mode, string> = {
   change: "Multi-temporal change",
   crossmodal: "Cross-modal validation",
 };
+
+// ----------------------------------------------------------------- report --
+
+/** What a finished analysis hands back, to be kept in the account's history. */
+export type Report = {
+  kind: "change" | "crossmodal";
+  variant: "bi" | "multi" | null;
+  title: string;
+  summary: string;
+  stats: Record<string, unknown>;
+  frames: { name: string; kind: string; date: string }[];
+};
+
+const ReportContext = createContext<(r: Report) => void>(() => undefined);
+
+const round = (x: number) => Math.round(x * 10) / 10;
+const meta = (f: Frame) => ({ name: f.name, kind: f.kind, date: f.date });
+
+/** Reports once per distinct result, not once per render. */
+function useReport(report: Report) {
+  const send = useContext(ReportContext);
+  const key = JSON.stringify(report);
+  useEffect(() => {
+    send(JSON.parse(key) as Report);
+  }, [key, send]);
+}
 
 // ---------------------------------------------------------------- loading --
 
@@ -568,6 +601,38 @@ export function AnalysisView({
   features,
   pair,
   onPair,
+  onResult,
+}: {
+  frames: Frame[];
+  mode: "change" | "crossmodal";
+  changeKind: "bi" | "multi";
+  features: Features;
+  pair: [string, string] | null;
+  onPair: (p: [string, string]) => void;
+  onResult?: (r: Report) => void;
+}) {
+  const noop = useMemo(() => () => undefined, []);
+  return (
+    <ReportContext.Provider value={onResult ?? noop}>
+      <AnalysisBody
+        frames={frames}
+        mode={mode}
+        changeKind={changeKind}
+        features={features}
+        pair={pair}
+        onPair={onPair}
+      />
+    </ReportContext.Provider>
+  );
+}
+
+function AnalysisBody({
+  frames,
+  mode,
+  changeKind,
+  features,
+  pair,
+  onPair,
 }: {
   frames: Frame[];
   mode: "change" | "crossmodal";
@@ -636,6 +701,19 @@ function BiView({
   const r = useMemo(() => detectChange(pa, pb, b.kind), [pa, pb, b.kind]);
   const map = useMemo(() => overlay(pb, r.cat, CHANGE), [pb, r]);
   const top = r.byCat.indexOf(Math.max(...r.byCat));
+  useReport({
+    kind: "change",
+    variant: "bi",
+    title: `Bi-temporal change · ${a.date} → ${b.date}`,
+    summary: `${r.pct.toFixed(1)}% of the scene changed between ${a.date} and ${b.date}${
+      r.pct > 0.5 ? `, mostly ${CHANGE[top]!.label.toLowerCase()} (${r.byCat[top]!.toFixed(1)}%)` : ""
+    }.`,
+    stats: {
+      changed_pct: round(r.pct),
+      by_category: Object.fromEntries(CHANGE.map((c, i) => [c.label, round(r.byCat[i]!)])),
+    },
+    frames: [meta(a), meta(b)],
+  });
   const pick = (which: 0 | 1, id: string) => onPair(which === 0 ? [id, b.id] : [a.id, id]);
 
   return (
@@ -709,6 +787,19 @@ function MultiView({ frames, px, features }: { frames: Frame[]; px: Map<string, 
   const max = Math.max(1, ...result.steps.map((s) => s.r.pct));
   const biggest = result.steps.reduce((m, s) => (s.r.pct > m.r.pct ? s : m), result.steps[0]!);
   const top = result.total.byCat.indexOf(Math.max(...result.total.byCat));
+  useReport({
+    kind: "change",
+    variant: "multi",
+    title: `Multi-temporal change · ${frames.length} dates, ${frames[0]!.date} → ${frames[frames.length - 1]!.date}`,
+    summary: `${result.total.pct.toFixed(1)}% of the scene differs from first to last, mostly ${CHANGE[top]!.label.toLowerCase()}. Biggest step: ${biggest.from.date} → ${biggest.to.date} (${biggest.r.pct.toFixed(1)}%). ${result.persistent.toFixed(1)}% of pixels changed in two or more intervals.`,
+    stats: {
+      changed_pct: round(result.total.pct),
+      persistent_pct: round(result.persistent),
+      intervals: result.steps.map((st) => ({ from: st.from.date, to: st.to.date, changed_pct: round(st.r.pct) })),
+      by_category: Object.fromEntries(CHANGE.map((c, i) => [c.label, round(result.total.byCat[i]!)])),
+    },
+    frames: frames.map(meta),
+  });
 
   return (
     <div className="space-y-3">
@@ -773,6 +864,21 @@ function CrossView({ opt, sar, o, s, features }: { opt: Frame; sar: Frame; o: Px
     r.byCat[2]! > 0.5 && `${f(r.byCat[2]!)} is dark only in SAR. It could be wet soil, tarmac or flooded vegetation, so check it on the ground.`,
     r.byCat[4]! > 0.5 && `SAR's moderate volume scattering supports ${f(r.byCat[4]!)} of the scene as vegetation.`,
   ].filter(Boolean) as string[];
+  useReport({
+    kind: "crossmodal",
+    variant: null,
+    title: `Cross-modal validation · ${KIND_LABEL[opt.kind]} ${opt.date} + SAR ${sar.date}`,
+    summary: notes.join(" "),
+    stats: {
+      water_agreement_iou_pct: round(r.iou),
+      optical_water_pct: round(r.oWater),
+      sar_water_pct: round(r.sWater),
+      optical_vegetation_pct: round(r.oVeg),
+      cloud_pct: round(r.cloud),
+      by_category: Object.fromEntries(CROSS.map((c, i) => [c.label, round(r.byCat[i]!)])),
+    },
+    frames: [meta(opt), meta(sar)],
+  });
 
   return (
     <div className="space-y-3">

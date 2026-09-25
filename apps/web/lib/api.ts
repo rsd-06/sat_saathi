@@ -245,3 +245,61 @@ export function subscribeToJob(
 
   return () => source.close();
 }
+
+// ---------------------------------------------------------------------------
+// Endpoints newer than the generated client, called with plain fetch.
+
+async function json<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...init,
+    headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
+  });
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as { error?: ErrorBody } | null;
+    throw new ApiError(
+      body?.error ?? { key: "error.apiUnreachable.title", params: {} as never },
+      response.status,
+    );
+  }
+  return (response.status === 204 ? null : await response.json()) as T;
+}
+
+export type AnalysisOut = {
+  id: string;
+  kind: "change" | "crossmodal";
+  variant: "bi" | "multi" | null;
+  method: string;
+  title: string;
+  summary: string;
+  stats: Record<string, unknown>;
+  frames: { name: string; kind: string; date: string }[];
+  created_at: string;
+};
+
+export const listAnalyses = (limit = 50) =>
+  json<AnalysisOut[]>(`/api/v1/analyses?limit=${limit}`);
+
+export const saveAnalysis = (
+  body: Omit<AnalysisOut, "id" | "method" | "created_at">,
+) => json<AnalysisOut>("/api/v1/analyses", { method: "POST", body: JSON.stringify(body) });
+
+export const deleteAnalysis = (id: string) =>
+  json<null>(`/api/v1/analyses/${id}`, { method: "DELETE" });
+
+export const listAllReview = () => json<ReviewOut[]>("/api/v1/review?pending_only=false");
+
+export type Profile = {
+  full_name: string;
+  email: string;
+  department: string | null;
+  district: string | null;
+  state: string | null;
+  designation: string | null;
+  preferred_locale: string;
+  created_at: string;
+};
+
+export const getProfile = () => json<Profile>("/api/v1/auth/me");
+
+export const updateProfile = (body: Partial<Omit<Profile, "email" | "created_at">>) =>
+  json<Profile>("/api/v1/auth/me", { method: "PATCH", body: JSON.stringify(body) });

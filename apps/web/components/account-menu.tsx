@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
+import { Link } from "@/i18n/navigation";
+import type { User } from "@/lib/session";
+
 /**
  * Who is signed in, and the way out.
  *
@@ -11,15 +14,14 @@ import { useRouter } from "next/navigation";
  * every server component re-renders signed-out. Navigating without the
  * refresh would leave a cached tree that still believes it has a user.
  */
-export function AccountMenu({
-  name,
-  email,
-  locale,
-}: {
-  name: string;
-  email: string;
-  locale: string;
-}) {
+export function AccountMenu({ user, locale }: { user: User; locale: string }) {
+  const { full_name: name, email } = user;
+  const area = [user.district, user.state].filter(Boolean).join(", ");
+  const details: [string, string | null][] = [
+    ["Post", user.designation],
+    ["Department", user.department],
+    ["Area", area || null],
+  ];
   const t = useTranslations();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -75,18 +77,43 @@ export function AccountMenu({
         >
           {initials || "—"}
         </span>
-        <span className="hidden max-w-[10rem] truncate sm:inline">{name}</span>
+        <span className="hidden min-w-0 text-left leading-tight sm:block">
+          <span className="block max-w-[11rem] truncate">{name}</span>
+          {(user.department || area) && (
+            <span className="text-ink-faint block max-w-[11rem] truncate text-[0.6875rem]">
+              {user.department ?? area}
+            </span>
+          )}
+        </span>
       </button>
 
       {open && (
         <div
           role="menu"
-          className="border-rule-strong bg-paper-raised absolute right-0 z-50 mt-1 w-60 border shadow-sm"
+          className="border-rule-strong bg-paper-raised absolute right-0 z-50 mt-1 w-72 border shadow-lg"
         >
           <div className="border-rule border-b px-3 py-2.5">
             <div className="text-ink truncate text-sm font-medium">{name}</div>
             <div className="marginal mt-0.5 truncate">{email}</div>
           </div>
+          <dl className="border-rule space-y-1.5 border-b px-3 py-2.5">
+            {details.map(([label, value]) => (
+              <div key={label} className="grid grid-cols-[5.5rem_1fr] gap-2 text-xs">
+                <dt className="text-ink-faint">{label}</dt>
+                <dd className={value ? "text-ink" : "text-ink-faint italic"}>
+                  {value ?? "Not set"}
+                </dd>
+              </div>
+            ))}
+          </dl>
+          <Link
+            href="/settings#profile"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="text-ink hover:bg-paper-sunk border-rule block border-b px-3 py-2.5 text-sm transition-colors"
+          >
+            Edit profile
+          </Link>
           <button
             type="button"
             role="menuitem"

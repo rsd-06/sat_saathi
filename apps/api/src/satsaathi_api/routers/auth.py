@@ -19,6 +19,7 @@ from ..deps import Session, SettingsDep, api_error
 from ..schemas import (
     GoogleTokenIn,
     LoginIn,
+    ProfileIn,
     RegisterIn,
     SessionOut,
     UserOut,
@@ -83,6 +84,8 @@ async def register(session: Session, body: RegisterIn) -> SessionOut:
             status.HTTP_409_CONFLICT, "auth.error.emailTaken"
         ) from None
 
+    user.state = body.state
+    user.designation = body.designation
     token = await auth_service.start_session(session, user)
     await session.commit()
     return _session_out(token, user)
@@ -155,6 +158,17 @@ async def logout(
     """Signing out with no session, or twice, is not an error."""
     await auth_service.end_session(session, _bearer(authorization))
     await session.commit()
+
+
+@router.patch("/me", response_model=UserOut)
+async def update_me(session: Session, user: CurrentUser, body: ProfileIn) -> UserOut:
+    """Edit one's own profile. Email and password are not changed here."""
+    for field, value in body.model_dump(exclude_unset=True).items():
+        if field == "full_name" and not value:
+            continue
+        setattr(user, field, (value.strip() or None) if isinstance(value, str) else value)
+    await session.commit()
+    return UserOut.model_validate(user, from_attributes=True)
 
 
 @router.get("/me", response_model=UserOut)

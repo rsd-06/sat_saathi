@@ -23,6 +23,8 @@ export type User = {
   full_name: string;
   department: string | null;
   district: string | null;
+  state: string | null;
+  designation: string | null;
   preferred_locale: string;
   created_at: string;
 };

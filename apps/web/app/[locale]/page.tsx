@@ -29,20 +29,20 @@ export default async function LandingPage({
 
       <main>
         {/* Hero: the sheet is the hero. The copy sits beside it, not over it. */}
-        <section className="relative">
+        <section className="relative bg-gradient-to-b from-blue-50/40 via-transparent to-transparent">
           <div aria-hidden className="sheet-grid pointer-events-none absolute inset-0" />
           <div className="relative mx-auto grid max-w-[88rem] gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] lg:gap-14 lg:py-20">
             <div className="open-line max-w-prose self-center">
-              <h1 className="font-serif text-ink text-4xl leading-[1.12] tracking-tight text-balance sm:text-5xl">
+              <h1 className="font-serif text-ink text-5xl leading-[1.15] tracking-tight text-balance sm:text-6xl drop-shadow-sm">
                 {t("landing.hero.headline")}
               </h1>
-              <p className="text-ink-muted mt-5 text-base leading-relaxed">
+              <p className="text-ink-muted mt-6 text-lg leading-relaxed">
                 {t("landing.hero.body")}
               </p>
-              <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <Link
                   href={user ? "/workspace" : "/sign-up"}
-                  className="bg-accent hover:bg-accent-hover rounded-xs px-5 py-2.5 text-sm font-medium text-white transition-colors"
+                  className="bg-accent hover:bg-accent-hover rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 px-6 py-3 text-base font-medium text-white transition-all"
                 >
                   {user ? t("landing.hero.ctaSignedIn") : t("landing.hero.cta")}
                 </Link>
@@ -64,7 +64,7 @@ export default async function LandingPage({
               </div>
             </div>
 
-            <div className="self-center">
+            <div className="self-center transform transition duration-500 hover:scale-[1.01] hover:shadow-2xl rounded-2xl overflow-hidden ring-1 ring-black/5">
               <HeroSheet />
             </div>
           </div>
@@ -74,10 +74,10 @@ export default async function LandingPage({
         <section className="border-rule border-t">
           <div className="mx-auto max-w-[88rem] px-4 py-14 sm:px-6">
             <Register rule={false} className="max-w-2xl">
-              <h2 className="font-serif text-ink text-2xl leading-snug tracking-tight text-balance sm:text-3xl">
+              <h2 className="font-serif text-ink text-3xl leading-snug tracking-tight text-balance sm:text-4xl">
                 {t("landing.problem.title")}
               </h2>
-              <p className="text-ink-muted mt-4 leading-relaxed">
+              <p className="text-ink-muted mt-5 text-lg leading-relaxed">
                 {t("landing.problem.body")}
               </p>
             </Register>
@@ -87,7 +87,7 @@ export default async function LandingPage({
         {/* Ask → Compute → Explain → Act. Genuinely a sequence, so it is numbered. */}
         <section id="how" className="border-rule bg-paper-sunk/60 border-t">
           <div className="mx-auto max-w-[88rem] px-4 py-14 sm:px-6">
-            <h2 className="font-serif text-ink text-2xl tracking-tight">
+            <h2 className="font-serif text-ink text-3xl tracking-tight">
               {t("landing.steps.title")}
             </h2>
             <ol className="divide-rule border-rule mt-8 grid divide-y border-t sm:grid-cols-2 sm:divide-y-0 lg:grid-cols-4">
@@ -98,14 +98,14 @@ export default async function LandingPage({
                 >
                   {/* Each step draws in turn, so the sequence reads as one. */}
                   <Register rule={false} delay={i * 110} className="flex gap-4 py-6 sm:px-5">
-                    <span className="text-ink-faint tabular marginal shrink-0 pt-0.5" aria-hidden>
+                    <span className="text-ink-faint tabular marginal shrink-0 pt-0.5 text-lg" aria-hidden>
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <div>
-                      <h3 className="text-ink font-medium">
+                      <h3 className="text-ink font-semibold text-lg">
                         {t(`landing.steps.${step}.title`)}
                       </h3>
-                      <p className="text-ink-muted mt-2 text-sm leading-relaxed">
+                      <p className="text-ink-muted mt-2 text-base leading-relaxed">
                         {t(`landing.steps.${step}.body`)}
                       </p>
                     </div>

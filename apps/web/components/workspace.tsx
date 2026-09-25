@@ -18,12 +18,14 @@ import {
   type ChangeChoice,
   type Frame,
   type Mode,
+  type Report,
 } from "./analysis";
 import {
   ApiError,
   createInputSet,
   createJob,
   subscribeToJob,
+  saveAnalysis,
   uploadAsset,
   type AssetOut,
   type ErrorBody,
@@ -61,6 +63,28 @@ export function Workspace({
   const [features, setFeatures] = useState(ALL_FEATURES);
   const [pair, setPair] = useState<[string, string] | null>(null);
   const resolved = resolveMode(mode, frames, changeChoice);
+  // Each distinct result is saved to history once, after it has been on screen
+  // for a moment, so flicking between toggles does not fill history with noise.
+  const saved = useRef(new Set<string>());
+  const pending = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [saveState, setSaveState] = useState<"idle" | "saved" | "failed">("idle");
+  const onResult = useCallback((report: Report) => {
+    const key = JSON.stringify([report.kind, report.variant, report.frames]);
+    if (pending.current) clearTimeout(pending.current);
+    if (saved.current.has(key)) {
+      setSaveState("saved");
+      return;
+    }
+    setSaveState("idle");
+    pending.current = setTimeout(() => {
+      saveAnalysis(report)
+        .then(() => {
+          saved.current.add(key);
+          setSaveState("saved");
+        })
+        .catch(() => setSaveState("failed"));
+    }, 1500);
+  }, []);
 
   async function addFrames(files: File[], primary = false) {
     const loaded = (
@@ -221,6 +245,11 @@ export function Workspace({
           onFeatures={setFeatures}
           frames={frames}
         />
+        {resolved.mode !== "single" && saveState !== "idle" && (
+          <p className="marginal mb-2 text-right" role="status">
+            {saveState === "saved" ? "✓ Saved to your history" : "Could not save to history. The API is unreachable."}
+          </p>
+        )}
         {resolved.mode !== "single" ? (
           <AnalysisView
             frames={frames}
@@ -229,6 +258,7 @@ export function Workspace({
             features={features}
             pair={pair}
             onPair={setPair}
+            onResult={onResult}
           />
         ) : (
         <div className="border-rule-strong bg-paper-raised border">
@@ -269,8 +299,8 @@ export function Workspace({
               /* GeoTIFF: no browser preview, so show what was read instead of
                  an empty frame. Real tiles arrive once the tiler is wired. */
               <div className="px-6 text-center">
-                <div className="mx-auto w-40 opacity-30">
-                  <Scene variant="flood" />
+                <div className="border-rule mx-auto aspect-[16/10] w-64 overflow-hidden border opacity-80">
+                  <Scene variant="flood" showLabel={false} sizes="16rem" />
                 </div>
                 <p className="text-ink-muted mt-4 text-sm">
                   {t("upload.error.geotiffPreview")}
@@ -278,8 +308,8 @@ export function Workspace({
               </div>
             ) : (
               <div className="px-6 text-center">
-                <div className="mx-auto w-48 opacity-25">
-                  <Scene variant="flood" />
+                <div className="border-rule mx-auto aspect-[16/10] w-64 overflow-hidden border opacity-80">
+                  <Scene variant="flood" showLabel={false} sizes="16rem" />
                 </div>
                 <p className="text-ink-muted mt-4 text-sm">
                   {t("workspace.map.empty.body")}

@@ -20,7 +20,7 @@ export default async function ReviewPage({
       subtitle={t("answer.review.body", { threshold: config.review_threshold_pct })}
       width="narrow"
     >
-      <ReviewQueue />
+      <ReviewQueue thresholdPct={config.review_threshold_pct} />
     </PageShell>
   );
 }

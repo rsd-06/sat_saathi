@@ -13,6 +13,7 @@ from fastapi.responses import JSONResponse
 from satsaathi_core.db import dispose_engine
 from satsaathi_core.settings import get_settings
 
+from .routers.analyses import router as analyses_router
 from .routers.assets import router as assets_router
 from .routers.auth import router as auth_router
 from .routers.health import router as health_router
@@ -170,6 +171,7 @@ for router in (
     health_router,
     auth_router,
     assets_router,
+    analyses_router,
     input_sets_router,
     jobs_router,
     models_router,

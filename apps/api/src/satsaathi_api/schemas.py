@@ -35,6 +35,8 @@ class RegisterIn(BaseModel):
     full_name: str = Field(min_length=1, max_length=200)
     department: str | None = Field(default=None, max_length=200)
     district: str | None = Field(default=None, max_length=200)
+    state: str | None = Field(default=None, max_length=100)
+    designation: str | None = Field(default=None, max_length=200)
     preferred_locale: Literal["en", "hi", "ta", "bn"] = "en"
 
 
@@ -56,7 +58,35 @@ class UserOut(BaseModel):
     full_name: str
     department: str | None = None
     district: str | None = None
+    state: str | None = None
+    designation: str | None = None
     preferred_locale: str
+    created_at: datetime
+
+
+class ProfileIn(BaseModel):
+    """Only the fields sent are changed; an empty string clears one."""
+
+    full_name: str | None = Field(default=None, min_length=1, max_length=200)
+    department: str | None = Field(default=None, max_length=200)
+    district: str | None = Field(default=None, max_length=200)
+    state: str | None = Field(default=None, max_length=100)
+    designation: str | None = Field(default=None, max_length=200)
+    preferred_locale: Literal["en", "hi", "ta", "bn"] | None = None
+
+
+class AnalysisIn(BaseModel):
+    kind: Literal["change", "crossmodal"]
+    variant: Literal["bi", "multi"] | None = None
+    title: str = Field(min_length=1, max_length=300)
+    summary: str = Field(min_length=1, max_length=5000)
+    stats: dict[str, Any] = Field(default_factory=dict)
+    frames: list[dict[str, Any]] = Field(default_factory=list, max_length=50)
+
+
+class AnalysisOut(AnalysisIn):
+    id: uuid.UUID
+    method: str
     created_at: datetime
 
 
