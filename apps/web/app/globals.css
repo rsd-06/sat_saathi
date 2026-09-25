@@ -308,3 +308,17 @@ body {
   font-size: 0.9375rem;
   line-height: 1.5;
 }
+
+/* The workspace is read at arm's length during a demo: one step larger. */
+.workspace-large .text-xs {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+.workspace-large .text-sm {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+.workspace-large .marginal {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}

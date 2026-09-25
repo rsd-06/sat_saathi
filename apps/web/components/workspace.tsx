@@ -197,7 +197,7 @@ export function Workspace({
   );
 
   return (
-    <div className="mx-auto grid max-w-[110rem] gap-6 px-4 py-6 sm:px-6 xl:grid-cols-[19rem_minmax(0,1fr)_25rem]">
+    <div className="workspace-large mx-auto grid max-w-[110rem] gap-6 px-4 py-6 sm:px-6 xl:grid-cols-[19rem_minmax(0,1fr)_25rem]">
       <aside
         data-lenis-prevent
         className="space-y-6 xl:max-h-[calc(100dvh-6rem)] xl:overflow-y-auto xl:pr-1"
@@ -290,15 +290,22 @@ export function Workspace({
             )}
           </div>
 
-          <div className="bg-paper-sunk relative flex aspect-[16/10] min-h-[20rem] items-center justify-center">
+          <div className="bg-paper-sunk relative flex min-h-[20rem] items-center justify-center p-2">
             {image?.url ? (
               /* A local object URL; next/image cannot optimise a blob source. */
-              <div className="relative inline-block max-h-full max-w-full">
+              /* Filled to the column, capped by screen height; the wrapper keeps
+                 the image's own shape so boxes drawn over it stay aligned. */
+              <div
+                className="relative"
+                style={{
+                  width: `min(100%, calc(75dvh * ${image.width || 16} / ${image.height || 10}))`,
+                }}
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={image.url}
                   alt={image.file.name}
-                  className="block max-h-[70dvh] max-w-full object-contain"
+                  className="block h-auto w-full"
                 />
                 {boxes.length > 0 && (
                   <svg
