@@ -213,6 +213,14 @@ class Asset(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=new_id
     )
+    #: The account this belongs to. Nullable only for rows made before
+    #: accounts existed; nothing new is created without one.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+    )
     storage_key: Mapped[str] = mapped_column(String(512))
     cog_key: Mapped[str | None] = mapped_column(String(512), nullable=True)
     filename: Mapped[str] = mapped_column(String(512))
@@ -241,6 +249,14 @@ class InputSet(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    #: The account this belongs to. Nullable only for rows made before
+    #: accounts existed; nothing new is created without one.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
     )
     mode: Mapped[InputMode] = mapped_column(Enum(InputMode, name="input_mode"))
     checks: Mapped[list | None] = mapped_column(JsonType, nullable=True)
@@ -275,6 +291,14 @@ class Job(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=new_id
+    )
+    #: The account this belongs to. Nullable only for rows made before
+    #: accounts existed; nothing new is created without one.
+    user_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
     )
     input_set_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("input_sets.id")

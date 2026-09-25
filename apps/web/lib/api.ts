@@ -28,8 +28,12 @@ export type {
   ToolOut,
 };
 
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+/**
+ * Same origin, always. Requests go to this app's /api/v1 route, which attaches
+ * the session and forwards them to the API, so the page never holds a token
+ * and never needs the API's address.
+ */
+export const API_BASE = "";
 
 const client = createApiClient(API_BASE);
 

@@ -1,8 +1,8 @@
 """Alembic environment.
 
-Runs migrations synchronously against a psycopg-style URL derived from the
-async one in settings: migrations are a one-shot operation and gain nothing
-from an async driver, while asyncpg would force a run_sync dance here.
+Runs migrations on asyncpg, the driver the app itself uses, through
+run_sync. psycopg was simpler here but its compiled extension can be blocked
+by Windows Application Control, which stopped migrations dead.
 
 GeoAlchemy2's alembic_helpers keep autogenerate from trying to re-create the
 spatial indexes and geometry columns PostGIS manages itself.
@@ -10,11 +10,13 @@ spatial indexes and geometry columns PostGIS manages itself.
 
 from __future__ import annotations
 
+import asyncio
 from logging.config import fileConfig
 
 from alembic import context
 from geoalchemy2 import alembic_helpers
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import pool
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from satsaathi_core.models import Base
 from satsaathi_core.settings import get_settings
@@ -68,28 +70,35 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-def run_migrations_online() -> None:
-    section = config.get_section(config.config_ini_section, {})
-    section["sqlalchemy.url"] = _sync_url()
-
-    connectable = engine_from_config(
-        section,
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-        # TLS for a hosted database, spelled the way psycopg wants it.
-        connect_args=get_settings().psycopg_connect_args(),
+def _run_sync(connection) -> None:
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        include_object=_include_object,
+        process_revision_directives=alembic_helpers.writer,
+        render_item=alembic_helpers.render_item,
     )
+    with context.begin_transaction():
+        context.run_migrations()
 
-    with connectable.connect() as connection:
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            include_object=_include_object,
-            process_revision_directives=alembic_helpers.writer,
-            render_item=alembic_helpers.render_item,
-        )
-        with context.begin_transaction():
-            context.run_migrations()
+
+async def _run_async() -> None:
+    settings = get_settings()
+    engine = create_async_engine(
+        settings.effective_database_url,
+        poolclass=pool.NullPool,
+        connect_args=settings.asyncpg_connect_args(),
+    )
+    async with engine.connect() as connection:
+        await connection.run_sync(_run_sync)
+    await engine.dispose()
+
+
+def run_migrations_online() -> None:
+    # asyncpg, the same driver the app uses. Migrations used to run on psycopg,
+    # whose compiled extension Windows Application Control can block outright;
+    # one driver for everything means one thing that has to load.
+    asyncio.run(_run_async())
 
 
 if context.is_offline_mode():

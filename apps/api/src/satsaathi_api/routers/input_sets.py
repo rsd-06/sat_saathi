@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from dataclasses import asdict
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import selectinload
 
 from satsaathi_core import compatibility
@@ -14,8 +14,10 @@ from satsaathi_core.raster import BandInfo, RasterMetadata, SensorType
 
 from ..deps import Session, SettingsDep, api_error
 from ..schemas import CheckOut, InputSetIn, InputSetOut
+from .auth import CurrentUser, current_user
 
-router = APIRouter(prefix="/input-sets", tags=["input-sets"])
+# Everything here is somebody's own work, so all of it needs an account.
+router = APIRouter(prefix="/input-sets", tags=["input-sets"], dependencies=[Depends(current_user)])
 
 REQUIRED_ROLES: dict[str, tuple[str, ...]] = {
     "single": ("single",),
@@ -67,7 +69,7 @@ def _footprint_geojson(asset: Asset) -> dict | None:
 
 @router.post("", response_model=InputSetOut, status_code=status.HTTP_201_CREATED)
 async def create_input_set(
-    session: Session, settings: SettingsDep, body: InputSetIn
+    session: Session, user: CurrentUser, settings: SettingsDep, body: InputSetIn
 ) -> InputSetOut:
     required = REQUIRED_ROLES[body.mode]
     missing = [r for r in required if r not in body.assets]
@@ -83,10 +85,8 @@ async def create_input_set(
     assets: dict[str, Asset] = {}
     for role, asset_id in body.assets.items():
         asset = await session.get(Asset, asset_id)
-        if asset is None:
-            raise api_error(
-                status.HTTP_404_NOT_FOUND, "asset.not_found", id=str(asset_id)
-            )
+        if asset is None or asset.user_id != user.id:
+            raise api_error(status.HTTP_404_NOT_FOUND, "asset.not_found", id=str(asset_id))
         assets[role] = asset
 
     metas = {role: _as_metadata(a) for role, a in assets.items()}
@@ -107,17 +107,13 @@ async def create_input_set(
         )
 
     input_set = InputSet(
-        mode=InputMode(body.mode), checks=[asdict(c) for c in checks]
+        user_id=user.id, mode=InputMode(body.mode), checks=[asdict(c) for c in checks]
     )
     session.add(input_set)
     await session.flush()
 
     for role, asset in assets.items():
-        session.add(
-            InputSetAsset(
-                input_set_id=input_set.id, asset_id=asset.id, role=role
-            )
-        )
+        session.add(InputSetAsset(input_set_id=input_set.id, asset_id=asset.id, role=role))
     await session.flush()
 
     return InputSetOut(
@@ -131,19 +127,17 @@ async def create_input_set(
 
 
 @router.get("/{input_set_id}", response_model=InputSetOut)
-async def get_input_set(session: Session, input_set_id: uuid.UUID) -> InputSetOut:
+async def get_input_set(
+    session: Session, user: CurrentUser, input_set_id: uuid.UUID
+) -> InputSetOut:
     from sqlalchemy import select
 
     result = await session.scalars(
-        select(InputSet)
-        .where(InputSet.id == input_set_id)
-        .options(selectinload(InputSet.assets))
+        select(InputSet).where(InputSet.id == input_set_id).options(selectinload(InputSet.assets))
     )
     input_set = result.first()
-    if input_set is None:
-        raise api_error(
-            status.HTTP_404_NOT_FOUND, "inputSet.not_found", id=str(input_set_id)
-        )
+    if input_set is None or input_set.user_id != user.id:
+        raise api_error(status.HTTP_404_NOT_FOUND, "inputSet.not_found", id=str(input_set_id))
 
     checks = [CheckOut(**c) for c in (input_set.checks or [])]
     return InputSetOut(

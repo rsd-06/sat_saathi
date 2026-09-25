@@ -44,7 +44,7 @@ export function SettingsPanel() {
 
       <section>
         <h2 className="text-ink text-sm font-medium">{t("settings.api")}</h2>
-        <p className="marginal mt-1">{API_BASE}</p>
+        <p className="marginal mt-1">{API_BASE || "/api/v1"}</p>
 
         <div className="border-rule divide-rule mt-3 divide-y border-y">
           <div className="flex items-center justify-between py-2">
