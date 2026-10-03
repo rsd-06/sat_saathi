@@ -4,8 +4,8 @@
 A short, polished launch-style film for SatSaathi, for a LinkedIn post.
 
 ## Output
-- Composition directory: `docs/brag-output/composition/`
-- Rendered video: `docs/brag-output/brag.mp4`
+- Composition directory: `brag/composition/`
+- Rendered video: `brag/brag.mp4`
 - Format: landscape, 1920x1080
 - Duration: 24 seconds
 

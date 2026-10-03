@@ -8,6 +8,8 @@ Built by **Team MidDevz** for **Smart India Hackathon 2026**, ISRO problem state
 
 ![The SatSaathi landing page: a Sentinel-2 scene of the Sundarbans delta with annotated features, beside the headline "Ask the satellite, in your language."](docs/img/landing.png)
 
+**[Watch the 24-second launch film](brag/brag.mp4)** (a [music-free cut](brag/brag-no-music.mp4) is alongside)
+
 ---
 
 ## Why this exists
@@ -107,7 +109,7 @@ make dev
 | Postgres + PostGIS | `localhost:5432` |
 | Redis | `localhost:6379` |
 
-Open the web app, **create an account**, and upload a GeoTIFF — `infra/fixtures/sample-scene.tif` is a small 4-band, 10 m GeoTIFF you can use. With no model weights installed, indices and area are still computed from the real pixels, while the vision-language steps return fixture text **and are labelled as such** in the trace. Check the stack with:
+Open the web app, **create an account**, and upload a GeoTIFF. [`mock-files/`](mock-files/) has four real Sentinel-1 and Sentinel-2 clips (farmland, a river in dry season and in flood, and radar), each under 3 MB, with suggested questions; `infra/fixtures/sample-scene.tif` is a tiny synthetic one. With no model weights installed, indices and area are still computed from the real pixels, while the vision-language steps return fixture text **and are labelled as such** in the trace. Check the stack with:
 
 ```bash
 curl http://localhost:8000/api/v1/health
@@ -205,6 +207,8 @@ packages/
   api-client/      Typed client generated from the API's OpenAPI schema
 infra/             Docker Compose, Dockerfiles, test fixtures
 scripts/stack.sh   The full demo stack on one port
+mock-files/        Real Sentinel-1 and Sentinel-2 GeoTIFFs to try the app with (see its README)
+brag/              The launch film and its caption
 docs/              Architecture notes and decision records
 ```
 
@@ -222,8 +226,12 @@ The longer-term plan targets the workflows of YES-TECH partners, state disaster 
 
 ## Acknowledgements
 
-The landing-page scenes use **modified Copernicus Sentinel data (ESA), CC BY-SA 3.0 IGO**. Open benchmarks referenced in the project proposal include RSVQA and Sen1Floods11. The base model is Qwen3-VL by Alibaba Cloud, used under its own licence.
+The landing-page scenes use **modified Copernicus Sentinel data (ESA), CC BY-SA 3.0 IGO**. The launch film's music is *Happy Beats / Business Moves* from [ende.app](https://ende.app/en) (CC BY 4.0); its sound effects are from Kenney (CC0). Open benchmarks referenced in the project proposal include RSVQA and Sen1Floods11. The base model is Qwen3-VL by Alibaba Cloud, used under its own licence.
+
+## License
+
+The code is released under the [MIT License](LICENSE). Third-party material keeps its own terms: Sentinel imagery (CC BY-SA 3.0 IGO / Copernicus open data), the Noto fonts (SIL OFL), and the Qwen3-VL base model (Alibaba Cloud's licence, which applies to the downloaded weights, not to this repository).
 
 ## Team MidDevz
 
-Kumaraguru College of Technology, Coimbatore — R Sudharshan (lead), SaiSanjay R, Jeya Krishna, Mithuna K N, Nakshathra S.
+Kumaraguru College of Technology, Coimbatore — Sudharshan (lead), SaiSanjay, Jeya, Mithuna, Nakshathra.
