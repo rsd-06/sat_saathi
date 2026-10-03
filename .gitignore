@@ -23,3 +23,10 @@ playwright-report/
 
 # Git worktrees live inside the repo but are never part of it.
 .claude/worktrees/
+
+# Launch video: the plan, brief and caption are tracked. The renders (~5 MB each,
+# and the bundled music's licence is unverified) and the composition's copied
+# assets are not.
+docs/brag-output/composition/
+docs/brag-output/*.mp4
+docs/brag-output/*.jpg

@@ -1,0 +1,1 @@
+Introducing SatSaathi: ask the satellite, in your language. Upload a GeoTIFF, ask in English, Hindi, Tamil or Bangla, and get an answer measured from the pixels, with every step recorded and anything uncertain held for an expert instead of guessed. Built by Team MidDevz for Smart India Hackathon 2026 (SIH26167).
