@@ -9,7 +9,17 @@
 #   bash scripts/stack.sh migrate|api|cpu|gpu|web   # one piece, foreground
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-DATA="${SATSAATHI_DATA:-D:/Projects/sat_saathi/.data}"
+# Where uploads, model weights and logs live. SATSAATHI_DATA wins. Otherwise an
+# existing data directory from the original dev machine is kept (the weights are
+# in it), and anywhere else it is .data/ in the repository.
+if [ -n "${SATSAATHI_DATA:-}" ]; then
+  DATA="$SATSAATHI_DATA"
+elif [ -d "D:/Projects/sat_saathi/.data" ]; then
+  DATA="D:/Projects/sat_saathi/.data"
+else
+  DATA="$ROOT/.data"
+fi
+mkdir -p "$DATA"
 export UV_LINK_MODE=copy PYTHONUNBUFFERED=1
 export DATABASE_URL="${DATABASE_URL:-postgresql+asyncpg://satsaathi:satsaathi_dev_password@localhost:5432/satsaathi}"
 export REDIS_URL="${REDIS_URL:-redis://localhost:6379/0}"
