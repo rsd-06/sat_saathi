@@ -273,7 +273,9 @@ async def job_trace(session: Session, user: CurrentUser, job_id: uuid.UUID) -> R
 
 
 @router.get("/{job_id}/result.geojson")
-async def job_geojson(session: Session, user: CurrentUser, storage: StorageDep, job_id: uuid.UUID) -> Response:
+async def job_geojson(
+    session: Session, user: CurrentUser, storage: StorageDep, job_id: uuid.UUID
+) -> Response:
     """Vector outputs as a FeatureCollection.
 
     Only geometry that was actually produced appears here; an input with no

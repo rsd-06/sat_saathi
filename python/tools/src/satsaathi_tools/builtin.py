@@ -430,7 +430,8 @@ class AnswerTemplate(BaseTool):
             pieces.append(f"SAR backscatter marks {measured['water_pct']}% of the scene as water")
         # The model's own words go out verbatim: no added punctuation, which
         # once turned a Hindi "।" into "।.". Only our own sentences get a stop.
-        said_verbatim = pieces[:1] if vision.get("source") in ("model", "classical") and vision.get("answer") else []
+        model_spoke = vision.get("source") in ("model", "classical") and vision.get("answer")
+        said_verbatim = pieces[:1] if model_spoke else []
         rest = [p if p.endswith(".") else p + "." for p in pieces[len(said_verbatim):]]
         text = " ".join(said_verbatim + rest) if pieces else "No measurement was available."
 
