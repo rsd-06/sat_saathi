@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from satsaathi_core.raster import inspect
+from satsaathi_core.raster import inspect, is_tiff
 
 
 def test_reads_shape_and_bands(optical: Path):
@@ -144,3 +144,34 @@ class TestGreyscaleChips:
 
         assert meta.sensor_type == "optical"
         assert "sensor.inferred_sar_from_greyscale" not in meta.warnings
+
+
+class TestIsTiff:
+    """The upload gate trusts these bytes, not the filename."""
+
+    def test_a_real_geotiff_is_recognised(self, optical: Path):
+        assert is_tiff(optical.read_bytes()[:4])
+
+    @pytest.mark.parametrize(
+        "magic",
+        ["49492a00", "4d4d002a", "49492b00", "4d4d002b"],
+        ids=["le", "be", "big-le", "big-be"],
+    )
+    def test_every_tiff_flavour_is_recognised(self, magic: str):
+        assert is_tiff(bytes.fromhex(magic) + bytes(4))
+
+    @pytest.mark.parametrize(
+        "head",
+        [
+            bytes.fromhex("ffd8ffe0"),  # JPEG
+            bytes.fromhex("89504e470d0a1a0a"),  # PNG
+            bytes.fromhex("52494646") + bytes(4) + b"WEBP",
+            b"GIF89a",
+            b"%PDF-1.7",
+            bytes.fromhex("49492a"),  # truncated: three bytes is not a header
+            b"",
+        ],
+        ids=["jpeg", "png", "webp", "gif", "pdf", "truncated", "empty"],
+    )
+    def test_everything_else_is_refused(self, head: bytes):
+        assert not is_tiff(head)

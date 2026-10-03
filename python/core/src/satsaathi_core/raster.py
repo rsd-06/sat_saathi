@@ -33,6 +33,24 @@ _DATE_TAGS = (
 _SAR_POL = {"VV", "VH", "HH", "HV"}
 
 
+#: The first four bytes of every TIFF: byte order ("II" little-endian, "MM"
+#: big-endian), then the magic number 42 (classic) or 43 (BigTIFF). A GeoTIFF
+#: is a TIFF with extra tags, so it starts the same way.
+TIFF_MAGIC = tuple(
+    bytes.fromhex(h) for h in ("49492a00", "4d4d002a", "49492b00", "4d4d002b")
+)
+
+
+def is_tiff(head: bytes) -> bool:
+    """Whether these leading bytes belong to a TIFF.
+
+    The filename is only a claim. A JPEG renamed to ``scene.tif`` has the right
+    extension and the wrong bytes, and this is what tells them apart without
+    handing the file to a decoder first.
+    """
+    return bytes(head[:4]) in TIFF_MAGIC
+
+
 @dataclass(frozen=True)
 class BandInfo:
     index: int

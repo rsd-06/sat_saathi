@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState, type DragEvent, type KeyboardEvent } from "react";
+import { useRef, useState, type DragEvent, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
 
 import type { AssetOut } from "@/lib/api";
+import { TIFF_EXTENSIONS, hasTiffExtension, looksLikeTiff } from "@/lib/tiff";
 
 export type LoadedImage = {
   file: File;
@@ -13,8 +14,7 @@ export type LoadedImage = {
   height: number;
 };
 
-const PREVIEWABLE = ["image/png", "image/jpeg", "image/webp", "image/avif"];
-const ACCEPT = [...PREVIEWABLE, ".tif", ".tiff"].join(",");
+const ACCEPT = [...TIFF_EXTENSIONS, "image/tiff"].join(",");
 
 export function ImageUpload({
   loaded,
@@ -41,17 +41,6 @@ export function ImageUpload({
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Every object URL this component made, so none outlives the preview.
-  // Without this a session of repeated uploads holds every image in memory.
-  const urls = useRef<string[]>([]);
-  useEffect(
-    () => () => {
-      urls.current.forEach(URL.revokeObjectURL);
-      urls.current = [];
-    },
-    [],
-  );
-
   function openPicker() {
     inputRef.current?.click();
   }
@@ -76,40 +65,21 @@ export function ImageUpload({
       return;
     }
 
-    const isGeotiff = /\.tiff?$/i.test(file.name);
-    if (!PREVIEWABLE.includes(file.type) && !isGeotiff) {
+    // GeoTIFF only. Anything else is refused here, before a byte is sent, and
+    // again on the server, which is the check that actually counts.
+    if (!hasTiffExtension(file.name)) {
       setError(t("upload.error.unsupported"));
       return;
     }
-
-    // A browser cannot decode a GeoTIFF, but the server reads it properly.
-    // Send it anyway and show the server's metadata instead of a picture.
-    if (isGeotiff) {
-      onLoad({ file, url: "", element: null, width: 0, height: 0 });
+    // A JPEG renamed to scene.tif has the right extension and the wrong bytes.
+    if (!(await looksLikeTiff(file))) {
+      setError(t("upload.error.notTiff"));
       return;
     }
 
-    const url = URL.createObjectURL(file);
-    urls.current.push(url);
-    try {
-      const element = await new Promise<HTMLImageElement>((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = () => reject(new Error("decode-failed"));
-        img.src = url;
-      });
-      onLoad({
-        file,
-        url,
-        element,
-        width: element.naturalWidth,
-        height: element.naturalHeight,
-      });
-    } catch {
-      URL.revokeObjectURL(url);
-      urls.current = urls.current.filter((u) => u !== url);
-      setError(t("upload.error.decode"));
-    }
+    // A browser cannot decode a TIFF, so there is no preview: the server
+    // reads the file and the metadata it reports stands in for a picture.
+    onLoad({ file, url: "", element: null, width: 0, height: 0 });
   }
 
   function onDrop(event: DragEvent<HTMLDivElement>) {
@@ -167,9 +137,7 @@ export function ImageUpload({
           {[
             [
               t("upload.meta.dimensions"),
-              asset
-                ? `${asset.width} × ${asset.height} px`
-                : `${loaded.width} × ${loaded.height} px`,
+              asset ? `${asset.width} × ${asset.height} px` : "—",
             ],
             [t("upload.meta.size"), `${(loaded.file.size / 1024).toFixed(0)} KB`],
             [t("workspace.bands.title"), asset ? String(asset.band_count) : "—"],

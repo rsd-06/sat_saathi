@@ -12,10 +12,6 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const GEOTIFF = fileURLToPath(
   new URL("../../../infra/fixtures/sample-scene.tif", import.meta.url),
 );
-const PNG = fileURLToPath(
-  new URL("../../../infra/fixtures/sample-scene.png", import.meta.url),
-);
-
 test.beforeAll(async ({ request }) => {
   try {
     const health = await request.get(`${API}/api/v1/health`, { timeout: 5000 });
@@ -93,20 +89,31 @@ test("measures a georeferenced raster and reports area on the ground", async ({
   await expect(page.getByText(/Measured from NDWI/).first()).toBeVisible();
 });
 
-test("holds an answer for review when nothing could be measured", async ({
-  page,
-}) => {
-  // A PNG carries three visible bands and no coordinate system, so no index
-  // is computable. The run must not present a confident answer anyway.
-  await upload(page, "en", PNG);
-  await expect(page.getByText("none (not georeferenced)").first()).toBeVisible();
+test("refuses anything that is not a GeoTIFF, before it is sent", async ({ page }) => {
+  await page.goto("/en/workspace");
+  const panel = page.locator("aside").first();
+  const input = panel.locator('input[type="file"]');
+  const refusal = panel.getByRole("alert");
 
-  await ask(page, "How much of this area is under water?");
-
-  await expect(page.getByRole("heading", { name: "Answer" })).toBeVisible({
-    timeout: 60_000,
+  // Wrong extension: refused on the name alone.
+  await input.setInputFiles({
+    name: "scene.png",
+    mimeType: "image/png",
+    buffer: Buffer.concat([Buffer.from("89504e470d0a1a0a", "hex"), Buffer.alloc(64)]),
   });
-  await expect(page.getByText("Sent for expert review").first()).toBeVisible();
+  await expect(refusal).toContainText("Only GeoTIFF files");
+
+  // A JPEG renamed to .tif: the extension passes, the bytes do not. The name
+  // is only a claim, so the file's own first four bytes decide.
+  await input.setInputFiles({
+    name: "scene.tif",
+    mimeType: "image/tiff",
+    buffer: Buffer.concat([Buffer.from("ffd8ffe0", "hex"), Buffer.alloc(64)]),
+  });
+  await expect(refusal).toContainText("is not one");
+
+  // Neither reached the server: no file is listed and no band panel appeared.
+  await expect(panel.locator("select")).toHaveCount(0);
 });
 
 test("runs all eight steps and records which of them measured anything", async ({

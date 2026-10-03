@@ -442,7 +442,7 @@
     "workspace.inputs.drop": {
       "reviewed": false,
       "source": "Drop a GeoTIFF here, or",
-      "translation": "GeoTIFF এখানে ছাড়ুন, বা"
+      "translation": "এখানে GeoTIFF ফেলুন, বা"
     },
     "workspace.inputs.browse": {
       "reviewed": false,
@@ -1223,236 +1223,241 @@
       "reviewed": false,
       "source": "No red, green and blue bands mapped; the first three bands were shown to the model",
       "translation": "লাল, সবুজ ও নীল ব্যান্ড ম্যাপ করা নেই; মডেলকে প্রথম তিনটি ব্যান্ড দেখানো হয়েছে"
+    },
+    "auth.error.badCredentials": {
+      "reviewed": false,
+      "source": "Email or password is not right. Check both and try again.",
+      "translation": "ইমেল বা পাসওয়ার্ড ঠিক নয়। দুটোই দেখে আবার চেষ্টা করুন।"
+    },
+    "auth.error.emailTaken": {
+      "reviewed": false,
+      "source": "An account already uses this email. Sign in instead.",
+      "translation": "এই ইমেলে ইতিমধ্যে একটি অ্যাকাউন্ট আছে। বরং সাইন ইন করুন।"
+    },
+    "auth.error.notSignedIn": {
+      "reviewed": false,
+      "source": "Sign in to continue.",
+      "translation": "চালিয়ে যেতে সাইন ইন করুন।"
+    },
+    "auth.error.badRequest": {
+      "reviewed": false,
+      "source": "The form could not be read. Try again.",
+      "translation": "ফর্মটি পড়া গেল না। আবার চেষ্টা করুন।"
+    },
+    "auth.error.unknownAction": {
+      "reviewed": false,
+      "source": "That action does not exist.",
+      "translation": "এমন কোনো ক্রিয়া নেই।"
+    },
+    "auth.error.emailInvalid": {
+      "reviewed": false,
+      "source": "Enter a complete email address.",
+      "translation": "সম্পূর্ণ ইমেল ঠিকানা লিখুন।"
+    },
+    "auth.error.nameRequired": {
+      "reviewed": false,
+      "source": "Enter your name.",
+      "translation": "আপনার নাম লিখুন।"
+    },
+    "auth.error.passwordShort": {
+      "reviewed": false,
+      "source": "Use at least {min} characters.",
+      "translation": "অন্তত {min}টি অক্ষর ব্যবহার করুন।"
+    },
+    "auth.action.signingIn": {
+      "reviewed": false,
+      "source": "Signing in…",
+      "translation": "সাইন ইন হচ্ছে…"
+    },
+    "auth.action.creating": {
+      "reviewed": false,
+      "source": "Creating account…",
+      "translation": "অ্যাকাউন্ট তৈরি হচ্ছে…"
+    },
+    "auth.signedInAs": {
+      "reviewed": false,
+      "source": "Signed in as {name}",
+      "translation": "{name} হিসেবে সাইন ইন করা"
+    },
+    "auth.field.departmentHint": {
+      "reviewed": false,
+      "source": "Optional. Appears on reports you export.",
+      "translation": "ঐচ্ছিক। আপনার রপ্তানি করা প্রতিবেদনে দেখা যায়।"
+    },
+    "auth.signUp.localeLabel": {
+      "reviewed": false,
+      "source": "Language to work in",
+      "translation": "কাজ করার ভাষা"
+    },
+    "settings.models.title": {
+      "reviewed": false,
+      "source": "Models on this machine",
+      "translation": "এই মেশিনে থাকা মডেল"
+    },
+    "settings.models.body": {
+      "reviewed": false,
+      "source": "A step with no model here answers from fixture data, and the trace says so.",
+      "translation": "যে ধাপের মডেল এখানে নেই সেটি নমুনা তথ্য থেকে উত্তর দেয়, আর ট্রেস তা জানিয়ে দেয়।"
+    },
+    "settings.models.installed": {
+      "reviewed": false,
+      "source": "Installed",
+      "translation": "ইনস্টল করা"
+    },
+    "settings.models.missing": {
+      "reviewed": false,
+      "source": "Not installed",
+      "translation": "ইনস্টল করা নেই"
+    },
+    "settings.models.count": {
+      "reviewed": false,
+      "source": "{available} of {total} installed",
+      "translation": "{total}টির মধ্যে {available}টি ইনস্টল করা"
+    },
+    "settings.models.measuring": {
+      "reviewed": false,
+      "source": "{measuring} of {total} steps measure something; the rest return fixtures.",
+      "translation": "{total}টি ধাপের মধ্যে {measuring}টি সত্যিই মাপে; বাকিগুলি নমুনা ফল দেয়।"
+    },
+    "settings.models.directory": {
+      "reviewed": false,
+      "source": "Weights directory",
+      "translation": "ওয়েট ডিরেক্টরি"
+    },
+    "settings.models.revision": {
+      "reviewed": false,
+      "source": "Revision",
+      "translation": "সংস্করণ"
+    },
+    "settings.models.empty": {
+      "reviewed": false,
+      "source": "No models are installed yet. Every step runs on fixture data.",
+      "translation": "এখনও কোনো মডেল ইনস্টল করা নেই। প্রতিটি ধাপ নমুনা তথ্যে চলে।"
+    },
+    "request.invalid": {
+      "reviewed": false,
+      "source": "Something in the form was not accepted. Check the highlighted fields.",
+      "translation": "ফর্মের কিছু গ্রহণ করা হয়নি। চিহ্নিত ঘরগুলি দেখুন।"
+    },
+    "upload.accepts": {
+      "reviewed": false,
+      "source": "GeoTIFF or TIFF only, up to {max} MB. Read on the server.",
+      "translation": "শুধু GeoTIFF বা TIFF, {max} MB পর্যন্ত। সার্ভারে পড়া হয়।"
+    },
+    "upload.error.unsupported": {
+      "reviewed": false,
+      "source": "Only GeoTIFF files (.tif or .tiff) are accepted.",
+      "translation": "শুধু GeoTIFF ফাইল (.tif বা .tiff) গ্রহণ করা হয়।"
+    },
+    "upload.error.tooLarge": {
+      "reviewed": false,
+      "source": "That file is {size} MB. The limit is {max} MB.",
+      "translation": "ফাইলটি {size} MB। সীমা {max} MB।"
+    },
+    "upload.error.empty": {
+      "reviewed": false,
+      "source": "That file is empty.",
+      "translation": "ফাইলটি ফাঁকা।"
+    },
+    "upload.progress": {
+      "reviewed": false,
+      "source": "Uploading… {percent}%",
+      "translation": "আপলোড হচ্ছে… {percent}%"
+    },
+    "nav.home": {
+      "reviewed": false,
+      "source": "Home",
+      "translation": "হোম"
+    },
+    "landing.hero.ctaSignedIn": {
+      "reviewed": false,
+      "source": "Open the workspace",
+      "translation": "ওয়ার্কস্পেস খুলুন"
+    },
+    "landing.hero.secondarySignedIn": {
+      "reviewed": false,
+      "source": "See your analyses",
+      "translation": "আপনার বিশ্লেষণ দেখুন"
+    },
+    "dashboard.stats.measured": {
+      "reviewed": false,
+      "source": "Measured",
+      "translation": "পরিমাপ করা"
+    },
+    "dashboard.stats.held": {
+      "reviewed": false,
+      "source": "Held for review",
+      "translation": "পর্যালোচনার জন্য রাখা"
+    },
+    "dashboard.empty.title": {
+      "reviewed": false,
+      "source": "Nothing analysed yet",
+      "translation": "এখনও কিছু বিশ্লেষণ করা হয়নি"
+    },
+    "dashboard.empty.body": {
+      "reviewed": false,
+      "source": "Upload a scene and ask a question. Every step is shown as it runs.",
+      "translation": "একটি দৃশ্য আপলোড করে প্রশ্ন করুন। প্রতিটি ধাপ চলার সময়েই দেখা যায়।"
+    },
+    "auth.google.continue": {
+      "reviewed": false,
+      "source": "Continue with Google",
+      "translation": "Google দিয়ে চালিয়ে যান"
+    },
+    "auth.google.or": {
+      "reviewed": false,
+      "source": "or",
+      "translation": "অথবা"
+    },
+    "auth.error.googleDisabled": {
+      "reviewed": false,
+      "source": "Google sign-in is not set up on this server. Use your password.",
+      "translation": "এই সার্ভারে Google সাইন-ইন সেট করা নেই। আপনার পাসওয়ার্ড ব্যবহার করুন।"
+    },
+    "auth.error.googleRejected": {
+      "reviewed": false,
+      "source": "Google could not confirm that sign-in. Try again.",
+      "translation": "Google সেই সাইন-ইন নিশ্চিত করতে পারেনি। আবার চেষ্টা করুন।"
+    },
+    "auth.error.googleUnverifiedEmail": {
+      "reviewed": false,
+      "source": "An account already uses this email, and Google has not verified the address. Sign in with your password instead.",
+      "translation": "এই ইমেলে ইতিমধ্যে একটি অ্যাকাউন্ট আছে, আর Google ঠিকানাটি যাচাই করেনি। বরং আপনার পাসওয়ার্ড দিয়ে সাইন ইন করুন।"
+    },
+    "auth.error.googleCancelled": {
+      "reviewed": false,
+      "source": "Sign-in was cancelled.",
+      "translation": "সাইন-ইন বাতিল করা হয়েছে।"
+    },
+    "auth.error.googleState": {
+      "reviewed": false,
+      "source": "That sign-in link expired or did not start here. Try again.",
+      "translation": "সেই সাইন-ইন লিঙ্কের মেয়াদ শেষ, বা সেটি এখান থেকে শুরু হয়নি। আবার চেষ্টা করুন।"
+    },
+    "auth.error.googleFailed": {
+      "reviewed": false,
+      "source": "Google sign-in did not complete. Try again.",
+      "translation": "Google সাইন-ইন সম্পূর্ণ হয়নি। আবার চেষ্টা করুন।"
+    },
+    "auth.error.sessionExpired": {
+      "reviewed": false,
+      "source": "Your session ended. Sign in again to continue.",
+      "translation": "আপনার সেশন শেষ হয়েছে। চালিয়ে যেতে আবার সাইন ইন করুন।"
+    },
+    "service.databaseUnavailable": {
+      "reviewed": false,
+      "source": "The service cannot reach its database right now. Try again in a moment.",
+      "translation": "পরিষেবাটি এখন তার ডেটাবেসে পৌঁছাতে পারছে না। একটু পরে আবার চেষ্টা করুন।"
+    },
+    "upload.error.unsupportedType": {
+      "reviewed": false,
+      "source": "Only GeoTIFF files (.tif or .tiff) are accepted.",
+      "translation": "শুধু GeoTIFF ফাইল (.tif বা .tiff) গ্রহণ করা হয়।"
+    },
+    "upload.error.notTiff": {
+      "reviewed": false,
+      "source": "This file is named like a TIFF but is not one. Export it from your GIS as a GeoTIFF.",
+      "translation": "এই ফাইলের নাম TIFF-এর মতো, কিন্তু এটি TIFF নয়। আপনার GIS থেকে GeoTIFF হিসেবে রপ্তানি করুন।"
     }
-  },
-  "auth.error.badCredentials": {
-    "reviewed": false,
-    "source": "Email or password is not right. Check both and try again.",
-    "translation": "ইমেল বা পাসওয়ার্ড ঠিক নয়। দুটোই দেখে আবার চেষ্টা করুন।"
-  },
-  "auth.error.emailTaken": {
-    "reviewed": false,
-    "source": "An account already uses this email. Sign in instead.",
-    "translation": "এই ইমেলে ইতিমধ্যে একটি অ্যাকাউন্ট আছে। বরং সাইন ইন করুন।"
-  },
-  "auth.error.notSignedIn": {
-    "reviewed": false,
-    "source": "Sign in to continue.",
-    "translation": "চালিয়ে যেতে সাইন ইন করুন।"
-  },
-  "auth.error.badRequest": {
-    "reviewed": false,
-    "source": "The form could not be read. Try again.",
-    "translation": "ফর্মটি পড়া গেল না। আবার চেষ্টা করুন।"
-  },
-  "auth.error.unknownAction": {
-    "reviewed": false,
-    "source": "That action does not exist.",
-    "translation": "এমন কোনো ক্রিয়া নেই।"
-  },
-  "auth.error.emailInvalid": {
-    "reviewed": false,
-    "source": "Enter a complete email address.",
-    "translation": "সম্পূর্ণ ইমেল ঠিকানা লিখুন।"
-  },
-  "auth.error.nameRequired": {
-    "reviewed": false,
-    "source": "Enter your name.",
-    "translation": "আপনার নাম লিখুন।"
-  },
-  "auth.error.passwordShort": {
-    "reviewed": false,
-    "source": "Use at least {min} characters.",
-    "translation": "অন্তত {min}টি অক্ষর ব্যবহার করুন।"
-  },
-  "auth.action.signingIn": {
-    "reviewed": false,
-    "source": "Signing in…",
-    "translation": "সাইন ইন হচ্ছে…"
-  },
-  "auth.action.creating": {
-    "reviewed": false,
-    "source": "Creating account…",
-    "translation": "অ্যাকাউন্ট তৈরি হচ্ছে…"
-  },
-  "auth.signedInAs": {
-    "reviewed": false,
-    "source": "Signed in as {name}",
-    "translation": "{name} হিসেবে সাইন ইন করা"
-  },
-  "auth.field.departmentHint": {
-    "reviewed": false,
-    "source": "Optional. Appears on reports you export.",
-    "translation": "ঐচ্ছিক। আপনার রপ্তানি করা প্রতিবেদনে দেখা যায়।"
-  },
-  "auth.signUp.localeLabel": {
-    "reviewed": false,
-    "source": "Language to work in",
-    "translation": "কাজ করার ভাষা"
-  },
-  "settings.models.title": {
-    "reviewed": false,
-    "source": "Models on this machine",
-    "translation": "এই মেশিনে থাকা মডেল"
-  },
-  "settings.models.body": {
-    "reviewed": false,
-    "source": "A step with no model here answers from fixture data, and the trace says so.",
-    "translation": "যে ধাপের মডেল এখানে নেই সেটি নমুনা তথ্য থেকে উত্তর দেয়, আর ট্রেস তা জানিয়ে দেয়।"
-  },
-  "settings.models.installed": {
-    "reviewed": false,
-    "source": "Installed",
-    "translation": "ইনস্টল করা"
-  },
-  "settings.models.missing": {
-    "reviewed": false,
-    "source": "Not installed",
-    "translation": "ইনস্টল করা নেই"
-  },
-  "settings.models.count": {
-    "reviewed": false,
-    "source": "{available} of {total} installed",
-    "translation": "{total}টির মধ্যে {available}টি ইনস্টল করা"
-  },
-  "settings.models.measuring": {
-    "reviewed": false,
-    "source": "{measuring} of {total} steps measure something; the rest return fixtures.",
-    "translation": "{total}টি ধাপের মধ্যে {measuring}টি সত্যিই মাপে; বাকিগুলি নমুনা ফল দেয়।"
-  },
-  "settings.models.directory": {
-    "reviewed": false,
-    "source": "Weights directory",
-    "translation": "ওয়েট ডিরেক্টরি"
-  },
-  "settings.models.revision": {
-    "reviewed": false,
-    "source": "Revision",
-    "translation": "সংস্করণ"
-  },
-  "settings.models.empty": {
-    "reviewed": false,
-    "source": "No models are installed yet. Every step runs on fixture data.",
-    "translation": "এখনও কোনো মডেল ইনস্টল করা নেই। প্রতিটি ধাপ নমুনা তথ্যে চলে।"
-  },
-  "request.invalid": {
-    "reviewed": false,
-    "source": "Something in the form was not accepted. Check the highlighted fields.",
-    "translation": "ফর্মের কিছু গ্রহণ করা হয়নি। চিহ্নিত ঘরগুলি দেখুন।"
-  },
-  "upload.accepts": {
-    "reviewed": false,
-    "source": "GeoTIFF, PNG or JPEG, up to {max} MB. Read on the server.",
-    "translation": "GeoTIFF, PNG বা JPEG, {max} MB পর্যন্ত। সার্ভারে পড়া হয়।"
-  },
-  "upload.error.unsupported": {
-    "reviewed": false,
-    "source": "That file type is not accepted. Use a GeoTIFF, PNG or JPEG.",
-    "translation": "এই ধরনের ফাইল নেওয়া হয় না। GeoTIFF, PNG বা JPEG ব্যবহার করুন।"
-  },
-  "workspace.inputs.drop": {
-    "reviewed": false,
-    "source": "Drop an image here, or",
-    "translation": "এখানে একটি ছবি ফেলুন, বা"
-  },
-  "upload.error.tooLarge": {
-    "reviewed": false,
-    "source": "That file is {size} MB. The limit is {max} MB.",
-    "translation": "ফাইলটি {size} MB। সীমা {max} MB।"
-  },
-  "upload.error.empty": {
-    "reviewed": false,
-    "source": "That file is empty.",
-    "translation": "ফাইলটি ফাঁকা।"
-  },
-  "upload.progress": {
-    "reviewed": false,
-    "source": "Uploading… {percent}%",
-    "translation": "আপলোড হচ্ছে… {percent}%"
-  },
-  "nav.home": {
-    "reviewed": false,
-    "source": "Home",
-    "translation": "হোম"
-  },
-  "landing.hero.ctaSignedIn": {
-    "reviewed": false,
-    "source": "Open the workspace",
-    "translation": "ওয়ার্কস্পেস খুলুন"
-  },
-  "landing.hero.secondarySignedIn": {
-    "reviewed": false,
-    "source": "See your analyses",
-    "translation": "আপনার বিশ্লেষণ দেখুন"
-  },
-  "dashboard.stats.measured": {
-    "reviewed": false,
-    "source": "Measured",
-    "translation": "পরিমাপ করা"
-  },
-  "dashboard.stats.held": {
-    "reviewed": false,
-    "source": "Held for review",
-    "translation": "পর্যালোচনার জন্য রাখা"
-  },
-  "dashboard.empty.title": {
-    "reviewed": false,
-    "source": "Nothing analysed yet",
-    "translation": "এখনও কিছু বিশ্লেষণ করা হয়নি"
-  },
-  "dashboard.empty.body": {
-    "reviewed": false,
-    "source": "Upload a scene and ask a question. Every step is shown as it runs.",
-    "translation": "একটি দৃশ্য আপলোড করে প্রশ্ন করুন। প্রতিটি ধাপ চলার সময়েই দেখা যায়।"
-  },
-  "auth.google.continue": {
-    "reviewed": false,
-    "source": "Continue with Google",
-    "translation": "Google দিয়ে চালিয়ে যান"
-  },
-  "auth.google.or": {
-    "reviewed": false,
-    "source": "or",
-    "translation": "অথবা"
-  },
-  "auth.error.googleDisabled": {
-    "reviewed": false,
-    "source": "Google sign-in is not set up on this server. Use your password.",
-    "translation": "এই সার্ভারে Google সাইন-ইন সেট করা নেই। আপনার পাসওয়ার্ড ব্যবহার করুন।"
-  },
-  "auth.error.googleRejected": {
-    "reviewed": false,
-    "source": "Google could not confirm that sign-in. Try again.",
-    "translation": "Google সেই সাইন-ইন নিশ্চিত করতে পারেনি। আবার চেষ্টা করুন।"
-  },
-  "auth.error.googleUnverifiedEmail": {
-    "reviewed": false,
-    "source": "An account already uses this email, and Google has not verified the address. Sign in with your password instead.",
-    "translation": "এই ইমেলে ইতিমধ্যে একটি অ্যাকাউন্ট আছে, আর Google ঠিকানাটি যাচাই করেনি। বরং আপনার পাসওয়ার্ড দিয়ে সাইন ইন করুন।"
-  },
-  "auth.error.googleCancelled": {
-    "reviewed": false,
-    "source": "Sign-in was cancelled.",
-    "translation": "সাইন-ইন বাতিল করা হয়েছে।"
-  },
-  "auth.error.googleState": {
-    "reviewed": false,
-    "source": "That sign-in link expired or did not start here. Try again.",
-    "translation": "সেই সাইন-ইন লিঙ্কের মেয়াদ শেষ, বা সেটি এখান থেকে শুরু হয়নি। আবার চেষ্টা করুন।"
-  },
-  "auth.error.googleFailed": {
-    "reviewed": false,
-    "source": "Google sign-in did not complete. Try again.",
-    "translation": "Google সাইন-ইন সম্পূর্ণ হয়নি। আবার চেষ্টা করুন।"
-  },
-  "auth.error.sessionExpired": {
-    "reviewed": false,
-    "source": "Your session ended. Sign in again to continue.",
-    "translation": "আপনার সেশন শেষ হয়েছে। চালিয়ে যেতে আবার সাইন ইন করুন।"
-  },
-  "service.databaseUnavailable": {
-    "reviewed": false,
-    "source": "The service cannot reach its database right now. Try again in a moment.",
-    "translation": "পরিষেবাটি এখন তার ডেটাবেসে পৌঁছাতে পারছে না। একটু পরে আবার চেষ্টা করুন।"
   }
 }

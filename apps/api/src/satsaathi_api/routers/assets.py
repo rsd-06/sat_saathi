@@ -11,7 +11,7 @@ from sqlalchemy import select
 
 from satsaathi_core import indices as index_maths
 from satsaathi_core.models import Asset
-from satsaathi_core.raster import inspect
+from satsaathi_core.raster import inspect, is_tiff
 from satsaathi_tools.presets import SENSOR_PRESETS, preset_band_map
 
 from ..deps import Session, SettingsDep, StorageDep, api_error
@@ -21,9 +21,10 @@ from .auth import CurrentUser, current_user
 # Everything here is somebody's own work, so all of it needs an account.
 router = APIRouter(prefix="/assets", tags=["assets"], dependencies=[Depends(current_user)])
 
-#: Browsers cannot render a GeoTIFF, so PNG/JPEG are accepted for demos and
-#: benchmark datasets. They carry no CRS, which the metadata reflects honestly.
-ALLOWED_SUFFIXES = {".tif", ".tiff", ".png", ".jpg", ".jpeg", ".webp"}
+#: GeoTIFF only. Anything else is refused outright rather than coerced: the
+#: pipeline measures pixels against a coordinate system, and a format that
+#: cannot carry one would be answered from guesses.
+ALLOWED_SUFFIXES = {".tif", ".tiff"}
 
 
 def _to_out(asset: Asset, tile_url: str | None = None) -> AssetOut:
@@ -88,6 +89,11 @@ async def create_asset(
             "upload.error.tooLarge",
             max=settings.max_upload_mb,
         )
+
+    # The extension is only a claim; the leading bytes are the evidence. This
+    # runs before the file is stored, so a renamed JPEG leaves nothing behind.
+    if not is_tiff(payload):
+        raise api_error(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, "upload.error.notTiff")
 
     asset_id = uuid.uuid4()
     key = f"assets/{asset_id}/{name}"

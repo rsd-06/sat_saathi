@@ -442,7 +442,7 @@
     "workspace.inputs.drop": {
       "reviewed": false,
       "source": "Drop a GeoTIFF here, or",
-      "translation": "GeoTIFF-ஐ இங்கே விடுங்கள், அல்லது"
+      "translation": "இங்கே GeoTIFF-ஐ விடுங்கள், அல்லது"
     },
     "workspace.inputs.browse": {
       "reviewed": false,
@@ -1223,236 +1223,241 @@
       "reviewed": false,
       "source": "No red, green and blue bands mapped; the first three bands were shown to the model",
       "translation": "சிவப்பு, பச்சை, நீல பட்டைகள் வரைபடமாக்கப்படவில்லை; முதல் மூன்று பட்டைகள் மாதிரிக்குக் காட்டப்பட்டன"
+    },
+    "auth.error.badCredentials": {
+      "reviewed": false,
+      "source": "Email or password is not right. Check both and try again.",
+      "translation": "மின்னஞ்சல் அல்லது கடவுச்சொல் சரியில்லை. இரண்டையும் சரிபார்த்து மீண்டும் முயலுங்கள்."
+    },
+    "auth.error.emailTaken": {
+      "reviewed": false,
+      "source": "An account already uses this email. Sign in instead.",
+      "translation": "இந்த மின்னஞ்சலில் ஏற்கெனவே கணக்கு உள்ளது. அதற்குப் பதிலாக உள்நுழையுங்கள்."
+    },
+    "auth.error.notSignedIn": {
+      "reviewed": false,
+      "source": "Sign in to continue.",
+      "translation": "தொடர உள்நுழையுங்கள்."
+    },
+    "auth.error.badRequest": {
+      "reviewed": false,
+      "source": "The form could not be read. Try again.",
+      "translation": "படிவத்தைப் படிக்க முடியவில்லை. மீண்டும் முயலுங்கள்."
+    },
+    "auth.error.unknownAction": {
+      "reviewed": false,
+      "source": "That action does not exist.",
+      "translation": "அத்தகைய செயல் இல்லை."
+    },
+    "auth.error.emailInvalid": {
+      "reviewed": false,
+      "source": "Enter a complete email address.",
+      "translation": "முழு மின்னஞ்சல் முகவரியை உள்ளிடுங்கள்."
+    },
+    "auth.error.nameRequired": {
+      "reviewed": false,
+      "source": "Enter your name.",
+      "translation": "உங்கள் பெயரை உள்ளிடுங்கள்."
+    },
+    "auth.error.passwordShort": {
+      "reviewed": false,
+      "source": "Use at least {min} characters.",
+      "translation": "குறைந்தது {min} எழுத்துகளைப் பயன்படுத்துங்கள்."
+    },
+    "auth.action.signingIn": {
+      "reviewed": false,
+      "source": "Signing in…",
+      "translation": "உள்நுழைகிறது…"
+    },
+    "auth.action.creating": {
+      "reviewed": false,
+      "source": "Creating account…",
+      "translation": "கணக்கு உருவாக்கப்படுகிறது…"
+    },
+    "auth.signedInAs": {
+      "reviewed": false,
+      "source": "Signed in as {name}",
+      "translation": "{name} ஆக உள்நுழைந்துள்ளீர்கள்"
+    },
+    "auth.field.departmentHint": {
+      "reviewed": false,
+      "source": "Optional. Appears on reports you export.",
+      "translation": "விருப்பத்தேர்வு. நீங்கள் ஏற்றுமதி செய்யும் அறிக்கைகளில் தோன்றும்."
+    },
+    "auth.signUp.localeLabel": {
+      "reviewed": false,
+      "source": "Language to work in",
+      "translation": "பணிபுரியும் மொழி"
+    },
+    "settings.models.title": {
+      "reviewed": false,
+      "source": "Models on this machine",
+      "translation": "இந்த இயந்திரத்தில் உள்ள மாதிரிகள்"
+    },
+    "settings.models.body": {
+      "reviewed": false,
+      "source": "A step with no model here answers from fixture data, and the trace says so.",
+      "translation": "இங்கு மாதிரி இல்லாத படி மாதிரித் தரவிலிருந்து பதிலளிக்கிறது; தடயப் பதிவு அதைச் சொல்கிறது."
+    },
+    "settings.models.installed": {
+      "reviewed": false,
+      "source": "Installed",
+      "translation": "நிறுவப்பட்டது"
+    },
+    "settings.models.missing": {
+      "reviewed": false,
+      "source": "Not installed",
+      "translation": "நிறுவப்படவில்லை"
+    },
+    "settings.models.count": {
+      "reviewed": false,
+      "source": "{available} of {total} installed",
+      "translation": "{total} இல் {available} நிறுவப்பட்டுள்ளது"
+    },
+    "settings.models.measuring": {
+      "reviewed": false,
+      "source": "{measuring} of {total} steps measure something; the rest return fixtures.",
+      "translation": "{total} படிகளில் {measuring} உண்மையில் அளவிடுகின்றன; மற்றவை மாதிரி முடிவுகளைத் தருகின்றன."
+    },
+    "settings.models.directory": {
+      "reviewed": false,
+      "source": "Weights directory",
+      "translation": "எடைக் கோப்பகம்"
+    },
+    "settings.models.revision": {
+      "reviewed": false,
+      "source": "Revision",
+      "translation": "பதிப்பு"
+    },
+    "settings.models.empty": {
+      "reviewed": false,
+      "source": "No models are installed yet. Every step runs on fixture data.",
+      "translation": "இன்னும் எந்த மாதிரியும் நிறுவப்படவில்லை. ஒவ்வொரு படியும் மாதிரித் தரவில் இயங்குகிறது."
+    },
+    "request.invalid": {
+      "reviewed": false,
+      "source": "Something in the form was not accepted. Check the highlighted fields.",
+      "translation": "படிவத்தில் ஏதோ ஒன்று ஏற்கப்படவில்லை. குறிக்கப்பட்ட புலங்களைச் சரிபார்க்கவும்."
+    },
+    "upload.accepts": {
+      "reviewed": false,
+      "source": "GeoTIFF or TIFF only, up to {max} MB. Read on the server.",
+      "translation": "GeoTIFF அல்லது TIFF மட்டும், {max} MB வரை. சேவையகத்தில் படிக்கப்படுகிறது."
+    },
+    "upload.error.unsupported": {
+      "reviewed": false,
+      "source": "Only GeoTIFF files (.tif or .tiff) are accepted.",
+      "translation": "GeoTIFF கோப்புகள் (.tif அல்லது .tiff) மட்டுமே ஏற்கப்படும்."
+    },
+    "upload.error.tooLarge": {
+      "reviewed": false,
+      "source": "That file is {size} MB. The limit is {max} MB.",
+      "translation": "அந்தக் கோப்பு {size} MB. வரம்பு {max} MB."
+    },
+    "upload.error.empty": {
+      "reviewed": false,
+      "source": "That file is empty.",
+      "translation": "அந்தக் கோப்பு காலியாக உள்ளது."
+    },
+    "upload.progress": {
+      "reviewed": false,
+      "source": "Uploading… {percent}%",
+      "translation": "பதிவேற்றுகிறது… {percent}%"
+    },
+    "nav.home": {
+      "reviewed": false,
+      "source": "Home",
+      "translation": "முகப்பு"
+    },
+    "landing.hero.ctaSignedIn": {
+      "reviewed": false,
+      "source": "Open the workspace",
+      "translation": "பணியிடத்தைத் திறக்கவும்"
+    },
+    "landing.hero.secondarySignedIn": {
+      "reviewed": false,
+      "source": "See your analyses",
+      "translation": "உங்கள் பகுப்பாய்வுகளைப் பாருங்கள்"
+    },
+    "dashboard.stats.measured": {
+      "reviewed": false,
+      "source": "Measured",
+      "translation": "அளவிடப்பட்டவை"
+    },
+    "dashboard.stats.held": {
+      "reviewed": false,
+      "source": "Held for review",
+      "translation": "மறுஆய்வுக்கு நிறுத்தப்பட்டவை"
+    },
+    "dashboard.empty.title": {
+      "reviewed": false,
+      "source": "Nothing analysed yet",
+      "translation": "இன்னும் எதுவும் பகுப்பாய்வு செய்யப்படவில்லை"
+    },
+    "dashboard.empty.body": {
+      "reviewed": false,
+      "source": "Upload a scene and ask a question. Every step is shown as it runs.",
+      "translation": "ஒரு காட்சியைப் பதிவேற்றி கேள்வி கேளுங்கள். ஒவ்வொரு படியும் இயங்கும்போது காட்டப்படும்."
+    },
+    "auth.google.continue": {
+      "reviewed": false,
+      "source": "Continue with Google",
+      "translation": "Google மூலம் தொடரவும்"
+    },
+    "auth.google.or": {
+      "reviewed": false,
+      "source": "or",
+      "translation": "அல்லது"
+    },
+    "auth.error.googleDisabled": {
+      "reviewed": false,
+      "source": "Google sign-in is not set up on this server. Use your password.",
+      "translation": "இந்தச் சேவையகத்தில் Google உள்நுழைவு அமைக்கப்படவில்லை. உங்கள் கடவுச்சொல்லைப் பயன்படுத்துங்கள்."
+    },
+    "auth.error.googleRejected": {
+      "reviewed": false,
+      "source": "Google could not confirm that sign-in. Try again.",
+      "translation": "அந்த உள்நுழைவை Google உறுதிப்படுத்த முடியவில்லை. மீண்டும் முயலுங்கள்."
+    },
+    "auth.error.googleUnverifiedEmail": {
+      "reviewed": false,
+      "source": "An account already uses this email, and Google has not verified the address. Sign in with your password instead.",
+      "translation": "இந்த மின்னஞ்சலில் ஏற்கெனவே கணக்கு உள்ளது, மேலும் Google இந்த முகவரியைச் சரிபார்க்கவில்லை. மாறாக உங்கள் கடவுச்சொல்லால் உள்நுழையுங்கள்."
+    },
+    "auth.error.googleCancelled": {
+      "reviewed": false,
+      "source": "Sign-in was cancelled.",
+      "translation": "உள்நுழைவு ரத்து செய்யப்பட்டது."
+    },
+    "auth.error.googleState": {
+      "reviewed": false,
+      "source": "That sign-in link expired or did not start here. Try again.",
+      "translation": "அந்த உள்நுழைவு இணைப்பு காலாவதியானது அல்லது இங்கிருந்து தொடங்கவில்லை. மீண்டும் முயலுங்கள்."
+    },
+    "auth.error.googleFailed": {
+      "reviewed": false,
+      "source": "Google sign-in did not complete. Try again.",
+      "translation": "Google உள்நுழைவு நிறைவடையவில்லை. மீண்டும் முயலுங்கள்."
+    },
+    "auth.error.sessionExpired": {
+      "reviewed": false,
+      "source": "Your session ended. Sign in again to continue.",
+      "translation": "உங்கள் அமர்வு முடிந்தது. தொடர மீண்டும் உள்நுழையுங்கள்."
+    },
+    "service.databaseUnavailable": {
+      "reviewed": false,
+      "source": "The service cannot reach its database right now. Try again in a moment.",
+      "translation": "சேவை இப்போது அதன் தரவுத்தளத்தை அணுக முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயலுங்கள்."
+    },
+    "upload.error.unsupportedType": {
+      "reviewed": false,
+      "source": "Only GeoTIFF files (.tif or .tiff) are accepted.",
+      "translation": "GeoTIFF கோப்புகள் (.tif அல்லது .tiff) மட்டுமே ஏற்கப்படும்."
+    },
+    "upload.error.notTiff": {
+      "reviewed": false,
+      "source": "This file is named like a TIFF but is not one. Export it from your GIS as a GeoTIFF.",
+      "translation": "இந்தக் கோப்பின் பெயர் TIFF போல உள்ளது, ஆனால் இது TIFF அல்ல. உங்கள் GIS-இலிருந்து GeoTIFF ஆக ஏற்றுமதி செய்யுங்கள்."
     }
-  },
-  "auth.error.badCredentials": {
-    "reviewed": false,
-    "source": "Email or password is not right. Check both and try again.",
-    "translation": "மின்னஞ்சல் அல்லது கடவுச்சொல் சரியில்லை. இரண்டையும் சரிபார்த்து மீண்டும் முயலுங்கள்."
-  },
-  "auth.error.emailTaken": {
-    "reviewed": false,
-    "source": "An account already uses this email. Sign in instead.",
-    "translation": "இந்த மின்னஞ்சலில் ஏற்கெனவே கணக்கு உள்ளது. அதற்குப் பதிலாக உள்நுழையுங்கள்."
-  },
-  "auth.error.notSignedIn": {
-    "reviewed": false,
-    "source": "Sign in to continue.",
-    "translation": "தொடர உள்நுழையுங்கள்."
-  },
-  "auth.error.badRequest": {
-    "reviewed": false,
-    "source": "The form could not be read. Try again.",
-    "translation": "படிவத்தைப் படிக்க முடியவில்லை. மீண்டும் முயலுங்கள்."
-  },
-  "auth.error.unknownAction": {
-    "reviewed": false,
-    "source": "That action does not exist.",
-    "translation": "அத்தகைய செயல் இல்லை."
-  },
-  "auth.error.emailInvalid": {
-    "reviewed": false,
-    "source": "Enter a complete email address.",
-    "translation": "முழு மின்னஞ்சல் முகவரியை உள்ளிடுங்கள்."
-  },
-  "auth.error.nameRequired": {
-    "reviewed": false,
-    "source": "Enter your name.",
-    "translation": "உங்கள் பெயரை உள்ளிடுங்கள்."
-  },
-  "auth.error.passwordShort": {
-    "reviewed": false,
-    "source": "Use at least {min} characters.",
-    "translation": "குறைந்தது {min} எழுத்துகளைப் பயன்படுத்துங்கள்."
-  },
-  "auth.action.signingIn": {
-    "reviewed": false,
-    "source": "Signing in…",
-    "translation": "உள்நுழைகிறது…"
-  },
-  "auth.action.creating": {
-    "reviewed": false,
-    "source": "Creating account…",
-    "translation": "கணக்கு உருவாக்கப்படுகிறது…"
-  },
-  "auth.signedInAs": {
-    "reviewed": false,
-    "source": "Signed in as {name}",
-    "translation": "{name} ஆக உள்நுழைந்துள்ளீர்கள்"
-  },
-  "auth.field.departmentHint": {
-    "reviewed": false,
-    "source": "Optional. Appears on reports you export.",
-    "translation": "விருப்பத்தேர்வு. நீங்கள் ஏற்றுமதி செய்யும் அறிக்கைகளில் தோன்றும்."
-  },
-  "auth.signUp.localeLabel": {
-    "reviewed": false,
-    "source": "Language to work in",
-    "translation": "பணிபுரியும் மொழி"
-  },
-  "settings.models.title": {
-    "reviewed": false,
-    "source": "Models on this machine",
-    "translation": "இந்த இயந்திரத்தில் உள்ள மாதிரிகள்"
-  },
-  "settings.models.body": {
-    "reviewed": false,
-    "source": "A step with no model here answers from fixture data, and the trace says so.",
-    "translation": "இங்கு மாதிரி இல்லாத படி மாதிரித் தரவிலிருந்து பதிலளிக்கிறது; தடயப் பதிவு அதைச் சொல்கிறது."
-  },
-  "settings.models.installed": {
-    "reviewed": false,
-    "source": "Installed",
-    "translation": "நிறுவப்பட்டது"
-  },
-  "settings.models.missing": {
-    "reviewed": false,
-    "source": "Not installed",
-    "translation": "நிறுவப்படவில்லை"
-  },
-  "settings.models.count": {
-    "reviewed": false,
-    "source": "{available} of {total} installed",
-    "translation": "{total} இல் {available} நிறுவப்பட்டுள்ளது"
-  },
-  "settings.models.measuring": {
-    "reviewed": false,
-    "source": "{measuring} of {total} steps measure something; the rest return fixtures.",
-    "translation": "{total} படிகளில் {measuring} உண்மையில் அளவிடுகின்றன; மற்றவை மாதிரி முடிவுகளைத் தருகின்றன."
-  },
-  "settings.models.directory": {
-    "reviewed": false,
-    "source": "Weights directory",
-    "translation": "எடைக் கோப்பகம்"
-  },
-  "settings.models.revision": {
-    "reviewed": false,
-    "source": "Revision",
-    "translation": "பதிப்பு"
-  },
-  "settings.models.empty": {
-    "reviewed": false,
-    "source": "No models are installed yet. Every step runs on fixture data.",
-    "translation": "இன்னும் எந்த மாதிரியும் நிறுவப்படவில்லை. ஒவ்வொரு படியும் மாதிரித் தரவில் இயங்குகிறது."
-  },
-  "request.invalid": {
-    "reviewed": false,
-    "source": "Something in the form was not accepted. Check the highlighted fields.",
-    "translation": "படிவத்தில் ஏதோ ஒன்று ஏற்கப்படவில்லை. குறிக்கப்பட்ட புலங்களைச் சரிபார்க்கவும்."
-  },
-  "upload.accepts": {
-    "reviewed": false,
-    "source": "GeoTIFF, PNG or JPEG, up to {max} MB. Read on the server.",
-    "translation": "GeoTIFF, PNG அல்லது JPEG, {max} MB வரை. சேவையகத்தில் படிக்கப்படுகிறது."
-  },
-  "upload.error.unsupported": {
-    "reviewed": false,
-    "source": "That file type is not accepted. Use a GeoTIFF, PNG or JPEG.",
-    "translation": "அந்த வகைக் கோப்பு ஏற்கப்படாது. GeoTIFF, PNG அல்லது JPEG பயன்படுத்துங்கள்."
-  },
-  "workspace.inputs.drop": {
-    "reviewed": false,
-    "source": "Drop an image here, or",
-    "translation": "இங்கே ஒரு படத்தை விடுங்கள், அல்லது"
-  },
-  "upload.error.tooLarge": {
-    "reviewed": false,
-    "source": "That file is {size} MB. The limit is {max} MB.",
-    "translation": "அந்தக் கோப்பு {size} MB. வரம்பு {max} MB."
-  },
-  "upload.error.empty": {
-    "reviewed": false,
-    "source": "That file is empty.",
-    "translation": "அந்தக் கோப்பு காலியாக உள்ளது."
-  },
-  "upload.progress": {
-    "reviewed": false,
-    "source": "Uploading… {percent}%",
-    "translation": "பதிவேற்றுகிறது… {percent}%"
-  },
-  "nav.home": {
-    "reviewed": false,
-    "source": "Home",
-    "translation": "முகப்பு"
-  },
-  "landing.hero.ctaSignedIn": {
-    "reviewed": false,
-    "source": "Open the workspace",
-    "translation": "பணியிடத்தைத் திறக்கவும்"
-  },
-  "landing.hero.secondarySignedIn": {
-    "reviewed": false,
-    "source": "See your analyses",
-    "translation": "உங்கள் பகுப்பாய்வுகளைப் பாருங்கள்"
-  },
-  "dashboard.stats.measured": {
-    "reviewed": false,
-    "source": "Measured",
-    "translation": "அளவிடப்பட்டவை"
-  },
-  "dashboard.stats.held": {
-    "reviewed": false,
-    "source": "Held for review",
-    "translation": "மறுஆய்வுக்கு நிறுத்தப்பட்டவை"
-  },
-  "dashboard.empty.title": {
-    "reviewed": false,
-    "source": "Nothing analysed yet",
-    "translation": "இன்னும் எதுவும் பகுப்பாய்வு செய்யப்படவில்லை"
-  },
-  "dashboard.empty.body": {
-    "reviewed": false,
-    "source": "Upload a scene and ask a question. Every step is shown as it runs.",
-    "translation": "ஒரு காட்சியைப் பதிவேற்றி கேள்வி கேளுங்கள். ஒவ்வொரு படியும் இயங்கும்போது காட்டப்படும்."
-  },
-  "auth.google.continue": {
-    "reviewed": false,
-    "source": "Continue with Google",
-    "translation": "Google மூலம் தொடரவும்"
-  },
-  "auth.google.or": {
-    "reviewed": false,
-    "source": "or",
-    "translation": "அல்லது"
-  },
-  "auth.error.googleDisabled": {
-    "reviewed": false,
-    "source": "Google sign-in is not set up on this server. Use your password.",
-    "translation": "இந்தச் சேவையகத்தில் Google உள்நுழைவு அமைக்கப்படவில்லை. உங்கள் கடவுச்சொல்லைப் பயன்படுத்துங்கள்."
-  },
-  "auth.error.googleRejected": {
-    "reviewed": false,
-    "source": "Google could not confirm that sign-in. Try again.",
-    "translation": "அந்த உள்நுழைவை Google உறுதிப்படுத்த முடியவில்லை. மீண்டும் முயலுங்கள்."
-  },
-  "auth.error.googleUnverifiedEmail": {
-    "reviewed": false,
-    "source": "An account already uses this email, and Google has not verified the address. Sign in with your password instead.",
-    "translation": "இந்த மின்னஞ்சலில் ஏற்கெனவே கணக்கு உள்ளது, மேலும் Google இந்த முகவரியைச் சரிபார்க்கவில்லை. மாறாக உங்கள் கடவுச்சொல்லால் உள்நுழையுங்கள்."
-  },
-  "auth.error.googleCancelled": {
-    "reviewed": false,
-    "source": "Sign-in was cancelled.",
-    "translation": "உள்நுழைவு ரத்து செய்யப்பட்டது."
-  },
-  "auth.error.googleState": {
-    "reviewed": false,
-    "source": "That sign-in link expired or did not start here. Try again.",
-    "translation": "அந்த உள்நுழைவு இணைப்பு காலாவதியானது அல்லது இங்கிருந்து தொடங்கவில்லை. மீண்டும் முயலுங்கள்."
-  },
-  "auth.error.googleFailed": {
-    "reviewed": false,
-    "source": "Google sign-in did not complete. Try again.",
-    "translation": "Google உள்நுழைவு நிறைவடையவில்லை. மீண்டும் முயலுங்கள்."
-  },
-  "auth.error.sessionExpired": {
-    "reviewed": false,
-    "source": "Your session ended. Sign in again to continue.",
-    "translation": "உங்கள் அமர்வு முடிந்தது. தொடர மீண்டும் உள்நுழையுங்கள்."
-  },
-  "service.databaseUnavailable": {
-    "reviewed": false,
-    "source": "The service cannot reach its database right now. Try again in a moment.",
-    "translation": "சேவை இப்போது அதன் தரவுத்தளத்தை அணுக முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயலுங்கள்."
   }
 }
