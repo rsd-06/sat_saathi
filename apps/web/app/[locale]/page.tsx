@@ -31,9 +31,10 @@ export default async function LandingPage({
         {/* Hero: the sheet is the hero. The copy sits beside it, not over it. */}
         <section className="relative bg-gradient-to-b from-blue-50/40 via-transparent to-transparent">
           <div aria-hidden className="sheet-grid pointer-events-none absolute inset-0" />
-          <div className="relative mx-auto grid max-w-[88rem] gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] lg:gap-14 lg:py-20">
+          <div className="relative mx-auto grid max-w-[88rem] gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[minmax(min-content,25rem)_minmax(0,1fr)] lg:gap-14 lg:py-20">
             <div className="open-line max-w-prose self-center">
-              <h1 className="font-serif text-ink text-5xl leading-[1.15] tracking-tight text-balance sm:text-6xl drop-shadow-sm">
+              {/* Tamil headline words are long; at the Latin size they overflowed phones. */}
+              <h1 className={`font-serif text-ink leading-[1.15] tracking-tight text-balance drop-shadow-sm ${locale === "ta" ? "text-3xl sm:text-5xl" : "text-5xl sm:text-6xl"}`}>
                 {t("landing.hero.headline")}
               </h1>
               <p className="text-ink-muted mt-6 text-lg leading-relaxed">

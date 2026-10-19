@@ -19,7 +19,9 @@ export async function ConnectivityBadge() {
           online ? "bg-vegetation" : "bg-relief"
         }`}
       />
-      {online ? t("status.online") : t("status.offline")}
+      <span className="sr-only sm:not-sr-only">
+        {online ? t("status.online") : t("status.offline")}
+      </span>
     </span>
   );
 }

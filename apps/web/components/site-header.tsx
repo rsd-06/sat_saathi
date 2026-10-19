@@ -51,7 +51,7 @@ export async function SiteHeader() {
           </nav>
         )}
 
-        <div className="ml-auto flex items-center gap-4 sm:gap-5">
+        <div className="ml-auto flex items-center gap-3 sm:gap-5">
           <ConnectivityBadge />
           <LanguageSwitcher />
           {user ? (
